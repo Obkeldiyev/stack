@@ -1,0 +1,7 @@
+stack-family-finance/release/
+*.exe
+*.asar
+node_modules/
+dist/
+build/
+out/

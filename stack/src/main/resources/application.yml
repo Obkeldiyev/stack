@@ -1,0 +1,25 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/kidsbank
+    username: postgres
+    password: Mirjalol13
+
+  flyway:
+    enabled: false
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+app:
+  jwt:
+    issuer: kidsbank-api
+    secret: "CHANGE_THIS_TO_A_LONG_RANDOM_SECRET_64_CHARS_MINIMUM_ABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789"
+    accessTokenMinutes: 60

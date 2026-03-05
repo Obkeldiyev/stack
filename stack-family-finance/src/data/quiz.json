@@ -1,0 +1,17 @@
+[
+  { "question": "What is the capital of France?", "options": ["London", "Berlin", "Paris", "Madrid"], "correctIndex": 2 },
+  { "question": "How many continents are there?", "options": ["5", "6", "7", "8"], "correctIndex": 2 },
+  { "question": "What is 15 × 3?", "options": ["30", "45", "50", "35"], "correctIndex": 1 },
+  { "question": "Which planet is closest to the Sun?", "options": ["Venus", "Mercury", "Mars", "Earth"], "correctIndex": 1 },
+  { "question": "What gas do plants absorb?", "options": ["Oxygen", "Nitrogen", "Carbon Dioxide", "Helium"], "correctIndex": 2 },
+  { "question": "How many sides does a hexagon have?", "options": ["5", "6", "7", "8"], "correctIndex": 1 },
+  { "question": "What is the largest ocean?", "options": ["Atlantic", "Indian", "Arctic", "Pacific"], "correctIndex": 3 },
+  { "question": "Who painted the Mona Lisa?", "options": ["Picasso", "Da Vinci", "Van Gogh", "Monet"], "correctIndex": 1 },
+  { "question": "What is H₂O commonly known as?", "options": ["Salt", "Water", "Sugar", "Oil"], "correctIndex": 1 },
+  { "question": "How many days are in a leap year?", "options": ["364", "365", "366", "367"], "correctIndex": 2 },
+  { "question": "What is the smallest prime number?", "options": ["0", "1", "2", "3"], "correctIndex": 2 },
+  { "question": "Which animal is known as the 'King of the Jungle'?", "options": ["Tiger", "Lion", "Bear", "Elephant"], "correctIndex": 1 },
+  { "question": "What is 144 ÷ 12?", "options": ["10", "11", "12", "13"], "correctIndex": 2 },
+  { "question": "Which country has the most people?", "options": ["USA", "India", "China", "Russia"], "correctIndex": 1 },
+  { "question": "How many bones does an adult human have?", "options": ["106", "206", "306", "186"], "correctIndex": 1 }
+]

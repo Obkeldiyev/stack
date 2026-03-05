@@ -1,0 +1,38 @@
+appId: com.kidsbank.stack
+productName: STACK Kids Bank
+copyright: Copyright © 2026
+directories:
+  output: release
+  buildResources: build
+files:
+  - out
+  - package.json
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+  icon: public/favicon.ico
+  artifactName: ${productName}-Setup-${version}.${ext}
+  signAndEditExecutable: false
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  allowElevation: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: ${productName}
+  installerIcon: public/favicon.ico
+  uninstallerIcon: public/favicon.ico
+mac:
+  target:
+    - dmg
+    - zip
+  icon: public/favicon.ico
+  category: public.app-category.finance
+linux:
+  target:
+    - AppImage
+    - deb
+  icon: public/favicon.ico
+  category: Finance
