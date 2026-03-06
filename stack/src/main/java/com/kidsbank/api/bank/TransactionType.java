@@ -5,5 +5,7 @@ public enum TransactionType {
   WITHDRAWAL,
   TASK_REWARD,
   GOAL_SAVE,
-  GAME_REWARD
+  GAME_REWARD,
+  PARENT_TRANSFER,
+  ALLOWANCE
 }

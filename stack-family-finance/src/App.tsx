@@ -9,9 +9,9 @@ import { isAuthenticated, getUserRole } from "@/lib/auth";
 import { AppLayout } from "@/components/layout/AppLayout";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
-import ParentDashboard from "@/pages/parent/Dashboard";
+import ParentBankingDashboard from "@/pages/parent/BankingDashboard";
 import ParentFamily from "@/pages/parent/Family";
-import ChildDashboard from "@/pages/child/Dashboard";
+import ChildBankingDashboard from "@/pages/child/BankingDashboard";
 import ChildFamily from "@/pages/child/Family";
 import Games from "@/pages/child/Games";
 import GamePlay from "@/pages/child/GamePlay";
@@ -42,13 +42,13 @@ const App = () => {
 
             {/* Parent routes */}
             <Route element={<AppLayout requiredRole="PARENT" />}>
-              <Route path="/parent/dashboard" element={<ParentDashboard />} />
+              <Route path="/parent/dashboard" element={<ParentBankingDashboard />} />
               <Route path="/parent/family" element={<ParentFamily />} />
             </Route>
 
             {/* Child routes */}
             <Route element={<AppLayout requiredRole="CHILD" />}>
-              <Route path="/child/dashboard" element={<ChildDashboard />} />
+              <Route path="/child/dashboard" element={<ChildBankingDashboard />} />
               <Route path="/child/family" element={<ChildFamily />} />
               <Route path="/child/games" element={<Games />} />
               <Route path="/child/games/:code" element={<GamePlay />} />

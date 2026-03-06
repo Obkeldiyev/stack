@@ -80,6 +80,59 @@ export const familyApi = {
     apiFetch<any[]>("/api/family/me"),
 };
 
+// Accounts
+export const accountsApi = {
+  getMyAccounts: () =>
+    apiFetch<any[]>("/api/accounts/me"),
+  getFamilyAccounts: (familyId: number) =>
+    apiFetch<any[]>(`/api/accounts/family/${familyId}`),
+  transfer: (childId: number, amount: number, note?: string) =>
+    apiFetch("/api/accounts/transfer", {
+      method: "POST",
+      body: JSON.stringify({ childId, amount, note }),
+    }),
+};
+
+// Transactions
+export const transactionsApi = {
+  getHistory: (accountId: number) =>
+    apiFetch<any[]>(`/api/transactions/accounts/${accountId}`),
+  deposit: (accountId: number, amount: number, note?: string) =>
+    apiFetch("/api/transactions/accounts/${accountId}/deposit", {
+      method: "POST",
+      body: JSON.stringify({ amount, note }),
+    }),
+  withdraw: (accountId: number, amount: number, note?: string) =>
+    apiFetch(`/api/transactions/accounts/${accountId}/withdraw`, {
+      method: "POST",
+      body: JSON.stringify({ amount, note }),
+    }),
+};
+
+// Dashboard
+export const dashboardApi = {
+  getChildDashboard: () =>
+    apiFetch<any>("/api/dashboard/child"),
+  getParentDashboard: () =>
+    apiFetch<any>("/api/dashboard/parent"),
+};
+
+// Goals
+export const goalsApi = {
+  getMyGoals: () =>
+    apiFetch<any[]>("/api/goals/me"),
+  create: (title: string, targetAmount: number) =>
+    apiFetch("/api/goals/me", {
+      method: "POST",
+      body: JSON.stringify({ title, targetAmount }),
+    }),
+  saveToGoal: (goalId: number, fromAccountId: number, amount: number) =>
+    apiFetch(`/api/goals/${goalId}/save`, {
+      method: "POST",
+      body: JSON.stringify({ fromAccountId, amount }),
+    }),
+};
+
 // Games
 export const gamesApi = {
   list: () => apiFetch<any[]>("/api/games/public/list"),

@@ -25,15 +25,21 @@ const FALLBACK_GAMES = [
 ];
 
 export default function Games() {
-  const [games, setGames] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [games, setGames] = useState<any[]>(FALLBACK_GAMES);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Try to load from backend, but use fallback if it fails
     gamesApi.list()
-      .then((data) => setGames(Array.isArray(data) ? data : FALLBACK_GAMES))
-      .catch(() => setGames(FALLBACK_GAMES))
-      .finally(() => setLoading(false));
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setGames(data);
+        }
+      })
+      .catch(() => {
+        // Keep using FALLBACK_GAMES
+      });
   }, []);
 
   if (loading) return <div className="max-w-2xl mx-auto space-y-4"><SkeletonCard /><SkeletonCard /><SkeletonCard /></div>;
