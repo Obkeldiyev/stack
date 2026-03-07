@@ -72,12 +72,16 @@ export const familyApi = {
     apiFetch(`/api/family/${familyId}`, { method: "DELETE" }),
   invite: (familyId: number) =>
     apiFetch<{ code: string }>(`/api/family/${familyId}/invite`, { method: "POST" }),
+  getInviteCode: (familyId: number) =>
+    apiFetch<{ code: string; inviteCode: string }>(`/api/family/${familyId}/invite`, { method: "POST" }),
   join: (code: string) =>
     apiFetch("/api/family/join", { method: "POST", body: JSON.stringify({ code }) }),
   getMembers: (familyId: number) =>
     apiFetch<any[]>(`/api/family/${familyId}/members`),
   getMyFamilies: () =>
     apiFetch<any[]>("/api/family/me"),
+  removeMember: (familyId: number, userId: number) =>
+    apiFetch(`/api/family/${familyId}/members/${userId}`, { method: "DELETE" }),
 };
 
 // Accounts

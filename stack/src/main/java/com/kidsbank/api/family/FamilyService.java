@@ -147,4 +147,24 @@ public class FamilyService {
     // Delete family
     familyRepo.deleteById(familyId);
   }
+
+  @Transactional
+  public void removeMember(Long parentId, Long familyId, Long userId) {
+    FamilyMember parentMember = memberRepo.findByFamily_IdAndUser_Id(familyId, parentId)
+        .orElseThrow(() -> new NotFoundException("Family not found or you are not a member"));
+
+    if (!"PARENT".equals(parentMember.getMemberRole())) {
+      throw new BadRequestException("Only family PARENT can remove members");
+    }
+
+    // Cannot remove parent
+    FamilyMember targetMember = memberRepo.findByFamily_IdAndUser_Id(familyId, userId)
+        .orElseThrow(() -> new NotFoundException("Member not found"));
+
+    if ("PARENT".equals(targetMember.getMemberRole())) {
+      throw new BadRequestException("Cannot remove parent from family");
+    }
+
+    memberRepo.delete(targetMember);
+  }
 }

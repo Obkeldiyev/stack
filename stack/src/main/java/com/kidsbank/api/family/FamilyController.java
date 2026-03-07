@@ -76,4 +76,14 @@ public class FamilyController {
     service.deleteFamily(parentId, familyId);
     return ApiResponse.ok("Family deleted", null);
   }
+
+  @DeleteMapping("/{familyId}/members/{userId}")
+  @PreAuthorize("hasRole('PARENT')")
+  public ApiResponse<Void> removeMember(@PathVariable Long familyId,
+                                        @PathVariable Long userId,
+                                        org.springframework.security.core.Authentication auth) {
+    Long parentId = authUserId(auth);
+    service.removeMember(parentId, familyId, userId);
+    return ApiResponse.ok("Member removed", null);
+  }
 }

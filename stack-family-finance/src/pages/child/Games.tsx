@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { SkeletonCard } from "@/components/SkeletonCard";
 import { EmptyState } from "@/components/EmptyState";
-import { Gamepad2, Coins, Brain, Grid3X3, Calculator, Type, Target } from "lucide-react";
+import { Gamepad2, Coins, Brain, Grid3X3, Calculator, Type, Target, DollarSign, PiggyBank, TrendingUp } from "lucide-react";
 
 const GAME_ICONS: Record<string, any> = {
   math_rush: Calculator,
@@ -13,6 +13,9 @@ const GAME_ICONS: Record<string, any> = {
   smart_quiz: Brain,
   word_scramble: Type,
   number_guess: Target,
+  coin_catcher: Coins,
+  budget_challenge: DollarSign,
+  savings_race: PiggyBank,
 };
 
 // Fallback games if backend is unreachable
@@ -22,6 +25,9 @@ const FALLBACK_GAMES = [
   { id: 3, code: "smart_quiz", title: "Smart Quiz", description: "Answer 10 trivia questions!", coinsPerHundredPoints: 12 },
   { id: 4, code: "word_scramble", title: "Word Scramble", description: "Unscramble financial words!", coinsPerHundredPoints: 13 },
   { id: 5, code: "number_guess", title: "Number Guess", description: "Guess numbers in 5 rounds!", coinsPerHundredPoints: 11 },
+  { id: 6, code: "coin_catcher", title: "Coin Catcher", description: "Catch falling coins in 45 seconds!", coinsPerHundredPoints: 14 },
+  { id: 7, code: "budget_challenge", title: "Budget Challenge", description: "Balance your budget perfectly!", coinsPerHundredPoints: 16 },
+  { id: 8, code: "savings_race", title: "Savings Race", description: "Make smart saving decisions!", coinsPerHundredPoints: 15 },
 ];
 
 export default function Games() {

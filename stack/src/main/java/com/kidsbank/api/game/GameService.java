@@ -40,11 +40,55 @@ public class GameService {
   public void ensureGamesSeeded() {
     if (gameRepo.count() > 0) return;
 
-    Game g1 = new Game(); g1.setCode("MATH"); g1.setTitle("Math Rush"); g1.setCoinsPer100Points(10);
-    Game g2 = new Game(); g2.setCode("MEMORY"); g2.setTitle("Memory Cards"); g2.setCoinsPer100Points(8);
-    Game g3 = new Game(); g3.setCode("QUIZ"); g3.setTitle("Smart Quiz"); g3.setCoinsPer100Points(12);
+    Game g1 = new Game(); 
+    g1.setCode("math_rush"); 
+    g1.setTitle("Math Rush"); 
+    g1.setDescription("Solve math problems in 60 seconds!");
+    g1.setCoinsPer100Points(10);
+    
+    Game g2 = new Game(); 
+    g2.setCode("memory_cards"); 
+    g2.setTitle("Memory Cards"); 
+    g2.setDescription("Match all the pairs!");
+    g2.setCoinsPer100Points(15);
+    
+    Game g3 = new Game(); 
+    g3.setCode("smart_quiz"); 
+    g3.setTitle("Smart Quiz"); 
+    g3.setDescription("Answer 10 trivia questions!");
+    g3.setCoinsPer100Points(12);
+    
+    Game g4 = new Game(); 
+    g4.setCode("word_scramble"); 
+    g4.setTitle("Word Scramble"); 
+    g4.setDescription("Unscramble financial words!");
+    g4.setCoinsPer100Points(13);
+    
+    Game g5 = new Game(); 
+    g5.setCode("number_guess"); 
+    g5.setTitle("Number Guess"); 
+    g5.setDescription("Guess numbers in 5 rounds!");
+    g5.setCoinsPer100Points(11);
+    
+    Game g6 = new Game(); 
+    g6.setCode("coin_catcher"); 
+    g6.setTitle("Coin Catcher"); 
+    g6.setDescription("Catch falling coins in 45 seconds!");
+    g6.setCoinsPer100Points(14);
+    
+    Game g7 = new Game(); 
+    g7.setCode("budget_challenge"); 
+    g7.setTitle("Budget Challenge"); 
+    g7.setDescription("Balance your budget perfectly!");
+    g7.setCoinsPer100Points(16);
+    
+    Game g8 = new Game(); 
+    g8.setCode("savings_race"); 
+    g8.setTitle("Savings Race"); 
+    g8.setDescription("Make smart saving decisions!");
+    g8.setCoinsPer100Points(15);
 
-    gameRepo.saveAll(List.of(g1,g2,g3));
+    gameRepo.saveAll(List.of(g1, g2, g3, g4, g5, g6, g7, g8));
   }
 
   public List<Game> listGames() {

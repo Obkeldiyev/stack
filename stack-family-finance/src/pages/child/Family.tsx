@@ -6,14 +6,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { EmptyState } from "@/components/EmptyState";
 import { SkeletonCard } from "@/components/SkeletonCard";
+import { QRScanner } from "@/components/QRScanner";
 import { useToast } from "@/hooks/use-toast";
-import { Users, CheckCircle } from "lucide-react";
+import { Users, CheckCircle, QrCode, Keyboard } from "lucide-react";
 
 export default function ChildFamily() {
   const [families, setFamilies] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [code, setCode] = useState("");
   const [joining, setJoining] = useState(false);
+  const [showScanner, setShowScanner] = useState(false);
+  const [manualMode, setManualMode] = useState(false);
   const { toast } = useToast();
 
   const fetchFamilies = async () => {
@@ -26,19 +29,25 @@ export default function ChildFamily() {
 
   useEffect(() => { fetchFamilies(); }, []);
 
-  const handleJoin = async () => {
-    if (!code.trim()) return;
+  const handleJoin = async (inviteCode: string) => {
+    if (!inviteCode.trim()) return;
     setJoining(true);
     try {
-      await familyApi.join(code.trim());
+      await familyApi.join(inviteCode.trim());
       toast({ title: "Joined family!" });
       setCode("");
+      setShowScanner(false);
+      setManualMode(false);
       fetchFamilies();
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
     } finally {
       setJoining(false);
     }
+  };
+
+  const handleManualJoin = () => {
+    handleJoin(code);
   };
 
   if (loading) return <div className="max-w-2xl mx-auto"><SkeletonCard /></div>;
@@ -48,20 +57,77 @@ export default function ChildFamily() {
       <h1 className="text-2xl font-bold">Family</h1>
 
       {families.length === 0 ? (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Join a Family</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="space-y-2">
-              <Label>Invite Code</Label>
-              <Input placeholder="Enter invite code" value={code} onChange={(e) => setCode(e.target.value)} className="font-mono min-h-[44px]" />
-            </div>
-            <Button onClick={handleJoin} disabled={joining} className="w-full min-h-[44px]">
-              {joining ? "Joining..." : "Join Family"}
-            </Button>
-          </CardContent>
-        </Card>
+        <>
+          {showScanner ? (
+            <QRScanner
+              onScan={handleJoin}
+              onClose={() => setShowScanner(false)}
+            />
+          ) : manualMode ? (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Enter Invite Code</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="space-y-2">
+                  <Label>Invite Code</Label>
+                  <Input 
+                    placeholder="ABC123" 
+                    value={code} 
+                    onChange={(e) => setCode(e.target.value.toUpperCase())} 
+                    className="font-mono text-center text-lg min-h-[44px]"
+                    maxLength={6}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button 
+                    variant="outline"
+                    onClick={() => setManualMode(false)} 
+                    className="min-h-[44px]"
+                  >
+                    <QrCode className="h-4 w-4 mr-2" />
+                    Scan QR
+                  </Button>
+                  <Button 
+                    onClick={handleManualJoin} 
+                    disabled={joining || code.length !== 6} 
+                    className="min-h-[44px]"
+                  >
+                    {joining ? "Joining..." : "Join"}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Join a Family</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <p className="text-sm text-muted-foreground">
+                  Ask your parent for a QR code or invite code to join your family
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button 
+                    onClick={() => setShowScanner(true)} 
+                    className="min-h-[44px]"
+                  >
+                    <QrCode className="h-4 w-4 mr-2" />
+                    Scan QR Code
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={() => setManualMode(true)} 
+                    className="min-h-[44px]"
+                  >
+                    <Keyboard className="h-4 w-4 mr-2" />
+                    Enter Code
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </>
       ) : (
         families.map((fm: any) => {
           const fam = fm.family ?? fm;

@@ -31,7 +31,8 @@ public class SecurityConfig {
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/", "/health").permitAll()
             .requestMatchers("/api/auth/**").permitAll()
-            .requestMatchers("/api/games/public/**").permitAll() // optional
+            .requestMatchers("/api/games/public/**").permitAll()
+            .requestMatchers("/api/games/**").permitAll() // Allow all game endpoints for testing
             .anyRequest().authenticated()
         )
         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

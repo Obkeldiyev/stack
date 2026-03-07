@@ -4,6 +4,9 @@ import { MemoryCards } from "@/components/games/MemoryCards";
 import { SmartQuiz } from "@/components/games/SmartQuiz";
 import { WordScramble } from "@/components/games/WordScramble";
 import { NumberGuess } from "@/components/games/NumberGuess";
+import { CoinCatcher } from "@/components/games/CoinCatcher";
+import { BudgetChallenge } from "@/components/games/BudgetChallenge";
+import { SavingsRace } from "@/components/games/SavingsRace";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 
@@ -28,6 +31,12 @@ export default function GamePlay() {
         return <WordScramble gameId={gameId} onBack={handleBack} />;
       case "number_guess":
         return <NumberGuess gameId={gameId} onBack={handleBack} />;
+      case "coin_catcher":
+        return <CoinCatcher gameId={gameId} onBack={handleBack} />;
+      case "budget_challenge":
+        return <BudgetChallenge gameId={gameId} onBack={handleBack} />;
+      case "savings_race":
+        return <SavingsRace gameId={gameId} onBack={handleBack} />;
       default:
         return (
           <div className="text-center py-12">
