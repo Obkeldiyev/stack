@@ -7,6 +7,15 @@ directories:
 files:
   - out
   - package.json
+  - "!node_modules"
+  - "!src"
+  - "!android"
+  - "!dist"
+  - "!**/*.md"
+  - "!**/*.map"
+asarUnpack:
+  - "**/*.node"
+compression: maximum
 win:
   target:
     - target: nsis
@@ -21,6 +30,7 @@ nsis:
   createDesktopShortcut: true
   createStartMenuShortcut: true
   shortcutName: ${productName}
+  differentialPackage: false
 mac:
   target:
     - dmg

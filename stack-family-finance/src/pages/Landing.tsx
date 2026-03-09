@@ -425,24 +425,87 @@ export default function Landing() {
           </div>
         </section>
 
+        {/* Download Section */}
+        <section className="section download-section" id="download">
+          <div className="container">
+            <div className="section-head reveal up">
+              <div className="eyebrow">Download Apps</div>
+              <h2>Get Stack on your device</h2>
+              <p>
+                Download Stack for Android or Windows and start your family's financial journey today.
+                Available for free on all platforms.
+              </p>
+            </div>
+
+            <div className="download-grid">
+              <div className="download-card glass reveal left">
+                <div className="download-icon">
+                  <i className="fa-brands fa-android"></i>
+                </div>
+                <h3>Android App</h3>
+                <p>Install Stack on your Android phone or tablet. Compatible with Android 7.0 and above.</p>
+                <div className="download-info">
+                  <span><i className="fa-solid fa-mobile-screen"></i> Mobile & Tablet</span>
+                  <span><i className="fa-solid fa-download"></i> 6.1 MB</span>
+                </div>
+                <a href="/STACK-Kids-Bank.apk" download className="btn btn-primary download-btn">
+                  <i className="fa-brands fa-android"></i>
+                  Download APK
+                </a>
+              </div>
+
+              <div className="download-card glass reveal right">
+                <div className="download-icon">
+                  <i className="fa-brands fa-windows"></i>
+                </div>
+                <h3>Windows App</h3>
+                <p>Install Stack on your Windows PC or laptop. Compatible with Windows 10 and above.</p>
+                <div className="download-info">
+                  <span><i className="fa-solid fa-desktop"></i> Desktop</span>
+                  <span><i className="fa-solid fa-download"></i> 112 MB</span>
+                </div>
+                <a href="/STACK-Kids-Bank-Setup.exe" download className="btn btn-primary download-btn">
+                  <i className="fa-brands fa-windows"></i>
+                  Download for Windows
+                </a>
+              </div>
+
+              <div className="download-card glass reveal up stagger-1">
+                <div className="download-icon web-icon">
+                  <i className="fa-solid fa-globe"></i>
+                </div>
+                <h3>Web App</h3>
+                <p>Use Stack directly in your browser. No installation required, works on any device.</p>
+                <div className="download-info">
+                  <span><i className="fa-solid fa-browser"></i> All Browsers</span>
+                  <span><i className="fa-solid fa-bolt"></i> Instant Access</span>
+                </div>
+                <button onClick={() => navigate("/login")} className="btn btn-primary download-btn">
+                  <i className="fa-solid fa-arrow-right"></i>
+                  Launch Web App
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* CTA Section */}
-        <section className="section cta-section" id="download">
+        <section className="section cta-section">
           <div className="container">
             <div className="cta-box glass reveal up">
               <div className="cta-copy">
                 <div className="eyebrow">Ready to launch</div>
                 <h2>Build the future of kids banking with Stack.</h2>
                 <p>
-                  This landing page is made as a strong premium starting point for your
-                  Spring Boot product. You can connect real screenshots, backend APIs,
-                  auth flows, pricing, FAQs, and app store links later.
+                  Join thousands of families teaching their children financial responsibility
+                  through fun, engaging, and secure banking experiences.
                 </p>
               </div>
 
               <div className="cta-actions">
                 <button onClick={() => navigate("/login")} className="btn btn-primary">
                   <i className="fa-solid fa-rocket"></i>
-                  Launch Stack
+                  Get Started Free
                 </button>
                 <button onClick={() => scrollToSection("features")} className="btn btn-secondary">
                   <i className="fa-solid fa-layer-group"></i>
