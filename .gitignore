@@ -1,7 +1,12 @@
 stack-family-finance/release/
 *.exe
 *.asar
+*.apk
 node_modules/
 dist/
 build/
 out/
+STACK-Kids-Bank.apk
+STACK-Kids-Bank-Setup.exe
+STACK-Kids-Bank-Setup-FIXED.exe
+stack-family-finance/android/app/build/
