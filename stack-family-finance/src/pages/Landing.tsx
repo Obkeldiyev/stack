@@ -462,9 +462,9 @@ export default function Landing() {
                 <p>Install Stack on your Windows PC or laptop. Compatible with Windows 10 and above.</p>
                 <div className="download-info">
                   <span><i className="fa-solid fa-desktop"></i> Desktop</span>
-                  <span><i className="fa-solid fa-download"></i> 112 MB</span>
+                  <span><i className="fa-solid fa-download"></i> 228 MB</span>
                 </div>
-                <a href="/STACK-Kids-Bank-Setup.exe" download className="btn btn-primary download-btn">
+                <a href="/STACK-Kids-Bank-Windows.zip" download className="btn btn-primary download-btn">
                   <i className="fa-brands fa-windows"></i>
                   Download for Windows
                 </a>

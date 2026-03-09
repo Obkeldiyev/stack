@@ -1,0 +1,36 @@
+STACK Kids Bank - Windows Installation Instructions
+===================================================
+
+STEP 1: Download the ZIP file
+------------------------------
+Download: STACK-Kids-Bank-Windows.zip (228 MB)
+
+STEP 2: Extract the ZIP file
+-----------------------------
+1. Right-click on "STACK-Kids-Bank-Windows.zip"
+2. Click "Extract All..."
+3. Choose a location (e.g., Desktop or Documents)
+4. Click "Extract"
+
+STEP 3: Run the application
+----------------------------
+1. Open the extracted folder
+2. Find "STACK Kids Bank.exe"
+3. Double-click to run the app
+
+IMPORTANT NOTES:
+----------------
+- No installation required - just extract and run!
+- Keep all files in the folder together
+- You can create a desktop shortcut to "STACK Kids Bank.exe"
+- The app will connect to: https://stack.polito.uz
+
+TROUBLESHOOTING:
+----------------
+If Windows shows a security warning:
+1. Click "More info"
+2. Click "Run anyway"
+
+This is normal for apps not from the Microsoft Store.
+
+===================================================
