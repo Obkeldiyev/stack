@@ -167,12 +167,11 @@ export function QRScanner({ onScan, onClose }: QRScannerProps) {
                 placeholder="ABC123"
                 value={manualCode}
                 onChange={(e) => setManualCode(e.target.value.toUpperCase())}
-                maxLength={6}
                 className="text-center text-2xl font-mono tracking-wider uppercase min-h-[44px]"
                 autoFocus
               />
               <p className="text-xs text-center text-muted-foreground">
-                Code is case-insensitive
+                Enter the invite code (usually 6 characters)
               </p>
             </div>
 
@@ -188,7 +187,7 @@ export function QRScanner({ onScan, onClose }: QRScannerProps) {
               </Button>
               <Button
                 type="submit"
-                disabled={manualCode.length !== 6}
+                disabled={manualCode.length < 4}
                 className="min-h-[44px]"
               >
                 Join Family

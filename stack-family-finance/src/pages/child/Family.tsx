@@ -76,8 +76,10 @@ export default function ChildFamily() {
                     value={code} 
                     onChange={(e) => setCode(e.target.value.toUpperCase())} 
                     className="font-mono text-center text-lg min-h-[44px]"
-                    maxLength={6}
                   />
+                  <p className="text-xs text-center text-muted-foreground">
+                    Enter the invite code from your parent
+                  </p>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <Button 
@@ -90,7 +92,7 @@ export default function ChildFamily() {
                   </Button>
                   <Button 
                     onClick={handleManualJoin} 
-                    disabled={joining || code.length !== 6} 
+                    disabled={joining || code.length < 4} 
                     className="min-h-[44px]"
                   >
                     {joining ? "Joining..." : "Join"}

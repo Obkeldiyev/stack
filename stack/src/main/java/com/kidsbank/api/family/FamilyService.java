@@ -74,7 +74,7 @@ public class FamilyService {
     inv.setUsed(false);
 
     String code;
-    do { code = genCode(8); }
+    do { code = genCode(6); }
     while (inviteRepo.findByCode(code).isPresent());
 
     inv.setCode(code);
