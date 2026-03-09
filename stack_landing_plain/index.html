@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stack Kids Bank</title>
+  <meta
+    name="description"
+    content="Stack is a modern banking platform for kids and parents with goals, cards, savings, chores, rewards, and financial learning."
+  />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+  />
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div class="cursor-glow"></div>
+  <div class="bg-noise"></div>
+
+  <header class="header" id="top">
+    <div class="container nav">
+      <a href="#top" class="brand">
+        <img src="./logo.png" alt="Stack logo" />
+        <span>Stack</span>
+      </a>
+
+      <nav class="desktop-nav">
+        <a href="#features">Features</a>
+        <a href="#experience">Experience</a>
+        <a href="#security">Security</a>
+        <a href="#journey">Journey</a>
+        <a href="#download">Download</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="#download" class="btn btn-outline">Get Started</a>
+        <button class="menu-btn" id="menuBtn" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+
+    <div class="mobile-nav" id="mobileNav">
+      <a href="#features">Features</a>
+      <a href="#experience">Experience</a>
+      <a href="#security">Security</a>
+      <a href="#journey">Journey</a>
+      <a href="#download">Download</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-bg-shape hero-shape-1 parallax" data-speed="0.18"></div>
+      <div class="hero-bg-shape hero-shape-2 parallax" data-speed="0.1"></div>
+
+      <div class="container hero-grid">
+        <div class="hero-copy reveal up">
+          <div class="eyebrow">
+            <i class="fa-solid fa-sparkles"></i>
+            Smart banking for kids and parents
+          </div>
+
+          <h1 class="hero-title">
+            The first money app
+            <span>children will love</span>
+            and parents will
+            <span>fully trust.</span>
+          </h1>
+
+          <p class="hero-text">
+            Stack is a complete kids banking experience made for modern families.
+            It combines pocket money, savings goals, spending controls, chores,
+            rewards, and financial education in one premium product.
+          </p>
+
+          <div class="hero-actions">
+            <a href="#download" class="btn btn-primary">
+              <i class="fa-solid fa-arrow-right"></i>
+              Start with Stack
+            </a>
+            <a href="#features" class="btn btn-secondary">
+              <i class="fa-regular fa-circle-play"></i>
+              Explore product
+            </a>
+          </div>
+
+          <div class="hero-stats">
+            <div class="stat glass reveal left stagger-1">
+              <strong class="counter" data-target="24">0</strong>
+              <span>hour visibility</span>
+            </div>
+            <div class="stat glass reveal left stagger-2">
+              <strong class="counter" data-target="100">0</strong>
+              <span>parent control</span>
+            </div>
+            <div class="stat glass reveal left stagger-3">
+              <strong class="counter" data-target="7">0</strong>
+              <span>learning zones</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <div class="floating-card card-back reveal right">
+            <div class="screen-top">
+              <span></span>
+              <p>Parent dashboard</p>
+            </div>
+
+            <div class="mini-block">
+              <div>
+                <small>Card Controls</small>
+                <h4>Online spend paused</h4>
+              </div>
+              <i class="fa-solid fa-shield-halved"></i>
+            </div>
+
+            <div class="mini-block">
+              <div>
+                <small>Allowance</small>
+                <h4>Auto every Friday</h4>
+              </div>
+              <i class="fa-solid fa-calendar-check"></i>
+            </div>
+
+            <div class="mini-block">
+              <div>
+                <small>Task reward</small>
+                <h4>Homework + $5</h4>
+              </div>
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+          </div>
+
+          <div class="phone-card glass reveal zoom">
+            <div class="screen-top">
+              <span></span>
+              <p>Child app</p>
+            </div>
+
+            <div class="balance-box">
+              <small>Available balance</small>
+              <h3>$128.40</h3>
+              <div class="badge-row">
+                <span>Stack Card</span>
+                <span>Goal Active</span>
+              </div>
+            </div>
+
+            <div class="goal-box">
+              <div class="goal-head">
+                <p>New Bike</p>
+                <span>78%</span>
+              </div>
+              <div class="progress">
+                <div class="progress-fill"></div>
+              </div>
+            </div>
+
+            <div class="icon-pills">
+              <div><i class="fa-solid fa-piggy-bank"></i><span>Save</span></div>
+              <div><i class="fa-solid fa-gamepad"></i><span>Play</span></div>
+              <div><i class="fa-solid fa-trophy"></i><span>Win</span></div>
+            </div>
+          </div>
+
+          <div class="floating-badge reveal down stagger-2">
+            <i class="fa-solid fa-lock"></i>
+            Safe by design
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="logo-strip section-mini">
+      <div class="container reveal up">
+        <p>Made for the platforms families already use</p>
+        <div class="strip-icons">
+          <i class="fa-brands fa-apple"></i>
+          <i class="fa-brands fa-google-play"></i>
+          <i class="fa-brands fa-android"></i>
+          <i class="fa-solid fa-credit-card"></i>
+          <i class="fa-solid fa-school"></i>
+          <i class="fa-solid fa-shield-heart"></i>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="features">
+      <div class="container">
+        <div class="section-head reveal up">
+          <div class="eyebrow">Main features</div>
+          <h2>Everything a kids bank should have, and more.</h2>
+          <p>
+            This landing page is built to sell the whole ecosystem: a product for
+            parents, a fun app for children, and a premium digital brand.
+          </p>
+        </div>
+
+        <div class="feature-grid">
+          <article class="feature-card glass reveal left">
+            <div class="icon-box"><i class="fa-solid fa-wallet"></i></div>
+            <h3>Smart allowances</h3>
+            <p>Set automatic daily, weekly, or monthly pocket money without manual sending every time.</p>
+          </article>
+
+          <article class="feature-card glass reveal up stagger-1">
+            <div class="icon-box"><i class="fa-solid fa-bullseye"></i></div>
+            <h3>Savings goals</h3>
+            <p>Kids create goals for toys, books, gifts, bikes, gadgets, and watch progress visually.</p>
+          </article>
+
+          <article class="feature-card glass reveal right">
+            <div class="icon-box"><i class="fa-solid fa-list-check"></i></div>
+            <h3>Chores & rewards</h3>
+            <p>Turn tasks into positive habits with simple approvals and rewards from parents.</p>
+          </article>
+
+          <article class="feature-card glass reveal left stagger-2">
+            <div class="icon-box"><i class="fa-solid fa-book-open-reader"></i></div>
+            <h3>Financial learning</h3>
+            <p>Mini lessons, quizzes, and friendly learning flows teach real money skills early.</p>
+          </article>
+
+          <article class="feature-card glass reveal up stagger-2">
+            <div class="icon-box"><i class="fa-solid fa-credit-card"></i></div>
+            <h3>Real-time card controls</h3>
+            <p>Parents can pause spending, limit categories, and monitor transactions instantly.</p>
+          </article>
+
+          <article class="feature-card glass reveal right stagger-2">
+            <div class="icon-box"><i class="fa-solid fa-chart-line"></i></div>
+            <h3>Growth insights</h3>
+            <p>Track saving streaks, completed chores, lesson progress, and habit improvements.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-dark sticky-section" id="experience">
+      <div class="container sticky-grid">
+        <div class="sticky-copy">
+          <div class="pin-box">
+            <div class="eyebrow">Scroll storytelling</div>
+            <h2>As you scroll, the story unfolds like a premium product launch.</h2>
+            <p>
+              This section is made to feel like big modern websites. Cards move
+              in from left and right, content fades in, and the product message
+              becomes stronger while the user continues scrolling.
+            </p>
+          </div>
+        </div>
+
+        <div class="sticky-cards">
+          <div class="story-panel glass panel-1 reveal right">
+            <span>01 · FOR KIDS</span>
+            <h3>Money feels exciting.</h3>
+            <p>Gamified goals, rewards, progress bars, and visual feedback make the experience memorable.</p>
+          </div>
+
+          <div class="story-panel glass panel-2 reveal left">
+            <span>02 · FOR PARENTS</span>
+            <h3>Control stays easy.</h3>
+            <p>Parents get calm visibility, less chaos, better money conversations, and stronger habits at home.</p>
+          </div>
+
+          <div class="story-panel glass panel-3 reveal right">
+            <span>03 · FOR FAMILY</span>
+            <h3>Every action teaches.</h3>
+            <p>Chores, savings, approvals, and challenges become small lessons that build discipline.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="security">
+      <div class="container security-grid">
+        <div class="security-copy reveal left">
+          <div class="eyebrow">Security first</div>
+          <h2>Parents should feel safe from the very first second.</h2>
+          <p>
+            Stack is designed around trust. The landing page communicates safety
+            visually with clean spacing, shield motifs, glass surfaces, and
+            structured information.
+          </p>
+
+          <div class="security-list">
+            <div class="security-item reveal up stagger-1">
+              <i class="fa-solid fa-fingerprint"></i>
+              <div>
+                <h4>Secure authentication</h4>
+                <p>Protected account access for family roles and permissions.</p>
+              </div>
+            </div>
+
+            <div class="security-item reveal up stagger-2">
+              <i class="fa-solid fa-bell"></i>
+              <div>
+                <h4>Instant alerts</h4>
+                <p>Get real-time updates for payments, rewards, or unusual activity.</p>
+              </div>
+            </div>
+
+            <div class="security-item reveal up stagger-3">
+              <i class="fa-solid fa-sliders"></i>
+              <div>
+                <h4>Flexible controls</h4>
+                <p>Pause cards, set limits, define rules, and approve actions in seconds.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="security-visual reveal zoom">
+          <div class="security-orbit orbit-1"></div>
+          <div class="security-orbit orbit-2"></div>
+          <div class="security-core glass">
+            <i class="fa-solid fa-shield-halved"></i>
+            <h3>Protected family finance</h3>
+            <p>Controls, visibility, safety, and peace of mind.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="journey">
+      <div class="container">
+        <div class="section-head reveal up">
+          <div class="eyebrow">User journey</div>
+          <h2>Simple onboarding. Strong long-term engagement.</h2>
+        </div>
+
+        <div class="journey-grid">
+          <div class="journey-card glass reveal left">
+            <span>01</span>
+            <h3>Create family account</h3>
+            <p>Parent registers, adds child profiles, and activates the first financial workspace.</p>
+          </div>
+          <div class="journey-card glass reveal up">
+            <span>02</span>
+            <h3>Set goals and rules</h3>
+            <p>Configure allowance, chores, spending permissions, savings, and learning steps.</p>
+          </div>
+          <div class="journey-card glass reveal right">
+            <span>03</span>
+            <h3>Track growth weekly</h3>
+            <p>Review habits, celebrate achievements, and help kids become confident with money.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section cta-section" id="download">
+      <div class="container">
+        <div class="cta-box glass reveal up">
+          <div class="cta-copy">
+            <div class="eyebrow">Ready to launch</div>
+            <h2>Build the future of kids banking with Stack.</h2>
+            <p>
+              This landing page is made as a strong premium starting point for your
+              Spring Boot product. You can connect real screenshots, backend APIs,
+              auth flows, pricing, FAQs, and app store links later.
+            </p>
+          </div>
+
+          <div class="cta-actions">
+            <a href="#top" class="btn btn-primary">
+              <i class="fa-solid fa-rocket"></i>
+              Launch Stack
+            </a>
+            <a href="#features" class="btn btn-secondary">
+              <i class="fa-solid fa-layer-group"></i>
+              See Features
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-wrap">
+      <div>
+        <a href="#top" class="brand footer-brand">
+          <img src="./logo.png" alt="Stack logo" />
+          <span>Stack</span>
+        </a>
+        <p>Kids banking made beautiful, safe, and meaningful.</p>
+      </div>
+
+      <div class="footer-links">
+        <a href="#features">Features</a>
+        <a href="#experience">Experience</a>
+        <a href="#security">Security</a>
+        <a href="#journey">Journey</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="./app.js"></script>
+</body>
+</html>

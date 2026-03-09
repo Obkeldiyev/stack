@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { initTheme } from "@/lib/theme";
 import { isAuthenticated, getUserRole } from "@/lib/auth";
 import { AppLayout } from "@/components/layout/AppLayout";
+import Landing from "@/pages/Landing";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import ParentBankingDashboard from "@/pages/parent/BankingDashboard";
@@ -20,10 +21,31 @@ import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
 
+// Detect if running in Electron or Capacitor
+function isNativeApp() {
+  // Check for Electron
+  if (window.navigator.userAgent.toLowerCase().includes('electron')) {
+    return true;
+  }
+  
+  // Check for Capacitor
+  if ((window as any).Capacitor) {
+    return true;
+  }
+  
+  return false;
+}
+
 function RootRedirect() {
-  if (!isAuthenticated()) return <Navigate to="/login" replace />;
-  const role = getUserRole();
-  return <Navigate to={role === "PARENT" ? "/parent/dashboard" : "/child/dashboard"} replace />;
+  // If native app (Electron/Capacitor), go to login
+  if (isNativeApp()) {
+    if (!isAuthenticated()) return <Navigate to="/login" replace />;
+    const role = getUserRole();
+    return <Navigate to={role === "PARENT" ? "/parent/dashboard" : "/child/dashboard"} replace />;
+  }
+  
+  // If web browser, show landing page
+  return <Navigate to="/landing" replace />;
 }
 
 const App = () => {
@@ -37,6 +59,7 @@ const App = () => {
         <HashRouter>
           <Routes>
             <Route path="/" element={<RootRedirect />} />
+            <Route path="/landing" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
 
