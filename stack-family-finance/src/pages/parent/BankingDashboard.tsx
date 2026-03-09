@@ -130,17 +130,24 @@ export default function ParentBankingDashboard() {
 
   const handleTransfer = async () => {
     if (!selectedChild || !transferAmount) return;
-    const amount = Math.round(parseFloat(transferAmount) * 100);
-    if (amount <= 0) return;
+    const amount = parseFloat(transferAmount);
+    if (amount <= 0 || isNaN(amount)) {
+      toast({ title: "Error", description: "Please enter a valid amount", variant: "destructive" });
+      return;
+    }
+    
+    const amountInCents = Math.round(amount * 100);
 
     setTransferring(true);
     try {
-      await accountsApi.transfer(selectedChild.childId, amount, transferNote || undefined);
-      toast({ title: "Transfer successful!" });
+      await accountsApi.transfer(selectedChild.childId, amountInCents, transferNote || undefined);
+      toast({ title: "Transfer successful!", description: `Sent $${amount.toFixed(2)} to ${selectedChild.childUsername}` });
       setTransferOpen(false);
+      setTransferAmount("");
+      setTransferNote("");
       fetchDashboard();
     } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast({ title: "Error", description: err.message || "Transfer failed", variant: "destructive" });
     } finally {
       setTransferring(false);
     }

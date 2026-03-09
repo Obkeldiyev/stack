@@ -11,7 +11,7 @@ interface QRCodeDisplayProps {
   size?: number;
 }
 
-export function QRCodeDisplay({ value, title = "Scan to Join", size = 256 }: QRCodeDisplayProps) {
+export function QRCodeDisplay({ value, title = "Scan to Join", size = 300 }: QRCodeDisplayProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -21,11 +21,12 @@ export function QRCodeDisplay({ value, title = "Scan to Join", size = 256 }: QRC
         value,
         {
           width: size,
-          margin: 2,
+          margin: 1,
           color: {
             dark: "#000000",
             light: "#FFFFFF",
           },
+          errorCorrectionLevel: 'H',
         },
         (error) => {
           if (error) console.error("QR Code generation error:", error);
