@@ -27,7 +27,7 @@ public class AuthController {
   @PostMapping("/register")
   public ApiResponse<AuthResponse> register(@Valid @RequestBody RegisterRequest req) {
     User u = userService.createUser(req.username(), req.password(), req.role());
-    String accessToken = jwtService.generateToken(u);
+    String accessToken = jwtService.generateAccessToken(u.getId(), u.getUsername(), u.getRole());
     
     RefreshToken refreshToken = null;
     if (req.rememberMe()) {
@@ -55,7 +55,7 @@ public class AuthController {
       throw new BadRequestException("Account is disabled");
     }
     
-    String accessToken = jwtService.generateToken(u);
+    String accessToken = jwtService.generateAccessToken(u.getId(), u.getUsername(), u.getRole());
     
     RefreshToken refreshToken = null;
     if (req.rememberMe()) {

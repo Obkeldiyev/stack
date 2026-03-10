@@ -88,7 +88,7 @@ public class AdminService {
     game.setCode(code);
     game.setTitle(title);
     game.setDescription(description);
-    game.setRewardCoins(rewardCoins);
+    game.setCoinsPer100Points(rewardCoins);
     
     return gameRepo.save(game);
   }
@@ -105,7 +105,7 @@ public class AdminService {
       game.setDescription(description);
     }
     if (rewardCoins != null) {
-      game.setRewardCoins(rewardCoins);
+      game.setCoinsPer100Points(rewardCoins);
     }
     
     return gameRepo.save(game);

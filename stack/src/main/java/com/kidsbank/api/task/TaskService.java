@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -43,10 +44,13 @@ public class TaskService {
             .orElseThrow(() -> new NotFoundException("Child not found"));
 
         // Verify parent has sufficient balance
-        Account parentAccount = accountRepository.findByUserId(parentId)
+        Account parentAccount = accountRepository.findByOwner_Id(parentId)
             .orElseThrow(() -> new NotFoundException("Parent account not found"));
         
-        if (parentAccount.getBalance().compareTo(amount) < 0) {
+        // Convert BigDecimal amount to cents (long)
+        long amountInCents = amount.multiply(new BigDecimal("100")).longValue();
+        
+        if (parentAccount.getBalance() < amountInCents) {
             throw new BadRequestException("Insufficient balance to create task");
         }
 
@@ -105,37 +109,39 @@ public class TaskService {
         }
 
         // Get accounts
-        Account parentAccount = accountRepository.findByUserId(parentId)
+        Account parentAccount = accountRepository.findByOwner_Id(parentId)
             .orElseThrow(() -> new NotFoundException("Parent account not found"));
-        Account childAccount = accountRepository.findByUserId(task.getChildId())
+        Account childAccount = accountRepository.findByOwner_Id(task.getChildId())
             .orElseThrow(() -> new NotFoundException("Child account not found"));
 
         // Verify parent still has sufficient balance
-        if (parentAccount.getBalance().compareTo(task.getAmount()) < 0) {
+        long amountInCents = task.getAmount().multiply(new BigDecimal("100")).longValue();
+        
+        if (parentAccount.getBalance() < amountInCents) {
             throw new BadRequestException("Insufficient balance to approve task");
         }
 
         // Transfer money
-        parentAccount.setBalance(parentAccount.getBalance().subtract(task.getAmount()));
-        childAccount.setBalance(childAccount.getBalance().add(task.getAmount()));
+        parentAccount.setBalance(parentAccount.getBalance() - amountInCents);
+        childAccount.setBalance(childAccount.getBalance() + amountInCents);
 
         accountRepository.save(parentAccount);
         accountRepository.save(childAccount);
 
         // Create transactions
         Transaction parentTransaction = new Transaction();
-        parentTransaction.setAccountId(parentAccount.getId());
-        parentTransaction.setAmount(task.getAmount().negate());
+        parentTransaction.setAccount(parentAccount);
+        parentTransaction.setAmount(-amountInCents); // Negative for withdrawal
         parentTransaction.setType(TransactionType.WITHDRAWAL);
         parentTransaction.setNote("Task payment: " + task.getTitle());
-        parentTransaction.setCreatedAt(LocalDateTime.now());
+        parentTransaction.setCreatedAt(Instant.now());
 
         Transaction childTransaction = new Transaction();
-        childTransaction.setAccountId(childAccount.getId());
-        childTransaction.setAmount(task.getAmount());
+        childTransaction.setAccount(childAccount);
+        childTransaction.setAmount(amountInCents); // Positive for deposit
         childTransaction.setType(TransactionType.DEPOSIT);
         childTransaction.setNote("Task reward: " + task.getTitle());
-        childTransaction.setCreatedAt(LocalDateTime.now());
+        childTransaction.setCreatedAt(Instant.now());
 
         transactionRepository.save(parentTransaction);
         transactionRepository.save(childTransaction);

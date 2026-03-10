@@ -71,7 +71,9 @@ public class RefreshTokenService {
         refreshTokenRepository.save(refreshToken);
         
         // Generate new access token
-        return jwtService.generateToken(refreshToken.getUser());
+        return jwtService.generateAccessToken(refreshToken.getUser().getId(), 
+                                            refreshToken.getUser().getUsername(), 
+                                            refreshToken.getUser().getRole());
     }
     
     @Transactional

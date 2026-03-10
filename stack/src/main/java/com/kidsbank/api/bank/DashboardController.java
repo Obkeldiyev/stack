@@ -3,6 +3,8 @@ package com.kidsbank.api.bank;
 import com.kidsbank.api.common.ApiResponse;
 import com.kidsbank.api.family.FamilyMember;
 import com.kidsbank.api.family.FamilyMemberRepository;
+import com.kidsbank.api.task.TaskRepository;
+import com.kidsbank.api.task.TaskStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -147,10 +149,8 @@ public class DashboardController {
         int completedGoals = (int) goals.stream().filter(Goal::isCompleted).count();
 
         // Get completed tasks count
-        int completedTasks = (int) taskRepo.findAllByChild_IdOrderByCreatedAtDesc(childId)
-            .stream()
-            .filter(t -> t.getStatus() == TaskStatus.APPROVED_AND_PAID)
-            .count();
+        int completedTasks = (int) taskRepo.findByChildIdAndStatus(childId, TaskStatus.APPROVED)
+            .size();
 
         grandTotalActiveGoals += activeGoals;
         grandTotalCompletedGoals += completedGoals;
