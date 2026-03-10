@@ -1,14 +1,8 @@
 import { useEffect, useState } from "react";
 import { familyApi } from "@/lib/api";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { EmptyState } from "@/components/EmptyState";
-import { SkeletonCard } from "@/components/SkeletonCard";
 import { QRScanner } from "@/components/QRScanner";
-import { useToast } from "@/hooks/use-toast";
-import { Users, CheckCircle, QrCode, Keyboard } from "lucide-react";
+import { toast } from "sonner";
+import "../Landing.css";
 
 export default function ChildFamily() {
   const [families, setFamilies] = useState<any[]>([]);
@@ -17,7 +11,6 @@ export default function ChildFamily() {
   const [joining, setJoining] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
   const [manualMode, setManualMode] = useState(false);
-  const { toast } = useToast();
 
   const fetchFamilies = async () => {
     try {
@@ -34,13 +27,13 @@ export default function ChildFamily() {
     setJoining(true);
     try {
       await familyApi.join(inviteCode.trim());
-      toast({ title: "Joined family!" });
+      toast.success("Joined family!");
       setCode("");
       setShowScanner(false);
       setManualMode(false);
       fetchFamilies();
     } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast.error(err.message);
     } finally {
       setJoining(false);
     }
@@ -50,104 +43,184 @@ export default function ChildFamily() {
     handleJoin(code);
   };
 
-  if (loading) return <div className="max-w-2xl mx-auto"><SkeletonCard /></div>;
+  if (loading) {
+    return (
+      <div className="landing-page">
+        <div className="bg-noise"></div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh" }}>
+          <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: "2rem", color: "#86f0ff" }}></i>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
-      <h1 className="text-2xl font-bold">Family</h1>
+    <div className="landing-page">
+      <div className="cursor-glow"></div>
+      <div className="bg-noise"></div>
 
-      {families.length === 0 ? (
-        <>
-          {showScanner ? (
-            <QRScanner
-              onScan={handleJoin}
-              onClose={() => setShowScanner(false)}
-            />
-          ) : manualMode ? (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Enter Invite Code</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="space-y-2">
-                  <Label>Invite Code</Label>
-                  <Input 
-                    placeholder="ABC123" 
-                    value={code} 
-                    onChange={(e) => setCode(e.target.value.toUpperCase())} 
-                    className="font-mono text-center text-lg min-h-[44px]"
-                  />
-                  <p className="text-xs text-center text-muted-foreground">
-                    Enter the invite code from your parent
-                  </p>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <Button 
-                    variant="outline"
-                    onClick={() => setManualMode(false)} 
-                    className="min-h-[44px]"
-                  >
-                    <QrCode className="h-4 w-4 mr-2" />
-                    Scan QR
-                  </Button>
-                  <Button 
-                    onClick={handleManualJoin} 
-                    disabled={joining || code.length < 4} 
-                    className="min-h-[44px]"
-                  >
-                    {joining ? "Joining..." : "Join"}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ) : (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Join a Family</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <p className="text-sm text-muted-foreground">
-                  Ask your parent for a QR code or invite code to join your family
-                </p>
-                <div className="grid grid-cols-2 gap-2">
-                  <Button 
-                    onClick={() => setShowScanner(true)} 
-                    className="min-h-[44px]"
-                  >
-                    <QrCode className="h-4 w-4 mr-2" />
-                    Scan QR Code
-                  </Button>
-                  <Button 
-                    variant="outline"
-                    onClick={() => setManualMode(true)} 
-                    className="min-h-[44px]"
-                  >
-                    <Keyboard className="h-4 w-4 mr-2" />
-                    Enter Code
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-        </>
-      ) : (
-        families.map((fm: any) => {
-          const fam = fm.family ?? fm;
-          return (
-            <Card key={fam.id ?? fm.familyId}>
-              <CardContent className="py-6 flex items-center gap-4">
-                <div className="h-10 w-10 rounded-full bg-success/10 flex items-center justify-center">
-                  <CheckCircle className="h-5 w-5 text-success" />
-                </div>
-                <div>
-                  <p className="font-medium">{fam.title ?? "My Family"}</p>
-                  <p className="text-sm text-muted-foreground">You're a member!</p>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })
-      )}
+      <main>
+        <section className="section" style={{ paddingTop: "0px", paddingBottom: "40px" }}>
+          <div className="container" style={{ maxWidth: "800px" }}>
+            <div className="section-head reveal up" style={{ marginBottom: "16px" }}>
+              <div className="eyebrow">
+                <i className="fa-solid fa-users"></i>
+                Family
+              </div>
+              <h2>Join Your Family</h2>
+              <p>Connect with your family to start managing your money together. Ask your parents for an invite code or QR code.</p>
+            </div>
+
+            {families.length === 0 ? (
+              <>
+                {showScanner ? (
+                  <div className="glass" style={{ padding: "32px", borderRadius: "28px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
+                      <h3 style={{ margin: 0, color: "white", letterSpacing: "-0.03em" }}>
+                        Scan QR Code
+                      </h3>
+                      <button
+                        onClick={() => setShowScanner(false)}
+                        className="btn btn-outline"
+                        style={{ fontSize: "0.9rem", minWidth: "44px" }}
+                      >
+                        <i className="fa-solid fa-times"></i>
+                      </button>
+                    </div>
+                    <QRScanner
+                      onScan={handleJoin}
+                      onClose={() => setShowScanner(false)}
+                    />
+                  </div>
+                ) : manualMode ? (
+                  <div className="glass" style={{ padding: "32px", borderRadius: "28px" }}>
+                    <h3 style={{ marginTop: 0, marginBottom: "24px", color: "white", letterSpacing: "-0.03em" }}>
+                      Enter Invite Code
+                    </h3>
+                    
+                    <div style={{ marginBottom: "24px" }}>
+                      <label style={{ display: "block", marginBottom: "8px", color: "#dce8ff" }}>
+                        Invite Code
+                      </label>
+                      <input 
+                        placeholder="ABC123" 
+                        value={code} 
+                        onChange={(e) => setCode(e.target.value.toUpperCase())} 
+                        style={{
+                          width: "100%",
+                          padding: "12px 16px",
+                          borderRadius: "14px",
+                          border: "1px solid rgba(255,255,255,0.12)",
+                          background: "rgba(255,255,255,0.05)",
+                          color: "white",
+                          fontSize: "1.2rem",
+                          fontFamily: "monospace",
+                          textAlign: "center",
+                          letterSpacing: "0.1em"
+                        }}
+                      />
+                      <p style={{ margin: "8px 0 0 0", color: "#a5b7d0", fontSize: "0.9rem", textAlign: "center" }}>
+                        Enter the invite code from your parent
+                      </p>
+                    </div>
+                    
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                      <button 
+                        onClick={() => setManualMode(false)} 
+                        className="btn btn-outline"
+                      >
+                        <i className="fa-solid fa-qrcode"></i>
+                        Scan QR
+                      </button>
+                      <button 
+                        onClick={handleManualJoin} 
+                        disabled={joining || code.length < 4} 
+                        className="btn btn-primary"
+                        style={{ opacity: (joining || code.length < 4) ? 0.5 : 1 }}
+                      >
+                        {joining ? (
+                          <>
+                            <i className="fa-solid fa-spinner fa-spin"></i>
+                            Joining...
+                          </>
+                        ) : (
+                          <>
+                            <i className="fa-solid fa-user-plus"></i>
+                            Join Family
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="glass" style={{ padding: "48px", borderRadius: "28px", textAlign: "center" }}>
+                    <i className="fa-solid fa-users" style={{ fontSize: "3rem", color: "#86f0ff", marginBottom: "24px", display: "block" }}></i>
+                    <h3 style={{ marginBottom: "16px", color: "white" }}>Join a Family</h3>
+                    <p style={{ color: "#a5b7d0", marginBottom: "32px", lineHeight: "1.6" }}>
+                      Ask your parent for a QR code or invite code to join your family and start managing your money together.
+                    </p>
+                    
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", maxWidth: "400px", margin: "0 auto" }}>
+                      <button 
+                        onClick={() => setShowScanner(true)} 
+                        className="btn btn-primary"
+                        style={{ padding: "16px", flexDirection: "column", gap: "8px", height: "auto" }}
+                      >
+                        <i className="fa-solid fa-qrcode" style={{ fontSize: "1.5rem" }}></i>
+                        <span>Scan QR Code</span>
+                      </button>
+                      <button 
+                        onClick={() => setManualMode(true)} 
+                        className="btn btn-outline"
+                        style={{ padding: "16px", flexDirection: "column", gap: "8px", height: "auto" }}
+                      >
+                        <i className="fa-solid fa-keyboard" style={{ fontSize: "1.5rem" }}></i>
+                        <span>Enter Code</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                {families.map((fm: any) => {
+                  const fam = fm.family ?? fm;
+                  return (
+                    <div key={fam.id ?? fm.familyId} className="glass" style={{ 
+                      padding: "24px", 
+                      borderRadius: "24px",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "16px"
+                    }}>
+                      <div style={{ 
+                        width: "48px", 
+                        height: "48px", 
+                        borderRadius: "50%", 
+                        background: "linear-gradient(135deg, rgba(112,207,66,0.2), rgba(25,199,216,0.2))",
+                        display: "flex", 
+                        alignItems: "center", 
+                        justifyContent: "center",
+                        border: "1px solid rgba(112,207,66,0.3)"
+                      }}>
+                        <i className="fa-solid fa-check-circle" style={{ color: "#70cf42", fontSize: "1.2rem" }}></i>
+                      </div>
+                      <div>
+                        <p style={{ margin: "0 0 4px 0", fontWeight: "600", color: "white", fontSize: "1.1rem" }}>
+                          {fam.title ?? "My Family"}
+                        </p>
+                        <p style={{ margin: 0, color: "#a5b7d0", fontSize: "0.9rem" }}>
+                          You're a member! 🎉
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </section>
+      </main>
     </div>
   );
 }

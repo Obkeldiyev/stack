@@ -565,7 +565,7 @@
 }
 
 .landing-page .section {
-  padding: 110px 0;
+  padding: 60px 0;
   position: relative;
   z-index: 1;
 }
@@ -1106,7 +1106,7 @@
   }
 
   .landing-page .section {
-    padding: 86px 0;
+    padding: 40px 0;
   }
 }
 
@@ -1172,5 +1172,22 @@
     width: 220px;
     height: 220px;
     padding: 24px;
+  }
+
+  .landing-page .section {
+    padding: 20px 0;
+  }
+
+  .landing-page .section-head {
+    margin-bottom: 24px;
+  }
+
+  .landing-page .section-head h2 {
+    font-size: clamp(1.8rem, 8vw, 2.5rem);
+    margin-bottom: 12px;
+  }
+
+  .landing-page .section-head p {
+    font-size: 0.95rem;
   }
 }

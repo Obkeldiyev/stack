@@ -16,9 +16,14 @@ export async function apiFetch<T>(
 ): Promise<T> {
   const token = getToken();
   const headers: Record<string, string> = {
-    "Content-Type": "application/json",
     ...(options.headers as Record<string, string>),
   };
+  
+  // Only add Content-Type for JSON requests, not FormData
+  if (!(options.body instanceof FormData)) {
+    headers["Content-Type"] = "application/json";
+  }
+  
   if (token) {
     headers["Authorization"] = `Bearer ${token}`;
   }
@@ -147,4 +152,104 @@ export const gamesApi = {
       method: "POST",
       body: JSON.stringify({ scorePoints }),
     }),
+};
+
+// Admin
+export const adminApi = {
+  // User Management
+  getAllUsers: () => apiFetch<any[]>("/api/admin/users"),
+  updateUser: (id: number, data: { username?: string; role?: string; enabled?: boolean }) =>
+    apiFetch(`/api/admin/users/${id}`, { method: "PUT", body: JSON.stringify(data) }),
+  enableUser: (id: number) =>
+    apiFetch(`/api/admin/users/${id}/enable`, { method: "PUT" }),
+  disableUser: (id: number) =>
+    apiFetch(`/api/admin/users/${id}/disable`, { method: "PUT" }),
+  deleteUser: (id: number) =>
+    apiFetch(`/api/admin/users/${id}`, { method: "DELETE" }),
+  
+  // Game Management
+  getAllGames: () => apiFetch<any[]>("/api/admin/games"),
+  createGame: (data: { code: string; title: string; description?: string; rewardCoins: number }) =>
+    apiFetch("/api/admin/games", { method: "POST", body: JSON.stringify(data) }),
+  updateGame: (id: number, data: { title?: string; description?: string; rewardCoins?: number }) =>
+    apiFetch(`/api/admin/games/${id}`, { method: "PUT", body: JSON.stringify(data) }),
+  deleteGame: (id: number) =>
+    apiFetch(`/api/admin/games/${id}`, { method: "DELETE" }),
+  
+  // Transaction Management
+  getAllTransactions: () => apiFetch<any[]>("/api/admin/transactions"),
+  
+  // Family Management
+  getAllFamilies: () => apiFetch<any[]>("/api/admin/families"),
+  
+  // Statistics
+  getStats: () => apiFetch<any>("/api/admin/stats"),
+};
+
+// Tasks
+export const tasksApi = {
+  // Parent endpoints
+  createTask: (data: { childId: number; title: string; description?: string; amount: number }) =>
+    apiFetch("/api/tasks", { method: "POST", body: JSON.stringify(data) }),
+  getParentTasks: () => apiFetch<any[]>("/api/tasks/parent"),
+  approveTask: (id: number, notes?: string) =>
+    apiFetch(`/api/tasks/${id}/approve`, { method: "PUT", body: JSON.stringify({ notes }) }),
+  rejectTask: (id: number, notes: string) =>
+    apiFetch(`/api/tasks/${id}/reject`, { method: "PUT", body: JSON.stringify({ notes }) }),
+  deleteTask: (id: number) =>
+    apiFetch(`/api/tasks/${id}`, { method: "DELETE" }),
+  
+  // Child endpoints
+  getChildTasks: () => apiFetch<any[]>("/api/tasks/child"),
+  completeTask: (id: number, photoUrl: string, notes?: string) =>
+    apiFetch(`/api/tasks/${id}/complete`, { method: "PUT", body: JSON.stringify({ photoUrl, notes }) }),
+  
+  // Shared endpoints
+  getTask: (id: number) => apiFetch<any>(`/api/tasks/${id}`),
+};
+
+// File Upload
+export const uploadApi = {
+  uploadPhoto: (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return apiFetch<{ url: string; filename: string; size: number }>("/api/upload/photo", {
+      method: "POST",
+      body: formData,
+      headers: {} // Remove Content-Type to let browser set it with boundary
+    });
+  },
+  uploadProfilePhoto: (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return apiFetch<{ url: string; filename: string; size: number }>("/api/upload/profile-photo", {
+      method: "POST",
+      body: formData,
+      headers: {} // Remove Content-Type to let browser set it with boundary
+    });
+  },
+};
+
+// Profile Management
+export const profileApi = {
+  getProfile: () => apiFetch<any>("/api/users/profile"),
+  updateProfile: (data: { username: string; photoUrl?: string }) =>
+    apiFetch("/api/users/profile", { method: "PUT", body: JSON.stringify(data) }),
+  changePassword: (data: { currentPassword: string; newPassword: string }) =>
+    apiFetch("/api/users/profile/password", { method: "PUT", body: JSON.stringify(data) }),
+  updateProfilePhoto: (photoUrl: string) =>
+    apiFetch("/api/users/profile/photo", { method: "POST", body: JSON.stringify({ photoUrl }) }),
+  getCurrentUser: () => apiFetch<any>("/api/users/me"),
+};
+
+// Auth with refresh tokens
+export const authApiExtended = {
+  register: (data: { username: string; password: string; role: string; rememberMe?: boolean }) =>
+    apiFetch("/api/auth/register", { method: "POST", body: JSON.stringify(data) }),
+  login: (data: { username: string; password: string; rememberMe?: boolean }) =>
+    apiFetch("/api/auth/login", { method: "POST", body: JSON.stringify(data) }),
+  refresh: (refreshToken: string) =>
+    apiFetch<{ accessToken: string }>("/api/auth/refresh", { method: "POST", body: JSON.stringify({ refreshToken }) }),
+  logout: (refreshToken?: string) =>
+    apiFetch("/api/auth/logout", { method: "POST", body: JSON.stringify({ refreshToken }) }),
 };

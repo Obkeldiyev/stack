@@ -1,19 +1,22 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { authApi } from "@/lib/api";
-import { setAuth, getUserRole } from "@/lib/auth";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { useToast } from "@/hooks/use-toast";
+import { setAuth } from "@/lib/auth";
+import { toast } from "sonner";
+import "./Landing.css";
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showForm, setShowForm] = useState(false);
   const navigate = useNavigate();
-  const { toast } = useToast();
+
+  useEffect(() => {
+    // Trigger form animation after component mounts
+    const timer = setTimeout(() => setShowForm(true), 300);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,44 +25,367 @@ export default function Login() {
       const res: any = await authApi.login({ username, password });
       setAuth(res.token, res.user ?? { id: 0, username, role: res.role ?? "CHILD" });
       const role = res.user?.role ?? res.role;
-      navigate(role === "PARENT" ? "/parent/dashboard" : "/child/dashboard", { replace: true });
+      
+      // Success animation before navigation
+      toast.success("Welcome back!");
+      setTimeout(() => {
+        navigate(role === "PARENT" ? "/parent/dashboard" : "/child/dashboard", { replace: true });
+      }, 500);
     } catch (err: any) {
-      toast({ title: "Login failed", description: err.message || "Invalid credentials", variant: "destructive" });
+      toast.error(err.message || "Invalid credentials");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-background">
-      <Card className="w-full max-w-sm animate-fade-in">
-        <CardHeader className="text-center">
-          <div className="mx-auto h-12 w-12 rounded-xl bg-primary flex items-center justify-center mb-2">
-            <span className="text-primary-foreground font-bold text-xl">S</span>
+    <div className="landing-page">
+      <div className="cursor-glow"></div>
+      <div className="bg-noise"></div>
+
+      {/* Animated Background Shapes */}
+      <div className="hero-bg-shape hero-shape-1 parallax" data-speed="0.15" style={{
+        position: "fixed",
+        width: "600px",
+        height: "600px",
+        left: "-200px",
+        top: "10%",
+        background: "radial-gradient(circle, rgba(29,100,214,0.2), transparent 70%)",
+        borderRadius: "50%",
+        filter: "blur(40px)",
+        animation: "float 6s ease-in-out infinite"
+      }}></div>
+      
+      <div className="hero-bg-shape hero-shape-2 parallax" data-speed="0.1" style={{
+        position: "fixed",
+        width: "500px",
+        height: "500px",
+        right: "-150px",
+        bottom: "10%",
+        background: "radial-gradient(circle, rgba(112,207,66,0.15), transparent 70%)",
+        borderRadius: "50%",
+        filter: "blur(30px)",
+        animation: "float 8s ease-in-out infinite reverse"
+      }}></div>
+
+      <main style={{ 
+        minHeight: "100vh", 
+        display: "flex", 
+        alignItems: "center", 
+        justifyContent: "center",
+        padding: "20px"
+      }}>
+        <div style={{
+          width: "100%",
+          maxWidth: "480px",
+          transform: showForm ? "translateY(0) scale(1)" : "translateY(30px) scale(0.95)",
+          opacity: showForm ? 1 : 0,
+          transition: "all 0.8s cubic-bezier(0.2, 0.7, 0.2, 1)"
+        }}>
+          {/* Logo and Header */}
+          <div style={{ 
+            textAlign: "center", 
+            marginBottom: "40px",
+            transform: showForm ? "translateY(0)" : "translateY(-20px)",
+            opacity: showForm ? 1 : 0,
+            transition: "all 1s cubic-bezier(0.2, 0.7, 0.2, 1) 0.2s"
+          }}>
+            <div style={{
+              width: "80px",
+              height: "80px",
+              margin: "0 auto 24px",
+              borderRadius: "24px",
+              background: "linear-gradient(135deg, #1d64d6 0%, #19c7d8 60%, #70cf42 100%)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "0 20px 60px rgba(25, 120, 220, 0.4)",
+              animation: showForm ? "logoGlow 2s ease-in-out infinite alternate" : "none"
+            }}>
+              <img src="/logo.png" alt="Stack logo" style={{ width: "50px", height: "50px" }} />
+            </div>
+            
+            <h1 style={{
+              fontSize: "2.5rem",
+              fontWeight: "800",
+              letterSpacing: "-0.05em",
+              margin: "0 0 12px 0",
+              background: "linear-gradient(135deg, #ffffff 0%, #86f0ff 45%, #79d748 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text"
+            }}>
+              Welcome Back
+            </h1>
+            
+            <p style={{ 
+              color: "#a5b7d0", 
+              fontSize: "1.1rem", 
+              margin: 0,
+              lineHeight: "1.6"
+            }}>
+              Sign in to continue your financial journey
+            </p>
           </div>
-          <CardTitle className="text-2xl">Welcome to STACK</CardTitle>
-          <CardDescription>Sign in to your account</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
-              <Input id="username" value={username} onChange={(e) => setUsername(e.target.value)} required className="min-h-[44px]" />
+
+          {/* Login Form */}
+          <div className="glass" style={{
+            padding: "48px",
+            borderRadius: "32px",
+            border: "2px solid rgba(25,199,216,0.2)",
+            background: "linear-gradient(180deg, rgba(255,255,255,0.15), rgba(255,255,255,0.08))",
+            backdropFilter: "blur(20px)",
+            boxShadow: "0 32px 80px rgba(0, 0, 0, 0.4)",
+            transform: showForm ? "translateY(0)" : "translateY(20px)",
+            opacity: showForm ? 1 : 0,
+            transition: "all 1s cubic-bezier(0.2, 0.7, 0.2, 1) 0.4s"
+          }}>
+            <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
+              {/* Username Field */}
+              <div style={{
+                transform: showForm ? "translateX(0)" : "translateX(-30px)",
+                opacity: showForm ? 1 : 0,
+                transition: "all 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) 0.6s"
+              }}>
+                <label style={{ 
+                  display: "block", 
+                  marginBottom: "12px", 
+                  color: "#dce8ff", 
+                  fontSize: "1rem", 
+                  fontWeight: "600",
+                  letterSpacing: "-0.02em"
+                }}>
+                  <i className="fa-solid fa-user" style={{ marginRight: "8px", color: "#86f0ff" }}></i>
+                  Username
+                </label>
+                <input
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                  placeholder="Enter your username"
+                  style={{
+                    width: "100%",
+                    padding: "16px 20px",
+                    borderRadius: "16px",
+                    border: "2px solid rgba(255,255,255,0.12)",
+                    background: "rgba(255,255,255,0.08)",
+                    color: "white",
+                    fontSize: "1.1rem",
+                    transition: "all 0.3s ease",
+                    outline: "none"
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = "rgba(25,199,216,0.5)";
+                    e.target.style.background = "rgba(255,255,255,0.12)";
+                    e.target.style.boxShadow = "0 0 0 4px rgba(25,199,216,0.1)";
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = "rgba(255,255,255,0.12)";
+                    e.target.style.background = "rgba(255,255,255,0.08)";
+                    e.target.style.boxShadow = "none";
+                  }}
+                />
+              </div>
+
+              {/* Password Field */}
+              <div style={{
+                transform: showForm ? "translateX(0)" : "translateX(30px)",
+                opacity: showForm ? 1 : 0,
+                transition: "all 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) 0.8s"
+              }}>
+                <label style={{ 
+                  display: "block", 
+                  marginBottom: "12px", 
+                  color: "#dce8ff", 
+                  fontSize: "1rem", 
+                  fontWeight: "600",
+                  letterSpacing: "-0.02em"
+                }}>
+                  <i className="fa-solid fa-lock" style={{ marginRight: "8px", color: "#86f0ff" }}></i>
+                  Password
+                </label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  placeholder="Enter your password"
+                  style={{
+                    width: "100%",
+                    padding: "16px 20px",
+                    borderRadius: "16px",
+                    border: "2px solid rgba(255,255,255,0.12)",
+                    background: "rgba(255,255,255,0.08)",
+                    color: "white",
+                    fontSize: "1.1rem",
+                    transition: "all 0.3s ease",
+                    outline: "none"
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = "rgba(25,199,216,0.5)";
+                    e.target.style.background = "rgba(255,255,255,0.12)";
+                    e.target.style.boxShadow = "0 0 0 4px rgba(25,199,216,0.1)";
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = "rgba(255,255,255,0.12)";
+                    e.target.style.background = "rgba(255,255,255,0.08)";
+                    e.target.style.boxShadow = "none";
+                  }}
+                />
+              </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={loading}
+                className="btn btn-primary"
+                style={{
+                  width: "100%",
+                  minHeight: "56px",
+                  fontSize: "1.1rem",
+                  fontWeight: "700",
+                  borderRadius: "16px",
+                  background: loading ? "rgba(255,255,255,0.1)" : "linear-gradient(135deg, #1d64d6 0%, #19c7d8 60%, #70cf42 100%)",
+                  border: "none",
+                  color: "white",
+                  cursor: loading ? "not-allowed" : "pointer",
+                  transform: showForm ? "translateY(0)" : "translateY(20px)",
+                  opacity: showForm ? 1 : 0,
+                  transition: "all 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) 1s",
+                  position: "relative",
+                  overflow: "hidden"
+                }}
+                onMouseEnter={(e) => {
+                  if (!loading) {
+                    e.currentTarget.style.transform = "translateY(-2px)";
+                    e.currentTarget.style.boxShadow = "0 20px 60px rgba(25, 120, 220, 0.4)";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!loading) {
+                    e.currentTarget.style.transform = "translateY(0)";
+                    e.currentTarget.style.boxShadow = "0 12px 40px rgba(25, 120, 220, 0.35)";
+                  }
+                }}
+              >
+                {loading ? (
+                  <>
+                    <i className="fa-solid fa-spinner fa-spin" style={{ marginRight: "8px" }}></i>
+                    Signing in...
+                  </>
+                ) : (
+                  <>
+                    <i className="fa-solid fa-arrow-right" style={{ marginRight: "8px" }}></i>
+                    Sign In
+                  </>
+                )}
+              </button>
+            </form>
+
+            {/* Register Link */}
+            <div style={{ 
+              textAlign: "center", 
+              marginTop: "32px",
+              transform: showForm ? "translateY(0)" : "translateY(20px)",
+              opacity: showForm ? 1 : 0,
+              transition: "all 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) 1.2s"
+            }}>
+              <p style={{ color: "#a5b7d0", margin: "0 0 16px 0", fontSize: "1rem" }}>
+                Don't have an account?
+              </p>
+              <Link 
+                to="/register" 
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  padding: "12px 24px",
+                  borderRadius: "12px",
+                  border: "1px solid rgba(255,255,255,0.12)",
+                  background: "rgba(255,255,255,0.04)",
+                  color: "#86f0ff",
+                  textDecoration: "none",
+                  fontSize: "1rem",
+                  fontWeight: "600",
+                  transition: "all 0.3s ease"
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "rgba(255,255,255,0.08)";
+                  e.currentTarget.style.borderColor = "rgba(134, 240, 255, 0.3)";
+                  e.currentTarget.style.transform = "translateY(-2px)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "rgba(255,255,255,0.04)";
+                  e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)";
+                  e.currentTarget.style.transform = "translateY(0)";
+                }}
+              >
+                <i className="fa-solid fa-user-plus"></i>
+                Create Account
+              </Link>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="min-h-[44px]" />
-            </div>
-            <Button type="submit" className="w-full min-h-[44px]" disabled={loading}>
-              {loading ? "Signing in..." : "Sign In"}
-            </Button>
-          </form>
-          <p className="text-center text-sm text-muted-foreground mt-4">
-            Don't have an account?{" "}
-            <Link to="/register" className="text-primary font-medium hover:underline">Register</Link>
-          </p>
-        </CardContent>
-      </Card>
+          </div>
+
+          {/* Back to Landing Link */}
+          <div style={{ 
+            textAlign: "center", 
+            marginTop: "24px",
+            transform: showForm ? "translateY(0)" : "translateY(20px)",
+            opacity: showForm ? 1 : 0,
+            transition: "all 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) 1.4s"
+          }}>
+            <Link 
+              to="/" 
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "8px",
+                color: "#a5b7d0",
+                textDecoration: "none",
+                fontSize: "0.95rem",
+                transition: "all 0.3s ease"
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = "#86f0ff";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = "#a5b7d0";
+              }}
+            >
+              <i className="fa-solid fa-arrow-left"></i>
+              Back to Home
+            </Link>
+          </div>
+        </div>
+      </main>
+
+      <style>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0px) rotate(0deg); }
+          50% { transform: translateY(-20px) rotate(5deg); }
+        }
+        
+        @keyframes logoGlow {
+          0% { box-shadow: 0 20px 60px rgba(25, 120, 220, 0.4); }
+          100% { box-shadow: 0 25px 80px rgba(25, 120, 220, 0.6), 0 0 30px rgba(134, 240, 255, 0.3); }
+        }
+        
+        .btn-primary:hover::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+          transition: left 0.5s;
+        }
+        
+        .btn-primary:hover::before {
+          left: 100%;
+        }
+      `}</style>
     </div>
   );
 }

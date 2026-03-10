@@ -12,12 +12,24 @@ import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import ParentBankingDashboard from "@/pages/parent/BankingDashboard";
 import ParentFamily from "@/pages/parent/Family";
+import ParentTasks from "@/pages/parent/Tasks";
 import ChildBankingDashboard from "@/pages/child/BankingDashboard";
 import ChildFamily from "@/pages/child/Family";
+import ChildTasks from "@/pages/child/Tasks";
 import Games from "@/pages/child/Games";
 import GamePlay from "@/pages/child/GamePlay";
 import Settings from "@/pages/Settings";
 import NotFound from "@/pages/NotFound";
+import AdminLogin from "@/pages/admin/AdminLogin";
+import AdminDashboard from "@/pages/admin/Dashboard";
+import AdminUsers from "@/pages/admin/Users";
+import AdminGames from "@/pages/admin/Games";
+import AdminTransactions from "@/pages/admin/Transactions";
+import AdminFamilies from "@/pages/admin/Families";
+import About from "@/pages/About";
+import Features from "@/pages/Features";
+import Developers from "@/pages/Developers";
+import Privacy from "@/pages/Privacy";
 
 const queryClient = new QueryClient();
 
@@ -67,12 +79,14 @@ const App = () => {
             <Route element={<AppLayout requiredRole="PARENT" />}>
               <Route path="/parent/dashboard" element={<ParentBankingDashboard />} />
               <Route path="/parent/family" element={<ParentFamily />} />
+              <Route path="/parent/tasks" element={<ParentTasks />} />
             </Route>
 
             {/* Child routes */}
             <Route element={<AppLayout requiredRole="CHILD" />}>
               <Route path="/child/dashboard" element={<ChildBankingDashboard />} />
               <Route path="/child/family" element={<ChildFamily />} />
+              <Route path="/child/tasks" element={<ChildTasks />} />
               <Route path="/child/games" element={<Games />} />
               <Route path="/child/games/:code" element={<GamePlay />} />
             </Route>
@@ -81,6 +95,20 @@ const App = () => {
             <Route element={<AppLayout />}>
               <Route path="/settings" element={<Settings />} />
             </Route>
+
+            {/* Admin routes - No layout, standalone pages */}
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/users" element={<AdminUsers />} />
+            <Route path="/admin/games" element={<AdminGames />} />
+            <Route path="/admin/transactions" element={<AdminTransactions />} />
+            <Route path="/admin/families" element={<AdminFamilies />} />
+
+            {/* Presentation pages - No layout, standalone pages */}
+            <Route path="/about" element={<About />} />
+            <Route path="/features" element={<Features />} />
+            <Route path="/developers" element={<Developers />} />
+            <Route path="/privacy" element={<Privacy />} />
 
             <Route path="*" element={<NotFound />} />
           </Routes>

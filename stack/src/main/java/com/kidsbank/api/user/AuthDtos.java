@@ -6,12 +6,17 @@ public class AuthDtos {
   public record RegisterRequest(
       @NotBlank @Size(min=3, max=50) String username,
       @NotBlank @Size(min=6, max=100) String password,
-      @NotNull Role role
+      @NotNull Role role,
+      boolean rememberMe
   ) {}
 
-  public record LoginRequest(@NotBlank String username, @NotBlank String password) {}
+  public record LoginRequest(
+      @NotBlank String username, 
+      @NotBlank String password,
+      boolean rememberMe
+  ) {}
 
   public record UserDto(Long id, String username, Role role) {}
   
-  public record AuthResponse(String token, UserDto user) {}
+  public record AuthResponse(String accessToken, String refreshToken, UserDto user) {}
 }

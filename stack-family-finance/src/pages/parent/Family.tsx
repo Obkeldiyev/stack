@@ -1,17 +1,8 @@
 import { useEffect, useState } from "react";
 import { familyApi, accountsApi } from "@/lib/api";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { EmptyState } from "@/components/EmptyState";
-import { SkeletonCard } from "@/components/SkeletonCard";
 import { QRCodeDisplay } from "@/components/QRCodeDisplay";
-import { Users, UserCircle, QrCode, Edit, Trash2, Wallet, UserMinus } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
+import "../Landing.css";
 
 export default function ParentFamily() {
   const [families, setFamilies] = useState<any[]>([]);
@@ -32,8 +23,6 @@ export default function ParentFamily() {
   // Remove member dialog
   const [removeMemberDialog, setRemoveMemberDialog] = useState<{ open: boolean; familyId: number; userId: number; username: string }>({ open: false, familyId: 0, userId: 0, username: "" });
   const [removeMemberLoading, setRemoveMemberLoading] = useState(false);
-  
-  const { toast } = useToast();
 
   const loadData = async () => {
     setLoading(true);
@@ -88,18 +77,18 @@ export default function ParentFamily() {
 
   const handleEditFamily = async () => {
     if (!editDialog.title.trim()) {
-      toast({ title: "Error", description: "Family name cannot be empty", variant: "destructive" });
+      toast.error("Family name cannot be empty");
       return;
     }
     
     setEditLoading(true);
     try {
       await familyApi.update(editDialog.familyId, editDialog.title);
-      toast({ title: "Success", description: "Family updated successfully" });
+      toast.success("Family updated successfully");
       setEditDialog({ open: false, familyId: 0, title: "" });
       loadData();
     } catch (err: any) {
-      toast({ title: "Error", description: err.message || "Failed to update family", variant: "destructive" });
+      toast.error(err.message || "Failed to update family");
     } finally {
       setEditLoading(false);
     }
@@ -109,11 +98,11 @@ export default function ParentFamily() {
     setDeleteLoading(true);
     try {
       await familyApi.delete(deleteDialog.familyId);
-      toast({ title: "Success", description: "Family deleted successfully" });
+      toast.success("Family deleted successfully");
       setDeleteDialog({ open: false, familyId: 0, title: "" });
       loadData();
     } catch (err: any) {
-      toast({ title: "Error", description: err.message || "Failed to delete family", variant: "destructive" });
+      toast.error(err.message || "Failed to delete family");
     } finally {
       setDeleteLoading(false);
     }
@@ -123,199 +112,432 @@ export default function ParentFamily() {
     setRemoveMemberLoading(true);
     try {
       await familyApi.removeMember(removeMemberDialog.familyId, removeMemberDialog.userId);
-      toast({ title: "Success", description: "Member removed successfully" });
+      toast.success("Member removed successfully");
       setRemoveMemberDialog({ open: false, familyId: 0, userId: 0, username: "" });
       loadData();
     } catch (err: any) {
-      toast({ title: "Error", description: err.message || "Failed to remove member", variant: "destructive" });
+      toast.error(err.message || "Failed to remove member");
     } finally {
       setRemoveMemberLoading(false);
     }
   };
 
-  if (loading) return <div className="max-w-2xl mx-auto space-y-4"><SkeletonCard /><SkeletonCard /></div>;
+  if (loading) {
+    return (
+      <div className="landing-page">
+        <div className="bg-noise"></div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh" }}>
+          <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: "2rem", color: "#86f0ff" }}></i>
+        </div>
+      </div>
+    );
+  }
 
   if (families.length === 0) {
-    return <EmptyState icon={Users} title="No family" description="Create a family from the dashboard." />;
+    return (
+      <div className="landing-page">
+        <div className="cursor-glow"></div>
+        <div className="bg-noise"></div>
+
+        <main>
+          <section className="section">
+            <div className="container" style={{ maxWidth: "800px" }}>
+              <div className="glass" style={{ padding: "48px", borderRadius: "28px", textAlign: "center" }}>
+                <i className="fa-solid fa-users" style={{ fontSize: "3rem", color: "#86f0ff", marginBottom: "24px", display: "block" }}></i>
+                <h3 style={{ marginBottom: "16px", color: "white" }}>No Families Yet</h3>
+                <p style={{ color: "#a5b7d0", margin: 0 }}>
+                  Create a family from the dashboard to start managing your children's finances.
+                </p>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+    );
   }
 
   return (
-    <>
-      <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
-        <h1 className="text-2xl font-bold">Family Management</h1>
-        {families.map((fm) => {
-          const fam = fm.family ?? fm;
-          const fid = fam.id ?? fm.familyId;
-          const mems = members[fid] ?? [];
-          const inviteCode = inviteCodes[fid] || "";
-          const isQRVisible = showQR[fid] || false;
-          const balance = familyBalances[fid] || 0;
-          
-          return (
-            <Card key={fid}>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <Users className="h-4 w-4 text-primary" /> {fam.title ?? "Family"}
-                  </CardTitle>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setEditDialog({ open: true, familyId: fid, title: fam.title ?? "" })}
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setDeleteDialog({ open: true, familyId: fid, title: fam.title ?? "" })}
-                    >
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {/* Family Balance */}
-                <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Wallet className="h-5 w-5 text-primary" />
-                      <span className="text-sm font-medium">Family Balance</span>
-                    </div>
-                    <span className="text-lg font-bold">{balance.toLocaleString()} coins</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">Total across all family members</p>
-                </div>
+    <div className="landing-page">
+      <div className="cursor-glow"></div>
+      <div className="bg-noise"></div>
 
-                {/* Invite Code */}
-                {inviteCode && (
-                  <div className="space-y-2">
-                    <Button
-                      variant="outline"
-                      onClick={() => toggleQR(fid)}
-                      className="w-full min-h-[44px]"
-                    >
-                      <QrCode className="h-4 w-4 mr-2" />
-                      {isQRVisible ? "Hide" : "Show"} Invite QR Code
-                    </Button>
-                    
-                    {isQRVisible && (
-                      <div className="animate-fade-in">
-                        <QRCodeDisplay value={inviteCode} title="Family Invite" />
+      <main>
+        <section className="section" style={{ paddingTop: "0px", paddingBottom: "40px" }}>
+          <div className="container" style={{ maxWidth: "800px" }}>
+            <div className="section-head reveal up" style={{ marginBottom: "16px" }}>
+              <div className="eyebrow">
+                <i className="fa-solid fa-users"></i>
+                Family Management
+              </div>
+              <h2>Manage Your Families</h2>
+              <p>View family members, share invite codes, and manage family settings.</p>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+              {families.map((fm) => {
+                const fam = fm.family ?? fm;
+                const fid = fam.id ?? fm.familyId;
+                const mems = members[fid] ?? [];
+                const inviteCode = inviteCodes[fid] || "";
+                const isQRVisible = showQR[fid] || false;
+                const balance = familyBalances[fid] || 0;
+                
+                return (
+                  <div key={fid} className="glass" style={{ padding: "32px", borderRadius: "28px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px", flexWrap: "wrap", gap: "16px" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                        <i className="fa-solid fa-users" style={{ color: "#86f0ff", fontSize: "1.5rem" }}></i>
+                        <h3 style={{ margin: 0, color: "white", letterSpacing: "-0.03em" }}>
+                          {fam.title ?? "Family"}
+                        </h3>
+                      </div>
+                      <div style={{ display: "flex", gap: "8px" }}>
+                        <button
+                          onClick={() => setEditDialog({ open: true, familyId: fid, title: fam.title ?? "" })}
+                          className="btn btn-outline"
+                          style={{ fontSize: "0.9rem", minWidth: "44px" }}
+                        >
+                          <i className="fa-solid fa-pencil"></i>
+                        </button>
+                        <button
+                          onClick={() => setDeleteDialog({ open: true, familyId: fid, title: fam.title ?? "" })}
+                          className="btn btn-outline"
+                          style={{ 
+                            fontSize: "0.9rem", 
+                            minWidth: "44px",
+                            borderColor: "rgba(255,100,100,0.3)",
+                            color: "#ff6b6b"
+                          }}
+                        >
+                          <i className="fa-solid fa-trash"></i>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Family Balance */}
+                    <div style={{ 
+                      padding: "20px", 
+                      borderRadius: "16px", 
+                      background: "linear-gradient(135deg, rgba(29,100,214,0.15), rgba(25,199,216,0.1))",
+                      border: "1px solid rgba(25,199,216,0.2)",
+                      marginBottom: "24px"
+                    }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                          <i className="fa-solid fa-wallet" style={{ color: "#86f0ff", fontSize: "1.2rem" }}></i>
+                          <span style={{ color: "white", fontWeight: "600" }}>Family Balance</span>
+                        </div>
+                        <span style={{ fontSize: "1.5rem", fontWeight: "700", color: "#70cf42" }}>
+                          ${(balance / 100).toFixed(2)}
+                        </span>
+                      </div>
+                      <p style={{ margin: "8px 0 0 0", color: "#a5b7d0", fontSize: "0.9rem" }}>
+                        Total across all family members
+                      </p>
+                    </div>
+
+                    {/* Invite Code */}
+                    {inviteCode && (
+                      <div style={{ marginBottom: "24px" }}>
+                        <button
+                          onClick={() => toggleQR(fid)}
+                          className="btn btn-outline"
+                          style={{ width: "100%", marginBottom: "16px" }}
+                        >
+                          <i className="fa-solid fa-qrcode"></i>
+                          {isQRVisible ? "Hide" : "Show"} Invite QR Code
+                        </button>
+                        
+                        {isQRVisible && (
+                          <div style={{ 
+                            padding: "20px", 
+                            borderRadius: "16px", 
+                            background: "rgba(255,255,255,0.05)",
+                            border: "1px solid rgba(255,255,255,0.08)",
+                            textAlign: "center"
+                          }}>
+                            <QRCodeDisplay value={inviteCode} title="Family Invite" />
+                          </div>
+                        )}
                       </div>
                     )}
-                  </div>
-                )}
-                
-                {/* Members List */}
-                <div>
-                  <h3 className="text-sm font-semibold mb-2">Members ({mems.length})</h3>
-                  {mems.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">No members yet. Share the invite code!</p>
-                  ) : (
-                    <div className="space-y-2">
-                      {mems.map((m: any, i: number) => {
-                        const userId = m.user?.id ?? m.userId ?? m.id;
-                        const username = m.username ?? m.user?.username ?? "User";
-                        const role = m.role ?? m.user?.role ?? "MEMBER";
-                        
-                        return (
-                          <div key={i} className="flex items-center gap-3 p-2 rounded-lg bg-muted/50">
-                            <UserCircle className="h-8 w-8 text-muted-foreground" />
-                            <div className="flex-1">
-                              <p className="font-medium text-sm">{username}</p>
-                            </div>
-                            <Badge variant={role === "PARENT" ? "default" : "secondary"}>
-                              {role}
-                            </Badge>
-                            {role !== "PARENT" && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setRemoveMemberDialog({ open: true, familyId: fid, userId, username })}
-                              >
-                                <UserMinus className="h-4 w-4 text-destructive" />
-                              </Button>
-                            )}
-                          </div>
-                        );
-                      })}
+                    
+                    {/* Members List */}
+                    <div>
+                      <h4 style={{ margin: "0 0 16px 0", color: "white", fontSize: "1.1rem", fontWeight: "600" }}>
+                        Members ({mems.length})
+                      </h4>
+                      {mems.length === 0 ? (
+                        <p style={{ color: "#a5b7d0", margin: 0, textAlign: "center", padding: "20px" }}>
+                          No members yet. Share the invite code!
+                        </p>
+                      ) : (
+                        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                          {mems.map((m: any, i: number) => {
+                            const userId = m.user?.id ?? m.userId ?? m.id;
+                            const username = m.username ?? m.user?.username ?? "User";
+                            const role = m.role ?? m.user?.role ?? "MEMBER";
+                            
+                            return (
+                              <div key={i} style={{ 
+                                display: "flex", 
+                                alignItems: "center", 
+                                gap: "16px", 
+                                padding: "16px", 
+                                borderRadius: "12px", 
+                                background: "rgba(255,255,255,0.05)",
+                                border: "1px solid rgba(255,255,255,0.08)"
+                              }}>
+                                <div style={{ 
+                                  width: "40px", 
+                                  height: "40px", 
+                                  borderRadius: "50%", 
+                                  background: "linear-gradient(135deg, rgba(134,240,255,0.2), rgba(25,199,216,0.2))",
+                                  display: "flex", 
+                                  alignItems: "center", 
+                                  justifyContent: "center",
+                                  border: "1px solid rgba(134,240,255,0.3)"
+                                }}>
+                                  <i className="fa-solid fa-user" style={{ color: "#86f0ff" }}></i>
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                  <p style={{ margin: "0 0 4px 0", fontWeight: "600", color: "white" }}>
+                                    {username}
+                                  </p>
+                                  <span style={{
+                                    padding: "4px 8px",
+                                    borderRadius: "999px",
+                                    fontSize: "0.75rem",
+                                    fontWeight: "600",
+                                    background: role === "PARENT" 
+                                      ? "linear-gradient(135deg, rgba(29,100,214,0.2), rgba(25,199,216,0.2))" 
+                                      : "rgba(255,255,255,0.1)",
+                                    color: role === "PARENT" ? "#86f0ff" : "#a5b7d0",
+                                    border: "1px solid " + (role === "PARENT" ? "rgba(134,240,255,0.3)" : "rgba(255,255,255,0.1)")
+                                  }}>
+                                    {role}
+                                  </span>
+                                </div>
+                                {role !== "PARENT" && (
+                                  <button
+                                    onClick={() => setRemoveMemberDialog({ open: true, familyId: fid, userId, username })}
+                                    className="btn btn-outline"
+                                    style={{ 
+                                      fontSize: "0.9rem", 
+                                      minWidth: "44px",
+                                      borderColor: "rgba(255,100,100,0.3)",
+                                      color: "#ff6b6b"
+                                    }}
+                                  >
+                                    <i className="fa-solid fa-user-minus"></i>
+                                  </button>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      </main>
 
-      {/* Edit Family Dialog */}
-      <Dialog open={editDialog.open} onOpenChange={(open) => setEditDialog({ ...editDialog, open })}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Edit Family</DialogTitle>
-            <DialogDescription>Update your family name</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="family-name">Family Name</Label>
-              <Input
-                id="family-name"
+      {/* Edit Family Modal */}
+      {editDialog.open && (
+        <div style={{
+          position: "fixed",
+          inset: 0,
+          background: "rgba(0,0,0,0.7)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 1000,
+          backdropFilter: "blur(8px)"
+        }} onClick={() => setEditDialog({ open: false, familyId: 0, title: "" })}>
+          <div className="glass" style={{
+            padding: "36px",
+            borderRadius: "28px",
+            maxWidth: "500px",
+            width: "90%"
+          }} onClick={(e) => e.stopPropagation()}>
+            <h3 style={{ marginTop: 0, marginBottom: "24px", color: "white" }}>
+              Edit Family
+            </h3>
+            
+            <div style={{ marginBottom: "24px" }}>
+              <label style={{ display: "block", marginBottom: "8px", color: "#dce8ff" }}>
+                Family Name
+              </label>
+              <input
                 value={editDialog.title}
                 onChange={(e) => setEditDialog({ ...editDialog, title: e.target.value })}
                 placeholder="Enter family name"
-                className="min-h-[44px]"
+                style={{
+                  width: "100%",
+                  padding: "12px 16px",
+                  borderRadius: "14px",
+                  border: "1px solid rgba(255,255,255,0.12)",
+                  background: "rgba(255,255,255,0.05)",
+                  color: "white",
+                  fontSize: "1rem"
+                }}
               />
             </div>
+            
+            <div style={{ display: "flex", gap: "12px" }}>
+              <button 
+                onClick={handleEditFamily} 
+                disabled={editLoading}
+                className="btn btn-primary" 
+                style={{ flex: 1 }}
+              >
+                {editLoading ? (
+                  <>
+                    <i className="fa-solid fa-spinner fa-spin"></i>
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <i className="fa-solid fa-save"></i>
+                    Save Changes
+                  </>
+                )}
+              </button>
+              <button
+                onClick={() => setEditDialog({ open: false, familyId: 0, title: "" })}
+                className="btn btn-outline"
+                style={{ flex: 1 }}
+              >
+                Cancel
+              </button>
+            </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setEditDialog({ open: false, familyId: 0, title: "" })}>
-              Cancel
-            </Button>
-            <Button onClick={handleEditFamily} disabled={editLoading}>
-              {editLoading ? "Saving..." : "Save Changes"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        </div>
+      )}
 
-      {/* Delete Family Dialog */}
-      <AlertDialog open={deleteDialog.open} onOpenChange={(open) => setDeleteDialog({ ...deleteDialog, open })}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Family?</AlertDialogTitle>
-            <AlertDialogDescription>
+      {/* Delete Family Modal */}
+      {deleteDialog.open && (
+        <div style={{
+          position: "fixed",
+          inset: 0,
+          background: "rgba(0,0,0,0.7)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 1000,
+          backdropFilter: "blur(8px)"
+        }} onClick={() => setDeleteDialog({ open: false, familyId: 0, title: "" })}>
+          <div className="glass" style={{
+            padding: "36px",
+            borderRadius: "28px",
+            maxWidth: "500px",
+            width: "90%"
+          }} onClick={(e) => e.stopPropagation()}>
+            <h3 style={{ marginTop: 0, marginBottom: "16px", color: "white" }}>
+              Delete Family?
+            </h3>
+            <p style={{ color: "#a5b7d0", marginBottom: "24px", lineHeight: "1.6" }}>
               Are you sure you want to delete "{deleteDialog.title}"? This action cannot be undone and will remove all family members.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteFamily} disabled={deleteLoading} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              {deleteLoading ? "Deleting..." : "Delete"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            </p>
+            
+            <div style={{ display: "flex", gap: "12px" }}>
+              <button
+                onClick={() => setDeleteDialog({ open: false, familyId: 0, title: "" })}
+                className="btn btn-outline"
+                style={{ flex: 1 }}
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleDeleteFamily} 
+                disabled={deleteLoading}
+                className="btn btn-primary" 
+                style={{ 
+                  flex: 1,
+                  background: "linear-gradient(135deg, #ff6b6b 0%, #ff5252 100%)",
+                  boxShadow: "0 12px 40px rgba(255, 107, 107, 0.35)"
+                }}
+              >
+                {deleteLoading ? (
+                  <>
+                    <i className="fa-solid fa-spinner fa-spin"></i>
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <i className="fa-solid fa-trash"></i>
+                    Delete
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
-      {/* Remove Member Dialog */}
-      <AlertDialog open={removeMemberDialog.open} onOpenChange={(open) => setRemoveMemberDialog({ ...removeMemberDialog, open })}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Remove Member?</AlertDialogTitle>
-            <AlertDialogDescription>
+      {/* Remove Member Modal */}
+      {removeMemberDialog.open && (
+        <div style={{
+          position: "fixed",
+          inset: 0,
+          background: "rgba(0,0,0,0.7)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 1000,
+          backdropFilter: "blur(8px)"
+        }} onClick={() => setRemoveMemberDialog({ open: false, familyId: 0, userId: 0, username: "" })}>
+          <div className="glass" style={{
+            padding: "36px",
+            borderRadius: "28px",
+            maxWidth: "500px",
+            width: "90%"
+          }} onClick={(e) => e.stopPropagation()}>
+            <h3 style={{ marginTop: 0, marginBottom: "16px", color: "white" }}>
+              Remove Member?
+            </h3>
+            <p style={{ color: "#a5b7d0", marginBottom: "24px", lineHeight: "1.6" }}>
               Are you sure you want to remove "{removeMemberDialog.username}" from the family? They will lose access to family features.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleRemoveMember} disabled={removeMemberLoading} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              {removeMemberLoading ? "Removing..." : "Remove"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </>
+            </p>
+            
+            <div style={{ display: "flex", gap: "12px" }}>
+              <button
+                onClick={() => setRemoveMemberDialog({ open: false, familyId: 0, userId: 0, username: "" })}
+                className="btn btn-outline"
+                style={{ flex: 1 }}
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleRemoveMember} 
+                disabled={removeMemberLoading}
+                className="btn btn-primary" 
+                style={{ 
+                  flex: 1,
+                  background: "linear-gradient(135deg, #ff6b6b 0%, #ff5252 100%)",
+                  boxShadow: "0 12px 40px rgba(255, 107, 107, 0.35)"
+                }}
+              >
+                {removeMemberLoading ? (
+                  <>
+                    <i className="fa-solid fa-spinner fa-spin"></i>
+                    Removing...
+                  </>
+                ) : (
+                  <>
+                    <i className="fa-solid fa-user-minus"></i>
+                    Remove
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
