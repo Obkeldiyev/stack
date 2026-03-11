@@ -881,6 +881,97 @@
   gap: 28px;
 }
 
+.landing-page .detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 22px;
+}
+
+.landing-page .timeline-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+
+.landing-page .metrics-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.landing-page .mini-feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 22px;
+  border-radius: 24px;
+}
+
+.landing-page .mini-feature i {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, rgba(29,100,214,0.25), rgba(25,199,216,0.25));
+  color: #96f1ff;
+  flex-shrink: 0;
+}
+
+.landing-page .mini-feature p {
+  margin: 0;
+  color: #dce8ff;
+  line-height: 1.7;
+}
+
+.landing-page .spec-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.landing-page .pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.06);
+  color: #dce8ff;
+  font-size: 0.88rem;
+}
+
+.landing-page .spec-table {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 22px;
+  padding: 30px;
+  border-radius: 30px;
+}
+
+.landing-page .spec-table small {
+  display: block;
+  color: #8fdfff;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.landing-page .spec-table strong {
+  display: block;
+  font-size: 1.2rem;
+  letter-spacing: -0.04em;
+  margin-bottom: 10px;
+}
+
+.landing-page .spec-table p {
+  margin: 0;
+  color: #a5b7d0;
+  line-height: 1.8;
+}
+
 .landing-page .download-card {
   padding: 36px;
   border-radius: 32px;
@@ -1034,7 +1125,11 @@
   .landing-page .security-grid,
   .landing-page .feature-grid,
   .landing-page .journey-grid,
+  .landing-page .detail-grid,
+  .landing-page .timeline-grid,
+  .landing-page .metrics-row,
   .landing-page .download-grid,
+  .landing-page .spec-table,
   .landing-page .cta-box {
     grid-template-columns: 1fr;
   }
@@ -1124,6 +1219,10 @@
   .landing-page .download-card {
     padding: 24px 20px;
     border-radius: 24px;
+  }
+
+  .landing-page .spec-table {
+    padding: 24px 20px;
   }
 
   .landing-page .download-info {
@@ -1235,5 +1334,9 @@
   .landing-page .cta-box {
     padding: 24px 18px;
     border-radius: 24px;
+  }
+
+  .landing-page .mini-feature {
+    padding: 18px;
   }
 }
