@@ -1,85 +1,54 @@
 import { useNavigate } from "react-router-dom";
 import { MarketingFooter } from "@/components/marketing/MarketingFooter";
 import { MarketingHeader } from "@/components/marketing/MarketingHeader";
+import { useMarketingMotion } from "@/hooks/useMarketingMotion";
 import "./Landing.css";
 
-const endpointGroups = [
+const endpointSets = [
   {
-    title: "Authentication",
-    icon: "fa-right-to-bracket",
-    summary: "Identity, refresh flow, and session lifecycle used by web, Electron, and mobile clients.",
-    endpoints: [
-      "POST /api/auth/register",
-      "POST /api/auth/login",
-      "POST /api/auth/refresh",
-      "POST /api/auth/logout",
-    ],
+    name: "Auth",
+    code: `POST /api/auth/login
+POST /api/auth/register
+POST /api/auth/refresh
+POST /api/auth/logout`,
   },
   {
-    title: "Family and roles",
-    icon: "fa-users",
-    summary: "Family creation, invite flow, role-aware ownership, and child linkage.",
-    endpoints: [
-      "GET /api/family/me",
-      "POST /api/family/create",
-      "POST /api/family/{id}/invite",
-      "POST /api/family/join",
-    ],
+    name: "Family",
+    code: `GET /api/family/me
+POST /api/family/create
+POST /api/family/{id}/invite
+POST /api/family/join`,
   },
   {
-    title: "Banking surfaces",
-    icon: "fa-wallet",
-    summary: "Dashboards, accounts, goals, transfers, and role-based financial visibility.",
-    endpoints: [
-      "GET /api/dashboard/parent",
-      "GET /api/dashboard/child",
-      "GET /api/accounts/me",
-      "POST /api/goals",
-    ],
-  },
-  {
-    title: "Tasks and gameplay",
-    icon: "fa-list-check",
-    summary: "Task creation, submission proof, approvals, game sessions, and engagement rewards.",
-    endpoints: [
-      "GET /api/tasks/parent",
-      "GET /api/tasks/child",
-      "POST /api/tasks",
-      "GET /api/games",
-    ],
+    name: "Dashboards",
+    code: `GET /api/dashboard/parent
+GET /api/dashboard/child
+GET /api/tasks/parent
+GET /api/tasks/child`,
   },
 ];
 
 const contracts = [
-  {
-    label: "Access token",
-    text: "All protected requests must send Authorization: Bearer <accessToken>. The frontend now persists accessToken instead of the old token field.",
-  },
-  {
-    label: "Refresh model",
-    text: "When the backend rejects an expired token, clients should call /api/auth/refresh and retry the original request once before forcing logout.",
-  },
-  {
-    label: "Role ownership",
-    text: "Parent, child, and admin surfaces are separate. The backend resolves the current user from the authenticated username, not a hardcoded ID.",
-  },
-  {
-    label: "Admin DTOs",
-    text: "Admin APIs return dedicated response models for users, families, transactions, and games so the frontend can render stable control screens.",
-  },
+  "Use Authorization: Bearer <accessToken> on all protected routes.",
+  "Persist accessToken from the login payload, not a guessed token field.",
+  "Refresh once on auth failure, then log out if refresh also fails.",
+  "Treat parent, child, and admin as separate application surfaces.",
+  "Consume DTO-shaped admin responses instead of raw entity assumptions.",
+  "Deploy backend changes before frontend changes when contracts shift.",
 ];
 
 export default function Documentation() {
   const navigate = useNavigate();
+  useMarketingMotion();
 
   return (
-    <div className="landing-page">
+    <div className="landing-page microsite-page">
       <div className="cursor-glow"></div>
       <div className="bg-noise"></div>
       <MarketingHeader activePath="/documentation" />
 
       <main>
-        <section className="hero" style={{ paddingBottom: "44px" }}>
+        <section className="hero hero-premium">
           <div className="container hero-grid">
             <div className="hero-copy reveal up">
               <div className="eyebrow">
@@ -87,13 +56,12 @@ export default function Documentation() {
                 Platform Documentation
               </div>
               <h1 className="hero-title">
-                Product docs for
-                <span>the real Stack system</span>
+                Documentation that reads
+                <span>like a real platform</span>
               </h1>
               <p className="hero-text">
-                This documentation surface explains how the live Spring Boot API, React web app, admin tools,
-                Electron desktop build, and Android package fit together. It is structured like a real product
-                documentation portal instead of raw markdown links.
+                These docs are structured by system behavior, route ownership, and product surfaces. The goal is not to dump endpoints.
+                The goal is to make the backend and frontend behave predictably together.
               </p>
               <div className="hero-actions">
                 <button className="btn btn-primary" onClick={() => navigate("/integration")}>
@@ -107,196 +75,126 @@ export default function Documentation() {
               </div>
             </div>
 
-            <div className="hero-visual">
-              <div className="phone-card glass reveal zoom">
-                <div className="screen-top">
-                  <span></span>
-                  <p>Documentation overview</p>
+            <div className="hero-visual reveal right">
+              <div className="code-surface glass">
+                <div className="code-topbar">
+                  <span></span><span></span><span></span>
+                  <p>stack-api.contracts.ts</p>
                 </div>
-                <div className="balance-box">
-                  <small>Production stack</small>
-                  <h3>React + Spring Boot</h3>
-                  <div className="badge-row">
-                    <span>JWT auth</span>
-                    <span>Admin DTOs</span>
-                    <span>Mobile ready</span>
-                  </div>
-                </div>
-                <div className="goal-box">
-                  <div className="goal-head">
-                    <p>Release confidence</p>
-                    <span>Operational</span>
-                  </div>
-                  <div className="progress"><div className="progress-fill" style={{ width: "88%" }}></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+                <pre>{`const login = await api.post("/api/auth/login", credentials);
+const token = login.data.accessToken;
 
-        <section className="section">
-          <div className="container metrics-row">
-            <div className="stat glass">
-              <strong>1</strong>
-              <span>production API host</span>
-            </div>
-            <div className="stat glass">
-              <strong>3</strong>
-              <span>core roles</span>
-            </div>
-            <div className="stat glass">
-              <strong>4</strong>
-              <span>delivery surfaces</span>
-            </div>
-            <div className="stat glass">
-              <strong>JWT</strong>
-              <span>session model</span>
-            </div>
-          </div>
-        </section>
+const parentDashboard = await api.get("/api/dashboard/parent", {
+  headers: { Authorization: \`Bearer \${token}\` }
+});
 
-        <section className="section">
-          <div className="container">
-            <div className="section-head reveal up">
-              <div className="eyebrow">System shape</div>
-              <h2>Separate docs, same operating model.</h2>
-              <p>
-                Stack is a multi-surface product. Parents and children use role-specific dashboards, admins operate
-                internal controls, and public visitors see a polished product site. The documentation reflects that split.
-              </p>
-            </div>
-            <div className="detail-grid">
-              <div className="feature-card glass">
-                <div className="icon-box"><i className="fa-solid fa-server"></i></div>
-                <h3>Backend system</h3>
-                <p>Spring Boot controllers, JWT filter, method security, DTO contracts, and role-aware service logic.</p>
-              </div>
-              <div className="feature-card glass">
-                <div className="icon-box"><i className="fa-solid fa-globe"></i></div>
-                <h3>Frontend product</h3>
-                <p>Landing, dashboards, tasks, family, settings, admin control area, and token refresh behavior.</p>
-              </div>
-              <div className="feature-card glass">
-                <div className="icon-box"><i className="fa-solid fa-desktop"></i></div>
-                <h3>Desktop delivery</h3>
-                <p>Electron packaging with explicit media permission handling for QR scanning and internal device features.</p>
-              </div>
-              <div className="feature-card glass">
-                <div className="icon-box"><i className="fa-solid fa-mobile-screen"></i></div>
-                <h3>Android delivery</h3>
-                <p>Capacitor packaging for APK output, browser-based camera flow, and mobile-first dashboard layouts.</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="section section-dark">
-          <div className="container">
-            <div className="section-head reveal up">
-              <div className="eyebrow">Endpoint map</div>
-              <h2>Documented by product area, not by random file.</h2>
-              <p>Each group below represents a real workflow in the app so future changes stay aligned across frontend, backend, and admin tools.</p>
-            </div>
-            <div className="feature-grid">
-              {endpointGroups.map((group) => (
-                <article className="feature-card glass" key={group.title}>
-                  <div className="icon-box"><i className={`fa-solid ${group.icon}`}></i></div>
-                  <h3>{group.title}</h3>
-                  <p>{group.summary}</p>
-                  <div className="spec-list">
-                    {group.endpoints.map((endpoint) => (
-                      <span className="pill" key={endpoint}>{endpoint}</span>
-                    ))}
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="section">
-          <div className="container">
-            <div className="section-head reveal up">
-              <div className="eyebrow">Critical contracts</div>
-              <h2>The parts that actually break the product if ignored.</h2>
-              <p>
-                These are the system rules the frontend and any external integration must respect. They are the parts
-                that were directly responsible for the earlier 403 and 500 failures.
-              </p>
-            </div>
-            <div className="journey-grid">
-              {contracts.map((contract, index) => (
-                <div className="journey-card glass" key={contract.label}>
-                  <span>{`0${index + 1}`}</span>
-                  <h3>{contract.label}</h3>
-                  <p>{contract.text}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="section">
-          <div className="container spec-table glass">
-            <div>
-              <small>Base URL</small>
-              <strong>https://stack.polito.uz</strong>
-              <p>Production API host used by the React app, Electron build, and mobile webview builds.</p>
-            </div>
-            <div>
-              <small>Local backend</small>
-              <strong>http://localhost:9008</strong>
-              <p>Use this while developing the Spring Boot service locally before pushing to the server.</p>
-            </div>
-            <div>
-              <small>Auth header</small>
-              <strong>Bearer accessToken</strong>
-              <p>Do not send the deprecated token field. The login and register flows must persist accessToken.</p>
-            </div>
-            <div>
-              <small>Admin seed</small>
-              <strong>Rotate immediately</strong>
-              <p>The seeded admin account exists only as a bootstrap credential and should be changed after deployment.</p>
-            </div>
-          </div>
-        </section>
-
-        <section className="section section-dark">
-          <div className="container">
-            <div className="glass" style={{ padding: "32px", borderRadius: "28px" }}>
-              <h2 style={{ marginTop: 0 }}>Current login response contract</h2>
-              <pre style={{ whiteSpace: "pre-wrap", color: "#dce8ff", fontSize: "0.95rem", lineHeight: "1.7", overflowX: "auto" }}>{`{
-  "message": "Login successful",
-  "data": {
-    "accessToken": "jwt",
-    "refreshToken": "optional",
-    "user": {
-      "id": 1,
-      "username": "parent1",
-      "role": "PARENT"
-    }
-  }
+if (requestFailsWith401) {
+  await api.post("/api/auth/refresh");
 }`}</pre>
+              </div>
             </div>
           </div>
         </section>
 
         <section className="section">
-          <div className="container timeline-grid">
-            <div className="story-panel glass">
-              <span>Docs 01</span>
-              <h3>Build against the contract</h3>
-              <p>Use documented DTO shapes and route ownership instead of inferring fields from raw entity responses.</p>
+          <div className="container editorial-grid">
+            <div className="editorial-copy reveal left">
+              <div className="eyebrow">Structure</div>
+              <h2>Document by behavior, not by backend file names.</h2>
+              <p>
+                The product spans backend security, dashboards, tasks, family flows, settings persistence, admin DTOs, Electron packaging,
+                and Android delivery. The docs should show how those pieces depend on each other.
+              </p>
             </div>
-            <div className="story-panel glass">
-              <span>Docs 02</span>
-              <h3>Deploy backend before frontend</h3>
-              <p>Authentication, DTO shape, and controller fixes must hit production first or the frontend will still receive stale errors.</p>
+            <div className="code-grid">
+              {endpointSets.map((set, index) => (
+                <div key={set.name} className={`code-panel glass reveal ${index % 2 === 0 ? "right" : "left"}`}>
+                  <div className="code-panel-head">
+                    <strong>{set.name}</strong>
+                    <button className="pill">copy-ready</button>
+                  </div>
+                  <pre>{set.code}</pre>
+                </div>
+              ))}
             </div>
-            <div className="story-panel glass">
-              <span>Docs 03</span>
-              <h3>Clear stale sessions</h3>
-              <p>After deployment, log out or clear storage so old auth data does not keep producing false failures.</p>
+          </div>
+        </section>
+
+        <section className="section section-dark">
+          <div className="container sticky-showcase">
+            <div className="sticky-copy reveal up">
+              <div className="pin-box">
+                <div className="eyebrow">Critical rules</div>
+                <h2>If these rules are ignored, the app breaks.</h2>
+                <p>
+                  Earlier 403 and 500 problems were not random. They came from auth contract drift, incorrect user resolution,
+                  and frontend assumptions that no longer matched the backend payload.
+                </p>
+              </div>
+            </div>
+            <div className="sticky-cards">
+              {contracts.map((item, index) => (
+                <div
+                  key={item}
+                  className={`story-panel glass ${index % 2 === 0 ? "reveal right" : "reveal left"} premium-panel`}
+                >
+                  <span>{`Rule ${index + 1}`}</span>
+                  <h3>{item}</h3>
+                  <p>Keep this as a non-negotiable product contract across web, Electron, Android, and any partner integration.</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="section">
+          <div className="container">
+            <div className="section-head reveal up">
+              <div className="eyebrow">Environment</div>
+              <h2>Where the project actually lives.</h2>
+            </div>
+            <div className="docs-spec-grid">
+              <div className="spec-card glass reveal left">
+                <small>Production API</small>
+                <strong>https://stack.polito.uz</strong>
+                <p>Live host for backend routes consumed by web, Electron, and Android clients.</p>
+              </div>
+              <div className="spec-card glass reveal up">
+                <small>Local backend</small>
+                <strong>http://localhost:9008</strong>
+                <p>Use this when validating Spring Boot changes before pushing to the server.</p>
+              </div>
+              <div className="spec-card glass reveal up">
+                <small>Desktop build</small>
+                <strong>Electron</strong>
+                <p>Windows packaging uses `electron-vite` and `electron-builder`, with explicit media permission handling.</p>
+              </div>
+              <div className="spec-card glass reveal right">
+                <small>Mobile build</small>
+                <strong>Capacitor Android</strong>
+                <p>Android delivery syncs the built web app into the native shell and exposes camera-based features.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="section section-dark">
+          <div className="container media-band">
+            <div className="media-card glass reveal left">
+              <div className="eyebrow">Admin contract</div>
+              <h3>Admin APIs now deserve first-class docs.</h3>
+              <p>
+                Users, games, families, and transactions are operational data. The admin frontend should consume dedicated DTOs,
+                not infer random fields from raw persistence models.
+              </p>
+            </div>
+            <div className="media-card glass reveal right">
+              <div className="eyebrow">Deployment sequence</div>
+              <h3>Backend first, frontend second.</h3>
+              <p>
+                When you fix auth or route logic, deploy the backend first. Then deploy the frontend and clear stale storage.
+                That sequence matters more than cosmetic frontend changes.
+              </p>
             </div>
           </div>
         </section>
