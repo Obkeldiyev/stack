@@ -1,6 +1,7 @@
 package com.kidsbank.api.bank;
 
 import com.kidsbank.api.common.ApiResponse;
+import com.kidsbank.api.user.UserRepository;
 import jakarta.validation.constraints.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -12,13 +13,18 @@ import java.util.List;
 public class GoalController {
 
   private final GoalService service;
+  private final UserRepository userRepository;
 
-  public GoalController(GoalService service) {
+  public GoalController(GoalService service, UserRepository userRepository) {
     this.service = service;
+    this.userRepository = userRepository;
   }
 
   private Long authUserId(org.springframework.security.core.Authentication auth) {
-    return Long.parseLong(auth.getPrincipal().toString());
+    String username = auth.getName();
+    return userRepository.findByUsername(username)
+        .map(user -> user.getId())
+        .orElseThrow(() -> new RuntimeException("User not found: " + username));
   }
 
   public record CreateGoalRequest(@NotBlank @Size(min = 3, max = 80) String title, @Min(1) long targetAmount) {}

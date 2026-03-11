@@ -1,6 +1,7 @@
 package com.kidsbank.api.bank;
 
 import com.kidsbank.api.common.ApiResponse;
+import com.kidsbank.api.user.UserRepository;
 import jakarta.validation.constraints.Min;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -12,13 +13,18 @@ import java.util.List;
 public class TransactionController {
 
   private final TransactionService txService;
+  private final UserRepository userRepository;
 
-  public TransactionController(TransactionService txService) {
+  public TransactionController(TransactionService txService, UserRepository userRepository) {
     this.txService = txService;
+    this.userRepository = userRepository;
   }
 
   private Long authUserId(org.springframework.security.core.Authentication auth) {
-    return Long.parseLong(auth.getPrincipal().toString());
+    String username = auth.getName();
+    return userRepository.findByUsername(username)
+        .map(user -> user.getId())
+        .orElseThrow(() -> new RuntimeException("User not found: " + username));
   }
 
   public record MoneyRequest(@Min(1) long amount, String note) {}

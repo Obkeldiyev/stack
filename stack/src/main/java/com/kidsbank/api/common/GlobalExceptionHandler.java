@@ -20,6 +20,11 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(400).body(ApiResponse.fail(e.getMessage()));
   }
 
+  @ExceptionHandler(UnauthorizedException.class)
+  public ResponseEntity<ApiResponse<Void>> unauthorized(UnauthorizedException e) {
+    return ResponseEntity.status(401).body(ApiResponse.fail(e.getMessage()));
+  }
+
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<ApiResponse<Void>> validation(MethodArgumentNotValidException e) {
     String msg = e.getBindingResult().getFieldErrors().stream()

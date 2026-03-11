@@ -1,7 +1,7 @@
 package com.kidsbank.api.bank;
 
 import com.kidsbank.api.common.ApiResponse;
-import com.kidsbank.api.family.FamilyMemberRepository;
+import com.kidsbank.api.user.UserRepository;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,13 +14,18 @@ import java.util.List;
 public class AccountController {
 
   private final AccountService accountService;
+  private final UserRepository userRepository;
 
-  public AccountController(AccountService accountService) {
+  public AccountController(AccountService accountService, UserRepository userRepository) {
     this.accountService = accountService;
+    this.userRepository = userRepository;
   }
 
   private Long authUserId(org.springframework.security.core.Authentication auth) {
-    return Long.parseLong(auth.getPrincipal().toString());
+    String username = auth.getName();
+    return userRepository.findByUsername(username)
+        .map(user -> user.getId())
+        .orElseThrow(() -> new RuntimeException("User not found: " + username));
   }
 
   public record CreateAccountRequest(@NotNull AccountType type) {}

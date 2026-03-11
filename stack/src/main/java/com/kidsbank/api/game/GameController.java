@@ -1,6 +1,8 @@
 package com.kidsbank.api.game;
 
 import com.kidsbank.api.common.ApiResponse;
+import com.kidsbank.api.common.UnauthorizedException;
+import com.kidsbank.api.user.UserRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -14,13 +16,18 @@ import static com.kidsbank.api.game.GameDtos.*;
 public class GameController {
 
   private final GameService service;
+  private final UserRepository userRepository;
 
-  public GameController(GameService service) {
+  public GameController(GameService service, UserRepository userRepository) {
     this.service = service;
+    this.userRepository = userRepository;
   }
 
   private Long authUserId(org.springframework.security.core.Authentication auth) {
-    return Long.parseLong(auth.getPrincipal().toString());
+    String username = auth.getName();
+    return userRepository.findByUsername(username)
+        .map(user -> user.getId())
+        .orElseThrow(() -> new RuntimeException("User not found: " + username));
   }
 
   @PostConstruct
@@ -45,7 +52,10 @@ public class GameController {
   @PostMapping("/start/{gameId}")
   public ApiResponse<GameSession> start(@PathVariable Long gameId,
                                         org.springframework.security.core.Authentication auth) {
-    Long childId = auth != null && auth.getPrincipal() != null ? authUserId(auth) : 3L; // Default test user
+    if (auth == null) {
+      throw new UnauthorizedException("User not authenticated");
+    }
+    Long childId = authUserId(auth);
     return ApiResponse.ok("Session started", service.start(childId, gameId));
   }
 
@@ -53,7 +63,10 @@ public class GameController {
   public ApiResponse<GameSession> finish(@PathVariable Long sessionId,
                                          @RequestBody FinishRequest req,
                                          org.springframework.security.core.Authentication auth) {
-    Long childId = auth != null && auth.getPrincipal() != null ? authUserId(auth) : 3L; // Default test user
+    if (auth == null) {
+      throw new UnauthorizedException("User not authenticated");
+    }
+    Long childId = authUserId(auth);
     return ApiResponse.ok("Session finished", service.finish(childId, sessionId, req.scorePoints()));
   }
 }
