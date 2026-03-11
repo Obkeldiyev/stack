@@ -5,6 +5,7 @@ import com.kidsbank.api.family.FamilyMember;
 import com.kidsbank.api.family.FamilyMemberRepository;
 import com.kidsbank.api.task.TaskRepository;
 import com.kidsbank.api.task.TaskStatus;
+import com.kidsbank.api.user.UserRepository;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,20 +25,26 @@ public class DashboardController {
   private final GoalRepository goalRepo;
   private final FamilyMemberRepository familyMemberRepo;
   private final TaskRepository taskRepo;
+  private final UserRepository userRepository;
 
   public DashboardController(AccountService accountService, AccountRepository accountRepo,
                              TransactionRepository txRepo, GoalRepository goalRepo,
-                             FamilyMemberRepository familyMemberRepo, TaskRepository taskRepo) {
+                             FamilyMemberRepository familyMemberRepo, TaskRepository taskRepo,
+                             UserRepository userRepository) {
     this.accountService = accountService;
     this.accountRepo = accountRepo;
     this.txRepo = txRepo;
     this.goalRepo = goalRepo;
     this.familyMemberRepo = familyMemberRepo;
     this.taskRepo = taskRepo;
+    this.userRepository = userRepository;
   }
 
   private Long authUserId(org.springframework.security.core.Authentication auth) {
-    return Long.parseLong(auth.getPrincipal().toString());
+    String username = auth.getName();
+    return userRepository.findByUsername(username)
+        .map(user -> user.getId())
+        .orElseThrow(() -> new RuntimeException("User not found: " + username));
   }
 
   @GetMapping("/child")

@@ -39,8 +39,8 @@ public class JwtAuthFilter extends GenericFilter {
         String role = c.get("role", String.class);
 
         var authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role));
-        // Store userId as principal so it's accessible in controllers
-        var authentication = new UsernamePasswordAuthenticationToken(userId, null, authorities);
+        // Store username as principal so it's accessible in controllers
+        var authentication = new UsernamePasswordAuthenticationToken(username, null, authorities);
         SecurityContextHolder.getContext().setAuthentication(authentication);
       } catch (Exception ignored) {
         SecurityContextHolder.clearContext();

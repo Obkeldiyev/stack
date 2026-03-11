@@ -42,14 +42,8 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
             return null;
         }
 
-        // The JWT filter stores userId as the principal, not username
-        String userIdStr = authentication.getName();
-        try {
-            Long userId = Long.parseLong(userIdStr);
-            return userRepository.findById(userId).orElse(null);
-        } catch (NumberFormatException e) {
-            // Fallback to username lookup if parsing fails
-            return userRepository.findByUsername(userIdStr).orElse(null);
-        }
+        // Get username from authentication principal (JWT filter stores username)
+        String username = authentication.getName();
+        return userRepository.findByUsername(username).orElse(null);
     }
 }

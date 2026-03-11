@@ -1,6 +1,7 @@
 package com.kidsbank.api.family;
 
 import com.kidsbank.api.common.ApiResponse;
+import com.kidsbank.api.user.UserRepository;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,11 +14,18 @@ import static com.kidsbank.api.family.FamilyDtos.*;
 public class FamilyController {
 
   private final FamilyService service;
+  private final UserRepository userRepository;
 
-  public FamilyController(FamilyService service) { this.service = service; }
+  public FamilyController(FamilyService service, UserRepository userRepository) { 
+    this.service = service; 
+    this.userRepository = userRepository;
+  }
 
   private Long authUserId(org.springframework.security.core.Authentication auth) { 
-    return Long.parseLong(auth.getPrincipal().toString()); 
+    String username = auth.getName();
+    return userRepository.findByUsername(username)
+        .map(user -> user.getId())
+        .orElseThrow(() -> new RuntimeException("User not found: " + username));
   }
 
   @PostMapping("/create")
