@@ -7,31 +7,86 @@ import "./Landing.css";
 const partnerStacks = [
   {
     title: "School systems",
-    text: "Map attendance, homework, achievements, and classroom progression into visible rewards and parent-supervised finance outcomes.",
+    text: "Map attendance, homework, achievement, and classroom progression into parent-visible value without forcing schools to build a finance stack from zero.",
   },
   {
     title: "Parenting products",
-    text: "Let another app handle routines, scheduling, and communication while Stack provides the money, goals, and reward engine.",
+    text: "Let another app own routines, communication, and scheduling while Stack provides the supervised money, reward, and goal engine.",
   },
   {
-    title: "Learning platforms",
-    text: "Convert study milestones, quiz performance, and challenge streaks into meaningful progress that parents can validate.",
+    title: "Learning products",
+    text: "Convert lesson completion, quiz performance, and challenge streaks into meaningful child progress that parents can validate.",
   },
   {
-    title: "Commerce or retail",
-    text: "Use Stack as the supervised balance and approval layer inside kid-safe purchasing experiences.",
+    title: "Kid-safe commerce",
+    text: "Use Stack as the supervised balance and approval layer inside controlled purchase experiences and retail-linked products.",
   },
 ];
 
-const packages = [
-  "JWT authentication and refresh",
-  "Role-aware parent / child / admin routing",
-  "Family membership and invites",
-  "Goals, balances, and transaction visibility",
-  "Task proof uploads and approvals",
-  "Games and rewards",
-  "Electron distribution",
-  "Capacitor Android support",
+const packageSurfaces = [
+  {
+    name: "Identity package",
+    text: "JWT login, refresh flow, session persistence, and role-aware route entry for parent, child, and admin.",
+  },
+  {
+    name: "Family package",
+    text: "Family creation, member lookup, invite flow, role linkage, and parent-supervised relationship structure.",
+  },
+  {
+    name: "Reward package",
+    text: "Tasks, proof uploads, approval decisions, game outcomes, balance updates, and goal movement.",
+  },
+  {
+    name: "Distribution package",
+    text: "Shared React frontend delivered on the web, in Electron, and through Capacitor Android packaging.",
+  },
+  {
+    name: "Admin package",
+    text: "Users, transactions, families, games, and internal system visibility through dedicated DTO-backed operations.",
+  },
+  {
+    name: "Camera package",
+    text: "QR and media permission handling for device-based flows in browser, Electron, and Android contexts.",
+  },
+];
+
+const flowExamples = [
+  {
+    title: "Partner auth flow",
+    code: `POST /api/auth/login
+-> read data.accessToken
+-> store token securely
+-> request /api/family/me
+-> load role-specific dashboard
+-> refresh on expiry once`,
+  },
+  {
+    title: "Value mapping flow",
+    code: `partner event
+-> task assignment or reward trigger
+-> child action
+-> proof / validation
+-> parent approval
+-> balance / goal update
+-> admin audit visibility`,
+  },
+  {
+    title: "Deployment path",
+    code: `Spring Boot API
+-> React web product
+-> Electron desktop package
+-> Capacitor Android package
+-> partner-facing public microsite`,
+  },
+];
+
+const approvalChecklist = [
+  "Developer reviews partner fit and intended use.",
+  "Route contract and token handling are validated.",
+  "Child-safety and parent-supervision expectations are checked.",
+  "Expected traffic and operational visibility are reviewed.",
+  "Integration launches with staged exposure instead of full access.",
+  "Admin audit visibility is confirmed before expansion.",
 ];
 
 export default function Integration() {
@@ -53,12 +108,12 @@ export default function Integration() {
                 Integration Architecture
               </div>
               <h1 className="hero-title">
-                Stack as a
-                <span>partner-ready platform layer</span>
+                Stack is a
+                <span>partner-ready systems layer</span>
               </h1>
               <p className="hero-text">
-                Integration should not mean bolting on a few routes. Stack already contains identity, role separation, family structure,
-                rewards, goals, task approvals, admin oversight, and distribution channels. That makes it useful as a systems layer.
+                Integration is not just about opening API routes. Stack already contains identity, roles, family linkage, tasks, proofs,
+                approvals, goals, transaction visibility, admin oversight, QR capability, and multi-platform delivery. That makes it usable as a platform package.
               </p>
               <div className="hero-actions">
                 <button className="btn btn-primary" onClick={() => navigate("/documentation")}>
@@ -76,13 +131,13 @@ export default function Integration() {
               <div className="package-surface glass">
                 <div className="code-topbar">
                   <span></span><span></span><span></span>
-                  <p>integration-packages</p>
+                  <p>integration-surface-map</p>
                 </div>
                 <div className="package-list">
-                  {packages.map((item) => (
-                    <div key={item} className="package-pill">
+                  {packageSurfaces.slice(0, 4).map((item) => (
+                    <div key={item.name} className="package-pill">
                       <i className="fa-solid fa-cube"></i>
-                      <span>{item}</span>
+                      <span>{item.name}</span>
                     </div>
                   ))}
                 </div>
@@ -96,9 +151,9 @@ export default function Integration() {
             <div className="source-column">
               <small>Sources</small>
               <div className="source-node">Spring Boot API</div>
-              <div className="source-node">Admin services</div>
-              <div className="source-node">Game content</div>
               <div className="source-node">Family finance logic</div>
+              <div className="source-node">Admin services</div>
+              <div className="source-node">Game and task engines</div>
             </div>
             <div className="source-connector"></div>
             <div className="source-column">
@@ -115,10 +170,10 @@ export default function Integration() {
           <div className="container editorial-grid">
             <div className="editorial-copy reveal left">
               <div className="eyebrow">Partner fit</div>
-              <h2>Integrate whole value loops, not isolated APIs.</h2>
+              <h2>Integrate complete value loops, not isolated endpoints.</h2>
               <p>
-                The strongest partner integrations are the ones that map real activity in another product back into Stack's supervised finance loop:
-                act, validate, reward, save, and review.
+                The strongest partner integrations are the ones that map real activity in another product back into Stack's supervised finance cycle:
+                act, validate, reward, save, review, and keep parents in control.
               </p>
             </div>
             <div className="feature-grid">
@@ -134,91 +189,88 @@ export default function Integration() {
         </section>
 
         <section className="section section-dark">
-          <div className="container sticky-showcase">
-            <div className="sticky-copy reveal up">
-              <div className="pin-box">
-                <div className="eyebrow">System mapping</div>
-                <h2>Think in sources, packages, and delivery points.</h2>
-                <p>
-                  Integration work is easier when you know what the source of truth is, what surface consumes it,
-                  and what package or runtime will deliver it to the end user.
-                </p>
-              </div>
+          <div className="container matrix-board glass reveal zoom">
+            <div className="section-head" style={{ marginBottom: 24 }}>
+              <div className="eyebrow">Package architecture</div>
+              <h2>Reusable platform packages instead of one giant vague integration.</h2>
             </div>
-            <div className="sticky-cards">
-              <div className="story-panel glass reveal right premium-panel">
-                <span>Source</span>
-                <h3>Spring Boot backend</h3>
-                <p>Owns auth, roles, families, tasks, transactions, goals, games, and admin operations.</p>
-              </div>
-              <div className="story-panel glass reveal left premium-panel">
-                <span>Client</span>
-                <h3>React product shell</h3>
-                <p>Consumes those routes across landing pages, parent and child dashboards, settings, and admin control screens.</p>
-              </div>
-              <div className="story-panel glass reveal right premium-panel">
-                <span>Packages</span>
-                <h3>Electron and Capacitor</h3>
-                <p>Wrap the same frontend into desktop and Android delivery with permission handling for camera-driven flows.</p>
-              </div>
+            <div className="matrix-grid">
+              {packageSurfaces.map((item) => (
+                <div key={item.name} className="matrix-cell">
+                  <strong>{item.name}</strong>
+                  <p>{item.text}</p>
+                </div>
+              ))}
             </div>
           </div>
         </section>
 
         <section className="section">
           <div className="container code-grid">
-            <div className="code-panel glass reveal left">
-              <div className="code-panel-head">
-                <strong>Partner auth flow</strong>
-                <button className="pill">copy-ready</button>
+            {flowExamples.map((item, index) => (
+              <div key={item.title} className={`code-panel glass reveal ${index % 2 === 0 ? "left" : "right"}`}>
+                <div className="code-panel-head">
+                  <strong>{item.title}</strong>
+                  <button className="pill">copy-ready</button>
+                </div>
+                <pre>{item.code}</pre>
               </div>
-              <pre>{`POST /api/auth/login
--> read data.accessToken
--> store token securely
--> request /api/family/me
--> request role dashboard
--> refresh on expiry once`}</pre>
-            </div>
-            <div className="code-panel glass reveal right">
-              <div className="code-panel-head">
-                <strong>Value mapping</strong>
-                <button className="pill">integration map</button>
-              </div>
-              <pre>{`partner event
--> task assignment or reward trigger
--> child action
--> proof / validation
--> parent approval
--> balance / goal update
--> admin audit visibility`}</pre>
-            </div>
+            ))}
           </div>
         </section>
 
         <section className="section section-dark">
+          <div className="container sticky-showcase">
+            <div className="sticky-copy reveal up">
+              <div className="pin-box">
+                <div className="eyebrow">Integration model</div>
+                <h2>Think in package ownership, not just request ownership.</h2>
+                <p>
+                  One integration may only need identity and family. Another may need rewards and goals. Another may need the full device delivery story.
+                  The page should make those layers legible.
+                </p>
+              </div>
+            </div>
+            <div className="sticky-cards">
+              <div className="story-panel glass reveal right premium-panel">
+                <span>Source</span>
+                <h3>Backend remains the source of truth</h3>
+                <p>Auth, roles, families, tasks, transactions, goals, games, and admin operations all live behind the Spring Boot API.</p>
+              </div>
+              <div className="story-panel glass reveal left premium-panel">
+                <span>Client</span>
+                <h3>Frontend remains the unified product shell</h3>
+                <p>The React app renders public pages, parent and child dashboards, settings, admin tools, and partner-visible product surfaces.</p>
+              </div>
+              <div className="story-panel glass reveal right premium-panel">
+                <span>Delivery</span>
+                <h3>Packages make the product portable</h3>
+                <p>Electron and Capacitor extend the same product into Windows and Android without splitting the experience into separate teams or codebases.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="section">
           <div className="container terminal-rack">
             <div className="terminal-panel glass reveal left">
               <div className="code-topbar">
                 <span></span><span></span><span></span>
-                <p>package sources</p>
+                <p>package-sources</p>
               </div>
               <pre>{`web        -> React + Vite
 desktop    -> Electron + electron-builder
 android    -> Capacitor + Gradle
 api        -> Spring Boot + JWT security
-admin      -> DTO-backed internal operations`}</pre>
+admin      -> DTO-backed internal operations
+camera     -> browser / electron / android permission flow`}</pre>
             </div>
             <div className="terminal-panel glass reveal right">
               <div className="code-topbar">
                 <span></span><span></span><span></span>
-                <p>integration approval</p>
+                <p>approval-checklist</p>
               </div>
-              <pre>{`1. developer review
-2. contract check
-3. token / role validation
-4. partner scope limit
-5. staged deployment
-6. admin audit visibility`}</pre>
+              <pre>{approvalChecklist.map((item, index) => `${index + 1}. ${item}`).join("\n")}</pre>
             </div>
           </div>
         </section>

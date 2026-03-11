@@ -984,8 +984,14 @@
 }
 
 .landing-page .horizontal-stage {
+  position: sticky;
+  top: 92px;
   overflow: hidden;
   padding: 8px 0 18px;
+}
+
+.landing-page .horizontal-pin {
+  height: 170vh;
 }
 
 .landing-page .horizontal-track {
@@ -1058,6 +1064,172 @@
 
 .landing-page .workspace-main {
   padding: 22px;
+}
+
+.landing-page .blueprint-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+
+.landing-page .blueprint-card {
+  min-height: 260px;
+  padding: 28px;
+  border-radius: 30px;
+  position: relative;
+  overflow: hidden;
+}
+
+.landing-page .blueprint-card::before {
+  content: "";
+  position: absolute;
+  inset: -20% auto auto -10%;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(29,100,214,0.18), transparent 72%);
+}
+
+.landing-page .blueprint-card h3,
+.landing-page .mosaic-panel h3 {
+  margin: 0 0 14px 0;
+  font-size: 1.75rem;
+  letter-spacing: -0.05em;
+}
+
+.landing-page .blueprint-card p,
+.landing-page .mosaic-panel p {
+  margin: 0;
+  color: #a5b7d0;
+  line-height: 1.85;
+}
+
+.landing-page .deep-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 22px;
+}
+
+.landing-page .deep-card {
+  min-height: 260px;
+  padding: 28px;
+  border-radius: 30px;
+}
+
+.landing-page .deep-card h3 {
+  margin: 0 0 14px 0;
+  font-size: 1.8rem;
+  letter-spacing: -0.05em;
+}
+
+.landing-page .deep-card p {
+  margin: 0;
+  color: #a5b7d0;
+  line-height: 1.85;
+}
+
+.landing-page .matrix-board {
+  padding: 28px;
+  border-radius: 34px;
+}
+
+.landing-page .matrix-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.landing-page .matrix-cell {
+  padding: 20px;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.landing-page .matrix-cell strong {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 1.05rem;
+  letter-spacing: -0.04em;
+}
+
+.landing-page .matrix-cell p {
+  margin: 0;
+  color: #a5b7d0;
+  line-height: 1.75;
+}
+
+.landing-page .cinematic-band {
+  display: grid;
+  grid-template-columns: 0.92fr 1.08fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.landing-page .cinematic-copy h2 {
+  margin: 0 0 14px 0;
+  font-size: clamp(2.2rem, 4vw, 4rem);
+  letter-spacing: -0.06em;
+  line-height: 1.03;
+}
+
+.landing-page .cinematic-copy p {
+  margin: 0;
+  color: #a5b7d0;
+  line-height: 1.85;
+}
+
+.landing-page .cinematic-stack {
+  display: grid;
+  gap: 18px;
+}
+
+.landing-page .cinematic-card {
+  padding: 24px;
+  border-radius: 28px;
+}
+
+.landing-page .cinematic-card small {
+  display: inline-block;
+  color: #8fdfff;
+  letter-spacing: 0.12em;
+  margin-bottom: 12px;
+}
+
+.landing-page .cinematic-card h3 {
+  margin: 0 0 12px 0;
+  font-size: 1.55rem;
+  letter-spacing: -0.05em;
+}
+
+.landing-page .cinematic-card p {
+  margin: 0;
+  color: #a5b7d0;
+  line-height: 1.8;
+}
+
+.landing-page .grid-mosaic {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr 1fr;
+  gap: 22px;
+  align-items: stretch;
+}
+
+.landing-page .mosaic-panel {
+  min-height: 280px;
+  padding: 28px;
+  border-radius: 30px;
+}
+
+.landing-page .micro-list {
+  margin: 16px 0 0 0;
+  padding-left: 18px;
+  color: #a5b7d0;
+  line-height: 1.9;
+}
+
+.landing-page .micro-list li + li {
+  margin-top: 6px;
 }
 
 .landing-page .route-board {
@@ -1573,9 +1745,14 @@
   .landing-page .timeline-grid,
   .landing-page .metrics-row,
   .landing-page .showcase-grid,
+  .landing-page .blueprint-grid,
+  .landing-page .deep-grid,
   .landing-page .code-grid,
   .landing-page .docs-spec-grid,
   .landing-page .media-band,
+  .landing-page .cinematic-band,
+  .landing-page .matrix-grid,
+  .landing-page .grid-mosaic,
   .landing-page .route-grid,
   .landing-page .terminal-rack,
   .landing-page .download-grid,
@@ -1710,6 +1887,14 @@
     grid-auto-columns: unset;
     transform: none;
     padding: 0 20px;
+  }
+
+  .landing-page .horizontal-pin {
+    height: auto;
+  }
+
+  .landing-page .horizontal-stage {
+    position: static;
   }
 }
 

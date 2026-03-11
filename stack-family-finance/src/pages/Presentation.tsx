@@ -4,51 +4,87 @@ import { MarketingHeader } from "@/components/marketing/MarketingHeader";
 import { useMarketingMotion } from "@/hooks/useMarketingMotion";
 import "./Landing.css";
 
-const productNarrative = [
-  {
-    title: "Parent command center",
-    body: "Parents need a surface that feels calm, premium, and exact. Stack gives them balances, task approvals, family structure, and visible control over money movement without turning the product into an overwhelming admin wall.",
-  },
-  {
-    title: "Child motivation engine",
-    body: "Children should not stare at empty finance widgets. Goals, games, streaks, rewards, and visual progress turn abstract money into a system they can understand and act on.",
-  },
-  {
-    title: "Admin operations layer",
-    body: "A real product needs internal control. Admins can supervise users, families, transactions, and game content from a hidden internal environment that does not leak into public marketing routes.",
-  },
-];
-
-const valueFrames = [
-  "Task creation with reward amount",
-  "Child proof upload and approval flow",
-  "Goals that explain why money is being saved",
-  "QR and camera capability for supervised interactions",
-  "Role-specific dashboards with cleaner mobile layouts",
-  "Electron and Android packaging from the same product codebase",
-];
-
 const horizontalFrames = [
   {
     label: "01",
-    title: "Finance should move sideways through the story",
-    text: "This rail is meant to feel like a cinematic deck. As the user scrolls down, the product argument moves across the screen instead of only stacking lower on the page.",
+    title: "Family finance should move sideways through the story",
+    text: "This rail exists to break the normal landing-page rhythm. As the user scrolls down, the business argument travels horizontally so the page feels like a guided product deck rather than a stack of sections.",
   },
   {
     label: "02",
-    title: "Parents need confidence, not noise",
-    text: "The visual system leans toward premium payment products: calm spacing, precise cards, controlled color, and fewer chaotic elements competing for attention.",
+    title: "Parents need payment-app confidence",
+    text: "If the surface feels noisy, parents read the product as unsafe. Stack needs calm structure, visible control, high legibility, and predictable movement more than decorative energy.",
   },
   {
     label: "03",
-    title: "Children need feedback loops",
-    text: "Tasks, proof, rewards, games, and goals create motion inside the product. The app should always show what happened and what comes next.",
+    title: "Children need visible feedback loops",
+    text: "Goals, rewards, tasks, game wins, and proof uploads turn abstract finance into understandable cause and effect. The child side has to feel active, not passive.",
   },
   {
     label: "04",
-    title: "Operators need internal control",
-    text: "Admin tools, transaction visibility, and content controls make the product credible beyond the public marketing layer.",
+    title: "Admin makes the platform credible",
+    text: "Investors, operators, and partners care whether the product can be supervised. User access, transactions, families, and game content all need internal control surfaces.",
   },
+];
+
+const storyBlocks = [
+  {
+    title: "Parent system",
+    body: "Parents create the family environment, control how value enters the system, review proofs, approve rewards, and decide how children progress. The product gives them precision without turning the dashboard into back-office software.",
+  },
+  {
+    title: "Child system",
+    body: "Children interact with the product through goals, tasks, family visibility, games, QR flows, and progress surfaces. Their side should explain what happened, what they earned, and what they can do next.",
+  },
+  {
+    title: "Platform system",
+    body: "Behind both roles, the backend controls auth, routes, DTOs, families, accounts, goals, tasks, transactions, and games. That hidden structure is what turns the UI into a real product instead of a concept.",
+  },
+  {
+    title: "Operational system",
+    body: "Admins can inspect users, change access, manage game content, supervise families, and track transaction movement. This is necessary for live operation, support, and rollout trust.",
+  },
+];
+
+const detailSignals = [
+  "Parents create paid tasks with an amount before the child starts work",
+  "Children can upload photo proof and wait for approval instead of receiving auto-credit",
+  "Goals explain why money is being saved and how progress changes over time",
+  "Games create engagement loops that tie back into rewards and habit retention",
+  "QR and camera flows let the product support supervised scan-based experiences",
+  "Settings and auth persistence keep users logged in rather than forcing repeated setup",
+  "Electron and Android packaging expand the same product into real device channels",
+  "Admin lives outside the public microsite so the control plane stays private",
+];
+
+const valueMap = [
+  {
+    kicker: "Family trust",
+    title: "Every money action is supervised",
+    text: "The product does not assume children should have isolated control over value. Parents remain the operating authority for approvals, transfers, task rewards, and access decisions.",
+  },
+  {
+    kicker: "Learning value",
+    title: "The product teaches through repetition",
+    text: "Children understand money more easily when actions lead to visible results. Finish task, upload proof, get approved, watch balance change, move toward a goal. That pattern is clearer than lectures.",
+  },
+  {
+    kicker: "Retention value",
+    title: "Motivation is built into the system",
+    text: "Goals, games, streaks, and family-visible rewards make the product feel alive. Without those loops, the app becomes a static control surface for adults only.",
+  },
+  {
+    kicker: "Platform value",
+    title: "The stack extends beyond the demo",
+    text: "The same structure can serve parents, children, admins, school-linked experiences, and partner integrations because the product is modeled as a system rather than one app screen.",
+  },
+];
+
+const rolloutTimeline = [
+  "Web launch with landing, login, parent, child, and admin role surfaces",
+  "Desktop rollout through Electron for Windows distribution",
+  "Android rollout through Capacitor packaging and device permissions",
+  "Partner rollout via integration review, route contracts, and staged traffic",
 ];
 
 export default function Presentation() {
@@ -70,12 +106,12 @@ export default function Presentation() {
                 Product Presentation
               </div>
               <h1 className="hero-title">
-                A family finance product
-                <span>with real depth</span>
+                Stack is a
+                <span>family operating system</span>
               </h1>
               <p className="hero-text">
-                Stack is not just a children's wallet screen. It is a full parent-child operating model with role-based dashboards,
-                tasks, approvals, goals, gameplay, internal admin control, and deployment paths across web, Windows, and Android.
+                Stack is not a toy wallet, and it is not a plain parent dashboard. It is a structured parent-child-admin product system
+                with money visibility, task rewards, proof uploads, goals, transactions, family control, games, QR support, and device delivery across web, desktop, and Android.
               </p>
               <div className="hero-actions">
                 <button className="btn btn-primary" onClick={() => navigate("/login")}>
@@ -92,30 +128,30 @@ export default function Presentation() {
             <div className="hero-visual reveal right">
               <div className="stage-shell glass stage-lift">
                 <div className="stage-device glass">
-                  <div className="screen-top"><span></span><p>Premium family banking</p></div>
+                  <div className="screen-top"><span></span><p>Parent command center</p></div>
                   <div className="balance-box">
-                    <small>Parent view</small>
-                    <h3>$1,284.00 under supervision</h3>
+                    <small>Supervised family value</small>
+                    <h3>$1,284.00 moving with context</h3>
                     <div className="badge-row">
-                      <span>Tasks approved</span>
-                      <span>Goals active</span>
-                      <span>Family synced</span>
+                      <span>Tasks</span>
+                      <span>Goals</span>
+                      <span>Family</span>
                     </div>
                   </div>
                   <div className="stage-grid">
                     <div className="mini-block">
                       <div>
-                        <small>Task proof</small>
-                        <h4>Photo uploaded</h4>
+                        <small>Proof upload</small>
+                        <h4>Photo waiting for approval</h4>
                       </div>
                       <i className="fa-solid fa-camera"></i>
                     </div>
                     <div className="mini-block">
                       <div>
-                        <small>Game rewards</small>
-                        <h4>Coins distributed</h4>
+                        <small>Admin oversight</small>
+                        <h4>Transaction visibility on</h4>
                       </div>
-                      <i className="fa-solid fa-trophy"></i>
+                      <i className="fa-solid fa-shield-halved"></i>
                     </div>
                   </div>
                 </div>
@@ -129,41 +165,60 @@ export default function Presentation() {
         <section className="section">
           <div className="container">
             <div className="section-head reveal up">
-              <div className="eyebrow">Scroll performance</div>
-              <h2>The presentation moves sideways while the page moves down.</h2>
-              <p>This section exists only to change the rhythm of the page and make the product story feel less ordinary.</p>
+              <div className="eyebrow">Directional storytelling</div>
+              <h2>The page scrolls down, but the argument moves across.</h2>
+              <p>This is deliberate. The presentation needs a stronger motion language than ordinary vertical marketing sections.</p>
             </div>
           </div>
-          <div className="horizontal-stage reveal zoom">
-            <div className="horizontal-track">
-              {horizontalFrames.map((frame) => (
-                <article className="horizontal-card glass" key={frame.label}>
-                  <span>{frame.label}</span>
-                  <h3>{frame.title}</h3>
-                  <p>{frame.text}</p>
-                </article>
-              ))}
+          <div className="horizontal-pin reveal zoom">
+            <div className="horizontal-stage">
+              <div className="horizontal-track">
+                {horizontalFrames.map((frame) => (
+                  <article className="horizontal-card glass" key={frame.label}>
+                    <span>{frame.label}</span>
+                    <h3>{frame.title}</h3>
+                    <p>{frame.text}</p>
+                  </article>
+                ))}
+              </div>
             </div>
           </div>
         </section>
 
         <section className="section">
-          <div className="container editorial-grid">
-            <div className="editorial-copy reveal left">
-              <div className="eyebrow">Narrative</div>
-              <h2>The product story changes as you scroll.</h2>
+          <div className="container blueprint-grid">
+            <div className="blueprint-card glass reveal left">
+              <div className="eyebrow">Who it serves</div>
+              <h3>Parents</h3>
+              <p>Parents need clean visibility, calm financial control, approval flows, and enough trust in the interface to use it repeatedly.</p>
+            </div>
+            <div className="blueprint-card glass reveal up">
+              <div className="eyebrow">Who it teaches</div>
+              <h3>Children</h3>
+              <p>Children need visible progress, a reason to act, and feedback loops that connect effort to outcome without hiding the logic.</p>
+            </div>
+            <div className="blueprint-card glass reveal right">
+              <div className="eyebrow">Who operates it</div>
+              <h3>Admins</h3>
+              <p>Admins need the authority to supervise users, block access, inspect transactions, manage families, and update games as the system evolves.</p>
+            </div>
+          </div>
+        </section>
+
+        <section className="section section-dark">
+          <div className="container cinematic-band">
+            <div className="cinematic-copy reveal left">
+              <div className="eyebrow">Presentation logic</div>
+              <h2>One scroll should tell the business case, the workflow, and the rollout.</h2>
               <p>
-                These sections are built like a presentation deck inside a microsite. Content shifts direction, cards enter from alternating sides,
-                and the page moves from the business case into the actual operating model.
+                The page should feel like a guided launch story. It starts with product value, moves into how the system behaves,
+                then lands on why the platform is operationally believable.
               </p>
             </div>
-            <div className="editorial-stack">
-              {productNarrative.map((item, index) => (
-                <article
-                  key={item.title}
-                  className={`story-panel glass reveal ${index % 2 === 0 ? "right" : "left"} premium-panel`}
-                >
-                  <span>{`0${index + 1}`}</span>
+            <div className="cinematic-stack">
+              {storyBlocks.map((item, index) => (
+                <article className={`cinematic-card glass reveal ${index % 2 === 0 ? "up" : "right"}`} key={item.title}>
+                  <small>{`Layer 0${index + 1}`}</small>
                   <h3>{item.title}</h3>
                   <p>{item.body}</p>
                 </article>
@@ -172,33 +227,45 @@ export default function Presentation() {
           </div>
         </section>
 
+        <section className="section">
+          <div className="container deep-grid">
+            {valueMap.map((item, index) => (
+              <article key={item.title} className={`deep-card glass reveal ${index % 2 === 0 ? "left" : "right"}`}>
+                <div className="eyebrow">{item.kicker}</div>
+                <h3>{item.title}</h3>
+                <p>{item.text}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
         <section className="section section-dark">
           <div className="container sticky-showcase">
             <div className="sticky-copy reveal up">
               <div className="pin-box">
-                <div className="eyebrow">Walkthrough</div>
-                <h2>Explain the full loop, not isolated screens.</h2>
+                <div className="eyebrow">Workflow</div>
+                <h2>Stack works because the loop is visible.</h2>
                 <p>
-                  Parents assign value. Children act. Proof gets uploaded. Goals progress. Admin keeps the system clean.
-                  That loop is what makes Stack feel like a system, not a demo page.
+                  Parent creates value. Child acts. Proof arrives. Approval happens. Balance changes. Goal progresses. Admin can still inspect the system.
+                  Every strong family product needs that kind of clarity.
                 </p>
               </div>
             </div>
             <div className="sticky-cards">
               <div className="story-panel glass panel-1 reveal right premium-panel">
-                <span>Parent</span>
-                <h3>Create paid tasks</h3>
-                <p>Tasks are not generic reminders. The parent enters the reward amount up front, turning work into a clear economic action.</p>
+                <span>Parent setup</span>
+                <h3>Create paid tasks and define expectations</h3>
+                <p>The parent enters the amount before the task begins, which makes the reward explicit and financially legible.</p>
               </div>
               <div className="story-panel glass panel-2 reveal left premium-panel">
-                <span>Child</span>
-                <h3>Upload proof</h3>
-                <p>Children submit a photo or other proof so parents can verify the work before value moves through the system.</p>
+                <span>Child action</span>
+                <h3>Complete work and submit proof</h3>
+                <p>The child uploads photo proof or another signal of completion so the parent can review the claim instead of trusting blind status changes.</p>
               </div>
               <div className="story-panel glass panel-3 reveal right premium-panel">
-                <span>Approval</span>
-                <h3>Approve, reward, continue</h3>
-                <p>After approval, rewards connect back to balances, goals, and motivation. The product teaches cause and effect instead of hiding it.</p>
+                <span>Financial result</span>
+                <h3>Approve, reward, and move toward goals</h3>
+                <p>Approval changes balances, affects goals, and teaches the child how effort maps to money over time.</p>
               </div>
             </div>
           </div>
@@ -207,51 +274,37 @@ export default function Presentation() {
         <section className="section">
           <div className="container">
             <div className="section-head reveal up">
-              <div className="eyebrow">What makes it unusual</div>
-              <h2>It behaves like a product system, not a theme.</h2>
+              <div className="eyebrow">Signals</div>
+              <h2>Important product details, not filler details.</h2>
             </div>
             <div className="ticker-wall glass reveal zoom">
-              {valueFrames.map((item) => (
+              {detailSignals.map((item) => (
                 <span key={item}>{item}</span>
               ))}
-            </div>
-            <div className="showcase-grid">
-              <article className="feature-card glass reveal left">
-                <div className="icon-box"><i className="fa-solid fa-wallet"></i></div>
-                <h3>Payment-app visual discipline</h3>
-                <p>Surfaces are cleaner, spacing is calmer, and the dashboard language is closer to modern finance apps than to noisy family portals.</p>
-              </article>
-              <article className="feature-card glass reveal up">
-                <div className="icon-box"><i className="fa-solid fa-mobile-screen"></i></div>
-                <h3>Adaptive across devices</h3>
-                <p>Parent, child, and marketing experiences now collapse more cleanly on smaller screens instead of breaking into oversized blocks.</p>
-              </article>
-              <article className="feature-card glass reveal right">
-                <div className="icon-box"><i className="fa-solid fa-user-shield"></i></div>
-                <h3>Internal and external surfaces separated</h3>
-                <p>The public site can pitch the product while the admin control plane remains hidden from marketing navigation.</p>
-              </article>
             </div>
           </div>
         </section>
 
         <section className="section section-dark">
-          <div className="container media-band">
-            <div className="media-card glass reveal left">
-              <div className="eyebrow">Operations</div>
-              <h3>Admin oversight is part of the pitch.</h3>
-              <p>
-                Admin can see all users, edit access, review families, inspect transactions, and change game content.
-                That matters because investors and operators do not want a family product that cannot be supervised internally.
-              </p>
-            </div>
-            <div className="media-card glass reveal right">
+          <div className="container grid-mosaic">
+            <div className="mosaic-panel glass reveal left">
               <div className="eyebrow">Rollout</div>
-              <h3>Windows, web, Android.</h3>
-              <p>
-                The same product strategy covers browser access, desktop packaging through Electron, and Android delivery through Capacitor.
-                That creates more believable rollout stories for schools, parents, and partner organizations.
-              </p>
+              <h3>The product can expand in phases.</h3>
+              <ul className="micro-list">
+                {rolloutTimeline.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="mosaic-panel glass reveal up">
+              <div className="eyebrow">Operator trust</div>
+              <h3>Why admins matter in the pitch.</h3>
+              <p>Support, moderation, visibility, access control, game content edits, and transaction review are operational requirements, not optional polish.</p>
+            </div>
+            <div className="mosaic-panel glass reveal right">
+              <div className="eyebrow">Design position</div>
+              <h3>Why the visual language must stay premium.</h3>
+              <p>Parents do not trust products that look chaotic. The design direction should stay closer to banking, productivity, and platform confidence than to noisy educational toy apps.</p>
             </div>
           </div>
         </section>
@@ -260,10 +313,10 @@ export default function Presentation() {
           <div className="container">
             <div className="cta-box glass reveal up">
               <div className="cta-copy">
-                <div className="eyebrow">Pitch ending</div>
-                <h2>A cleaner experience on the surface, a deeper system underneath.</h2>
+                <div className="eyebrow">Presentation ending</div>
+                <h2>A family fintech product with public clarity and private control.</h2>
                 <p>
-                  Use this page as the high-level product story, then move into the documentation and integration pages for technical depth.
+                  Use this page to explain the product story, then move into documentation for contracts and integration for partner architecture.
                 </p>
               </div>
               <div className="cta-actions">
