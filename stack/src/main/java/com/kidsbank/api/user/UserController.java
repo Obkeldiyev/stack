@@ -19,6 +19,9 @@ public class UserController {
 
     @GetMapping("/profile")
     public ApiResponse<UserProfileDto> getProfile(@CurrentUser User currentUser) {
+        if (currentUser == null) {
+            throw new RuntimeException("User not authenticated");
+        }
         UserProfileDto profile = userService.getUserProfile(currentUser.getId());
         return ApiResponse.ok("Profile retrieved", profile);
     }
@@ -27,6 +30,9 @@ public class UserController {
     public ApiResponse<UserProfileDto> updateProfile(
             @CurrentUser User currentUser,
             @RequestBody @Valid UpdateProfileRequest request) {
+        if (currentUser == null) {
+            throw new RuntimeException("User not authenticated");
+        }
         UserProfileDto profile = userService.updateProfile(
             currentUser.getId(),
             request.username(),
@@ -39,6 +45,9 @@ public class UserController {
     public ApiResponse<Void> changePassword(
             @CurrentUser User currentUser,
             @RequestBody @Valid ChangePasswordRequest request) {
+        if (currentUser == null) {
+            throw new RuntimeException("User not authenticated");
+        }
         userService.changePassword(
             currentUser.getId(),
             request.currentPassword(),
@@ -51,12 +60,18 @@ public class UserController {
     public ApiResponse<PhotoUploadResponse> uploadProfilePhoto(
             @CurrentUser User currentUser,
             @RequestBody @Valid PhotoUploadRequest request) {
+        if (currentUser == null) {
+            throw new RuntimeException("User not authenticated");
+        }
         String photoUrl = userService.updateProfilePhoto(currentUser.getId(), request.photoUrl());
         return ApiResponse.ok("Profile photo updated", new PhotoUploadResponse(photoUrl));
     }
 
     @GetMapping("/me")
     public ApiResponse<UserDto> getCurrentUser(@CurrentUser User currentUser) {
+        if (currentUser == null) {
+            throw new RuntimeException("User not authenticated");
+        }
         UserDto userDto = userService.getUserDto(currentUser.getId());
         return ApiResponse.ok("User retrieved", userDto);
     }

@@ -28,6 +28,9 @@ public class TaskController {
     public ApiResponse<TaskItem> createTask(
             @CurrentUser User currentUser,
             @RequestBody @Valid CreateTaskRequest request) {
+        if (currentUser == null) {
+            throw new RuntimeException("User not authenticated");
+        }
         TaskItem task = taskService.createTask(
             currentUser.getId(),
             request.childId(),
@@ -41,6 +44,9 @@ public class TaskController {
     @GetMapping("/parent")
     // @PreAuthorize("hasRole('PARENT')") // TEMPORARILY DISABLED
     public ApiResponse<List<TaskItem>> getParentTasks(@CurrentUser User currentUser) {
+        if (currentUser == null) {
+            throw new RuntimeException("User not authenticated");
+        }
         List<TaskItem> tasks = taskService.getParentTasks(currentUser.getId());
         return ApiResponse.ok("Tasks retrieved", tasks);
     }
@@ -48,6 +54,9 @@ public class TaskController {
     @GetMapping("/child")
     // @PreAuthorize("hasRole('CHILD')") // TEMPORARILY DISABLED
     public ApiResponse<List<TaskItem>> getChildTasks(@CurrentUser User currentUser) {
+        if (currentUser == null) {
+            throw new RuntimeException("User not authenticated");
+        }
         List<TaskItem> tasks = taskService.getChildTasks(currentUser.getId());
         return ApiResponse.ok("Tasks retrieved", tasks);
     }
@@ -58,6 +67,9 @@ public class TaskController {
             @PathVariable Long id,
             @CurrentUser User currentUser,
             @RequestBody @Valid CompleteTaskRequest request) {
+        if (currentUser == null) {
+            throw new RuntimeException("User not authenticated");
+        }
         TaskItem task = taskService.completeTask(
             id,
             currentUser.getId(),
@@ -73,6 +85,9 @@ public class TaskController {
             @PathVariable Long id,
             @CurrentUser User currentUser,
             @RequestBody @Valid ApproveTaskRequest request) {
+        if (currentUser == null) {
+            throw new RuntimeException("User not authenticated");
+        }
         TaskItem task = taskService.approveTask(
             id,
             currentUser.getId(),
@@ -87,6 +102,9 @@ public class TaskController {
             @PathVariable Long id,
             @CurrentUser User currentUser,
             @RequestBody @Valid RejectTaskRequest request) {
+        if (currentUser == null) {
+            throw new RuntimeException("User not authenticated");
+        }
         TaskItem task = taskService.rejectTask(
             id,
             currentUser.getId(),
@@ -106,6 +124,9 @@ public class TaskController {
     public ApiResponse<Void> deleteTask(
             @PathVariable Long id,
             @CurrentUser User currentUser) {
+        if (currentUser == null) {
+            throw new RuntimeException("User not authenticated");
+        }
         taskService.deleteTask(id, currentUser.getId());
         return ApiResponse.ok("Task deleted", null);
     }

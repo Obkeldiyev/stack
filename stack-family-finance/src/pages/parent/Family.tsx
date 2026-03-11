@@ -1,28 +1,22 @@
 import { useEffect, useState } from "react";
-import { familyApi, accountsApi } from "@/lib/api";
-import { QRCodeDisplay } from "@/components/QRCodeDisplay";
+import { familyApi } from "@/lib/api";
+import { getUser } from "@/lib/auth";
 import { toast } from "sonner";
-import "../Landing.css";
+import { Users, QrCode, Copy, Pencil, Trash2, UserMinus, ChevronRight } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { QRCodeDisplay } from "@/components/QRCodeDisplay";
 
 export default function ParentFamily() {
   const [families, setFamilies] = useState<any[]>([]);
   const [members, setMembers] = useState<Record<number, any[]>>({});
   const [inviteCodes, setInviteCodes] = useState<Record<number, string>>({});
   const [showQR, setShowQR] = useState<Record<number, boolean>>({});
-  const [familyBalances, setFamilyBalances] = useState<Record<number, number>>({});
   const [loading, setLoading] = useState(true);
-  
-  // Edit dialog
   const [editDialog, setEditDialog] = useState<{ open: boolean; familyId: number; title: string }>({ open: false, familyId: 0, title: "" });
-  const [editLoading, setEditLoading] = useState(false);
-  
-  // Delete dialog
   const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; familyId: number; title: string }>({ open: false, familyId: 0, title: "" });
-  const [deleteLoading, setDeleteLoading] = useState(false);
-  
-  // Remove member dialog
   const [removeMemberDialog, setRemoveMemberDialog] = useState<{ open: boolean; familyId: number; userId: number; username: string }>({ open: false, familyId: 0, userId: 0, username: "" });
-  const [removeMemberLoading, setRemoveMemberLoading] = useState(false);
+  const user = getUser();
 
   const loadData = async () => {
     setLoading(true);
@@ -32,27 +26,13 @@ export default function ParentFamily() {
       setFamilies(fams);
       const membersMap: Record<number, any[]> = {};
       const codesMap: Record<number, string> = {};
-      const balancesMap: Record<number, number> = {};
       
       for (const fm of fams) {
         const fid = fm.family?.id ?? fm.id ?? fm.familyId;
         try {
           const mems = await familyApi.getMembers(fid);
           membersMap[fid] = mems;
-          
-          // Calculate family balance (sum of all member accounts)
-          let totalBalance = 0;
-          for (const mem of mems) {
-            try {
-              const accounts = await accountsApi.getMyAccounts();
-              totalBalance += accounts.reduce((sum: number, acc: any) => sum + (acc.balance || 0), 0);
-            } catch {}
-          }
-          balancesMap[fid] = totalBalance;
-        } catch { 
-          membersMap[fid] = [];
-          balancesMap[fid] = 0;
-        }
+        } catch { membersMap[fid] = []; }
         
         try {
           const inviteData = await familyApi.getInviteCode(fid);
@@ -62,14 +42,11 @@ export default function ParentFamily() {
       
       setMembers(membersMap);
       setInviteCodes(codesMap);
-      setFamilyBalances(balancesMap);
     } catch { }
     setLoading(false);
   };
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  useEffect(() => { loadData(); }, []);
 
   const toggleQR = (fid: number) => {
     setShowQR(prev => ({ ...prev, [fid]: !prev[fid] }));
@@ -80,464 +57,260 @@ export default function ParentFamily() {
       toast.error("Family name cannot be empty");
       return;
     }
-    
-    setEditLoading(true);
     try {
       await familyApi.update(editDialog.familyId, editDialog.title);
-      toast.success("Family updated successfully");
+      toast.success("Family updated!");
       setEditDialog({ open: false, familyId: 0, title: "" });
       loadData();
     } catch (err: any) {
       toast.error(err.message || "Failed to update family");
-    } finally {
-      setEditLoading(false);
     }
   };
 
   const handleDeleteFamily = async () => {
-    setDeleteLoading(true);
     try {
       await familyApi.delete(deleteDialog.familyId);
-      toast.success("Family deleted successfully");
+      toast.success("Family deleted!");
       setDeleteDialog({ open: false, familyId: 0, title: "" });
       loadData();
     } catch (err: any) {
       toast.error(err.message || "Failed to delete family");
-    } finally {
-      setDeleteLoading(false);
     }
   };
 
   const handleRemoveMember = async () => {
-    setRemoveMemberLoading(true);
     try {
       await familyApi.removeMember(removeMemberDialog.familyId, removeMemberDialog.userId);
-      toast.success("Member removed successfully");
+      toast.success("Member removed!");
       setRemoveMemberDialog({ open: false, familyId: 0, userId: 0, username: "" });
       loadData();
     } catch (err: any) {
       toast.error(err.message || "Failed to remove member");
-    } finally {
-      setRemoveMemberLoading(false);
     }
   };
 
-  if (loading) {
-    return (
-      <div className="landing-page">
-        <div className="bg-noise"></div>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh" }}>
-          <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: "2rem", color: "#86f0ff" }}></i>
-        </div>
-      </div>
-    );
-  }
-
-  if (families.length === 0) {
-    return (
-      <div className="landing-page">
-        <div className="cursor-glow"></div>
-        <div className="bg-noise"></div>
-
-        <main>
-          <section className="section">
-            <div className="container" style={{ maxWidth: "800px" }}>
-              <div className="glass" style={{ padding: "48px", borderRadius: "28px", textAlign: "center" }}>
-                <i className="fa-solid fa-users" style={{ fontSize: "3rem", color: "#86f0ff", marginBottom: "24px", display: "block" }}></i>
-                <h3 style={{ marginBottom: "16px", color: "white" }}>No Families Yet</h3>
-                <p style={{ color: "#a5b7d0", margin: 0 }}>
-                  Create a family from the dashboard to start managing your children's finances.
-                </p>
-              </div>
-            </div>
-          </section>
-        </main>
-      </div>
-    );
-  }
+  const copyCode = (code: string) => {
+    navigator.clipboard.writeText(code);
+    toast.success("Copied to clipboard!");
+  };
 
   return (
-    <div className="landing-page">
-      <div className="cursor-glow"></div>
-      <div className="bg-noise"></div>
+    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
+      {/* Mobile Header */}
+      <div className="md:hidden px-4 pt-6 pb-4">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <p className="text-slate-400 text-sm">Family Management</p>
+            <h1 className="text-2xl font-bold text-white">Your Families</h1>
+          </div>
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold">
+            {user?.username?.charAt(0).toUpperCase()}
+          </div>
+        </div>
+      </div>
 
-      <main>
-        <section className="section" style={{ paddingTop: "0px", paddingBottom: "40px" }}>
-          <div className="container" style={{ maxWidth: "800px" }}>
-            <div className="section-head reveal up" style={{ marginBottom: "16px" }}>
-              <div className="eyebrow">
-                <i className="fa-solid fa-users"></i>
-                Family Management
-              </div>
-              <h2>Manage Your Families</h2>
-              <p>View family members, share invite codes, and manage family settings.</p>
-            </div>
+      {/* Desktop Header */}
+      <div className="hidden md:block px-6 pt-8 pb-6">
+        <h1 className="text-3xl font-bold text-white mb-2">Family Management</h1>
+        <p className="text-slate-400">Manage your families and invite members</p>
+      </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-              {families.map((fm) => {
-                const fam = fm.family ?? fm;
-                const fid = fam.id ?? fm.familyId;
-                const mems = members[fid] ?? [];
-                const inviteCode = inviteCodes[fid] || "";
-                const isQRVisible = showQR[fid] || false;
-                const balance = familyBalances[fid] || 0;
-                
-                return (
-                  <div key={fid} className="glass" style={{ padding: "32px", borderRadius: "28px" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px", flexWrap: "wrap", gap: "16px" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                        <i className="fa-solid fa-users" style={{ color: "#86f0ff", fontSize: "1.5rem" }}></i>
-                        <h3 style={{ margin: 0, color: "white", letterSpacing: "-0.03em" }}>
-                          {fam.title ?? "Family"}
-                        </h3>
+      <div className="px-4 md:px-6 pb-24 md:pb-8 space-y-4">
+        {loading ? (
+          <div className="space-y-3">
+            <div className="h-48 bg-slate-800/50 rounded-2xl animate-pulse" />
+            <div className="h-48 bg-slate-800/50 rounded-2xl animate-pulse" />
+          </div>
+        ) : families.length === 0 ? (
+          <div className="bg-slate-800/30 rounded-2xl p-12 text-center border border-slate-700/50">
+            <Users className="h-16 w-16 text-slate-600 mx-auto mb-4" />
+            <p className="text-slate-300 font-medium text-lg mb-2">No families yet</p>
+            <p className="text-slate-500">Go to Dashboard to create your first family</p>
+          </div>
+        ) : (
+          families.map((fm: any) => {
+            const fam = fm.family ?? fm;
+            const familyId = fam.id ?? fm.familyId;
+            const familyMembers = members[familyId] || [];
+            const inviteCode = inviteCodes[familyId] || "";
+            const showQRCode = showQR[familyId] || false;
+
+            return (
+              <div key={familyId} className="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 shadow-xl overflow-hidden">
+                {/* Family Header */}
+                <div className="bg-gradient-to-br from-purple-600/20 to-pink-600/20 p-5 border-b border-slate-700/50">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg">
+                        <Users className="h-6 w-6 text-white" />
                       </div>
-                      <div style={{ display: "flex", gap: "8px" }}>
-                        <button
-                          onClick={() => setEditDialog({ open: true, familyId: fid, title: fam.title ?? "" })}
-                          className="btn btn-outline"
-                          style={{ fontSize: "0.9rem", minWidth: "44px" }}
-                        >
-                          <i className="fa-solid fa-pencil"></i>
-                        </button>
-                        <button
-                          onClick={() => setDeleteDialog({ open: true, familyId: fid, title: fam.title ?? "" })}
-                          className="btn btn-outline"
-                          style={{ 
-                            fontSize: "0.9rem", 
-                            minWidth: "44px",
-                            borderColor: "rgba(255,100,100,0.3)",
-                            color: "#ff6b6b"
-                          }}
-                        >
-                          <i className="fa-solid fa-trash"></i>
-                        </button>
+                      <div>
+                        <h3 className="text-white font-bold text-lg">{fam.title ?? "Family"}</h3>
+                        <p className="text-slate-400 text-sm">{familyMembers.length} members</p>
                       </div>
                     </div>
-
-                    {/* Family Balance */}
-                    <div style={{ 
-                      padding: "20px", 
-                      borderRadius: "16px", 
-                      background: "linear-gradient(135deg, rgba(29,100,214,0.15), rgba(25,199,216,0.1))",
-                      border: "1px solid rgba(25,199,216,0.2)",
-                      marginBottom: "24px"
-                    }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                          <i className="fa-solid fa-wallet" style={{ color: "#86f0ff", fontSize: "1.2rem" }}></i>
-                          <span style={{ color: "white", fontWeight: "600" }}>Family Balance</span>
-                        </div>
-                        <span style={{ fontSize: "1.5rem", fontWeight: "700", color: "#70cf42" }}>
-                          ${(balance / 100).toFixed(2)}
-                        </span>
-                      </div>
-                      <p style={{ margin: "8px 0 0 0", color: "#a5b7d0", fontSize: "0.9rem" }}>
-                        Total across all family members
-                      </p>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setEditDialog({ open: true, familyId, title: fam.title ?? "" })}
+                        className="w-9 h-9 rounded-lg bg-slate-700/50 hover:bg-slate-700 flex items-center justify-center transition-colors"
+                      >
+                        <Pencil className="h-4 w-4 text-slate-300" />
+                      </button>
+                      <button
+                        onClick={() => setDeleteDialog({ open: true, familyId, title: fam.title ?? "" })}
+                        className="w-9 h-9 rounded-lg bg-red-500/10 hover:bg-red-500/20 flex items-center justify-center transition-colors"
+                      >
+                        <Trash2 className="h-4 w-4 text-red-400" />
+                      </button>
                     </div>
+                  </div>
 
-                    {/* Invite Code */}
-                    {inviteCode && (
-                      <div style={{ marginBottom: "24px" }}>
+                  {/* Invite Code Section */}
+                  {inviteCode && (
+                    <div className="bg-slate-900/50 rounded-xl p-4 border border-slate-700/50">
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-slate-400 text-xs font-medium">INVITE CODE</p>
                         <button
-                          onClick={() => toggleQR(fid)}
-                          className="btn btn-outline"
-                          style={{ width: "100%", marginBottom: "16px" }}
+                          onClick={() => toggleQR(familyId)}
+                          className="text-blue-400 hover:text-blue-300 transition-colors"
                         >
-                          <i className="fa-solid fa-qrcode"></i>
-                          {isQRVisible ? "Hide" : "Show"} Invite QR Code
+                          <QrCode className="h-5 w-5" />
                         </button>
-                        
-                        {isQRVisible && (
-                          <div style={{ 
-                            padding: "20px", 
-                            borderRadius: "16px", 
-                            background: "rgba(255,255,255,0.05)",
-                            border: "1px solid rgba(255,255,255,0.08)",
-                            textAlign: "center"
-                          }}>
-                            <QRCodeDisplay value={inviteCode} title="Family Invite" />
-                          </div>
-                        )}
                       </div>
-                    )}
-                    
-                    {/* Members List */}
-                    <div>
-                      <h4 style={{ margin: "0 0 16px 0", color: "white", fontSize: "1.1rem", fontWeight: "600" }}>
-                        Members ({mems.length})
-                      </h4>
-                      {mems.length === 0 ? (
-                        <p style={{ color: "#a5b7d0", margin: 0, textAlign: "center", padding: "20px" }}>
-                          No members yet. Share the invite code!
-                        </p>
-                      ) : (
-                        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                          {mems.map((m: any, i: number) => {
-                            const userId = m.user?.id ?? m.userId ?? m.id;
-                            const username = m.username ?? m.user?.username ?? "User";
-                            const role = m.role ?? m.user?.role ?? "MEMBER";
-                            
-                            return (
-                              <div key={i} style={{ 
-                                display: "flex", 
-                                alignItems: "center", 
-                                gap: "16px", 
-                                padding: "16px", 
-                                borderRadius: "12px", 
-                                background: "rgba(255,255,255,0.05)",
-                                border: "1px solid rgba(255,255,255,0.08)"
-                              }}>
-                                <div style={{ 
-                                  width: "40px", 
-                                  height: "40px", 
-                                  borderRadius: "50%", 
-                                  background: "linear-gradient(135deg, rgba(134,240,255,0.2), rgba(25,199,216,0.2))",
-                                  display: "flex", 
-                                  alignItems: "center", 
-                                  justifyContent: "center",
-                                  border: "1px solid rgba(134,240,255,0.3)"
-                                }}>
-                                  <i className="fa-solid fa-user" style={{ color: "#86f0ff" }}></i>
-                                </div>
-                                <div style={{ flex: 1 }}>
-                                  <p style={{ margin: "0 0 4px 0", fontWeight: "600", color: "white" }}>
-                                    {username}
-                                  </p>
-                                  <span style={{
-                                    padding: "4px 8px",
-                                    borderRadius: "999px",
-                                    fontSize: "0.75rem",
-                                    fontWeight: "600",
-                                    background: role === "PARENT" 
-                                      ? "linear-gradient(135deg, rgba(29,100,214,0.2), rgba(25,199,216,0.2))" 
-                                      : "rgba(255,255,255,0.1)",
-                                    color: role === "PARENT" ? "#86f0ff" : "#a5b7d0",
-                                    border: "1px solid " + (role === "PARENT" ? "rgba(134,240,255,0.3)" : "rgba(255,255,255,0.1)")
-                                  }}>
-                                    {role}
-                                  </span>
-                                </div>
-                                {role !== "PARENT" && (
-                                  <button
-                                    onClick={() => setRemoveMemberDialog({ open: true, familyId: fid, userId, username })}
-                                    className="btn btn-outline"
-                                    style={{ 
-                                      fontSize: "0.9rem", 
-                                      minWidth: "44px",
-                                      borderColor: "rgba(255,100,100,0.3)",
-                                      color: "#ff6b6b"
-                                    }}
-                                  >
-                                    <i className="fa-solid fa-user-minus"></i>
-                                  </button>
-                                )}
-                              </div>
-                            );
-                          })}
+                      <div className="flex items-center gap-2">
+                        <code className="flex-1 text-xl font-mono font-bold text-white tracking-wider">{inviteCode}</code>
+                        <button
+                          onClick={() => copyCode(inviteCode)}
+                          className="w-10 h-10 rounded-lg bg-blue-600 hover:bg-blue-700 flex items-center justify-center transition-colors"
+                        >
+                          <Copy className="h-5 w-5 text-white" />
+                        </button>
+                      </div>
+                      {showQRCode && (
+                        <div className="mt-4 flex justify-center">
+                          <QRCodeDisplay value={inviteCode} />
                         </div>
                       )}
                     </div>
+                  )}
+                </div>
+
+                {/* Members List */}
+                <div className="p-5">
+                  <h4 className="text-slate-300 font-semibold text-sm mb-3">MEMBERS ({familyMembers.length})</h4>
+                  <div className="space-y-2">
+                    {familyMembers.map((mem: any) => (
+                      <div key={mem.user?.id} className="flex items-center justify-between p-3 rounded-xl bg-slate-900/30 hover:bg-slate-900/50 transition-colors">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center text-white font-bold text-sm">
+                            {mem.user?.username?.charAt(0).toUpperCase()}
+                          </div>
+                          <div>
+                            <p className="text-white font-medium">{mem.user?.username}</p>
+                            <p className="text-slate-400 text-xs uppercase">{mem.memberRole || mem.role}</p>
+                          </div>
+                        </div>
+                        {mem.memberRole !== "PARENT" && mem.role !== "PARENT" && (
+                          <button
+                            onClick={() => setRemoveMemberDialog({ open: true, familyId, userId: mem.user?.id, username: mem.user?.username })}
+                            className="w-8 h-8 rounded-lg bg-red-500/10 hover:bg-red-500/20 flex items-center justify-center transition-colors"
+                          >
+                            <UserMinus className="h-4 w-4 text-red-400" />
+                          </button>
+                        )}
+                      </div>
+                    ))}
                   </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-      </main>
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
 
-      {/* Edit Family Modal */}
-      {editDialog.open && (
-        <div style={{
-          position: "fixed",
-          inset: 0,
-          background: "rgba(0,0,0,0.7)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 1000,
-          backdropFilter: "blur(8px)"
-        }} onClick={() => setEditDialog({ open: false, familyId: 0, title: "" })}>
-          <div className="glass" style={{
-            padding: "36px",
-            borderRadius: "28px",
-            maxWidth: "500px",
-            width: "90%"
-          }} onClick={(e) => e.stopPropagation()}>
-            <h3 style={{ marginTop: 0, marginBottom: "24px", color: "white" }}>
-              Edit Family
-            </h3>
-            
-            <div style={{ marginBottom: "24px" }}>
-              <label style={{ display: "block", marginBottom: "8px", color: "#dce8ff" }}>
-                Family Name
-              </label>
-              <input
-                value={editDialog.title}
-                onChange={(e) => setEditDialog({ ...editDialog, title: e.target.value })}
-                placeholder="Enter family name"
-                style={{
-                  width: "100%",
-                  padding: "12px 16px",
-                  borderRadius: "14px",
-                  border: "1px solid rgba(255,255,255,0.12)",
-                  background: "rgba(255,255,255,0.05)",
-                  color: "white",
-                  fontSize: "1rem"
-                }}
-              />
-            </div>
-            
-            <div style={{ display: "flex", gap: "12px" }}>
-              <button 
-                onClick={handleEditFamily} 
-                disabled={editLoading}
-                className="btn btn-primary" 
-                style={{ flex: 1 }}
-              >
-                {editLoading ? (
-                  <>
-                    <i className="fa-solid fa-spinner fa-spin"></i>
-                    Saving...
-                  </>
-                ) : (
-                  <>
-                    <i className="fa-solid fa-save"></i>
-                    Save Changes
-                  </>
-                )}
-              </button>
-              <button
-                onClick={() => setEditDialog({ open: false, familyId: 0, title: "" })}
-                className="btn btn-outline"
-                style={{ flex: 1 }}
-              >
-                Cancel
-              </button>
-            </div>
+      {/* Edit Dialog */}
+      <Dialog open={editDialog.open} onOpenChange={(open) => setEditDialog({ ...editDialog, open })}>
+        <DialogContent className="sm:max-w-sm bg-slate-800 border-slate-700">
+          <DialogHeader>
+            <DialogTitle className="text-white">Edit Family</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <input
+              type="text"
+              value={editDialog.title}
+              onChange={(e) => setEditDialog({ ...editDialog, title: e.target.value })}
+              className="w-full px-4 py-3 rounded-xl bg-slate-900/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Family name"
+            />
           </div>
-        </div>
-      )}
+          <DialogFooter className="gap-2 flex-col sm:flex-row">
+            <button
+              onClick={() => setEditDialog({ open: false, familyId: 0, title: "" })}
+              className="w-full py-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-semibold transition-all"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleEditFamily}
+              className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-all"
+            >
+              Save Changes
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
-      {/* Delete Family Modal */}
-      {deleteDialog.open && (
-        <div style={{
-          position: "fixed",
-          inset: 0,
-          background: "rgba(0,0,0,0.7)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 1000,
-          backdropFilter: "blur(8px)"
-        }} onClick={() => setDeleteDialog({ open: false, familyId: 0, title: "" })}>
-          <div className="glass" style={{
-            padding: "36px",
-            borderRadius: "28px",
-            maxWidth: "500px",
-            width: "90%"
-          }} onClick={(e) => e.stopPropagation()}>
-            <h3 style={{ marginTop: 0, marginBottom: "16px", color: "white" }}>
-              Delete Family?
-            </h3>
-            <p style={{ color: "#a5b7d0", marginBottom: "24px", lineHeight: "1.6" }}>
-              Are you sure you want to delete "{deleteDialog.title}"? This action cannot be undone and will remove all family members.
-            </p>
-            
-            <div style={{ display: "flex", gap: "12px" }}>
-              <button
-                onClick={() => setDeleteDialog({ open: false, familyId: 0, title: "" })}
-                className="btn btn-outline"
-                style={{ flex: 1 }}
-              >
-                Cancel
-              </button>
-              <button 
-                onClick={handleDeleteFamily} 
-                disabled={deleteLoading}
-                className="btn btn-primary" 
-                style={{ 
-                  flex: 1,
-                  background: "linear-gradient(135deg, #ff6b6b 0%, #ff5252 100%)",
-                  boxShadow: "0 12px 40px rgba(255, 107, 107, 0.35)"
-                }}
-              >
-                {deleteLoading ? (
-                  <>
-                    <i className="fa-solid fa-spinner fa-spin"></i>
-                    Deleting...
-                  </>
-                ) : (
-                  <>
-                    <i className="fa-solid fa-trash"></i>
-                    Delete
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Delete Dialog */}
+      <AlertDialog open={deleteDialog.open} onOpenChange={(open) => setDeleteDialog({ ...deleteDialog, open })}>
+        <AlertDialogContent className="bg-slate-800 border-slate-700">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-white">Delete Family?</AlertDialogTitle>
+            <AlertDialogDescription className="text-slate-400">
+              This will permanently delete "{deleteDialog.title}" and remove all members. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+            <button
+              onClick={() => setDeleteDialog({ open: false, familyId: 0, title: "" })}
+              className="w-full py-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-semibold transition-all"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleDeleteFamily}
+              className="w-full py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold transition-all"
+            >
+              Delete Family
+            </button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
-      {/* Remove Member Modal */}
-      {removeMemberDialog.open && (
-        <div style={{
-          position: "fixed",
-          inset: 0,
-          background: "rgba(0,0,0,0.7)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 1000,
-          backdropFilter: "blur(8px)"
-        }} onClick={() => setRemoveMemberDialog({ open: false, familyId: 0, userId: 0, username: "" })}>
-          <div className="glass" style={{
-            padding: "36px",
-            borderRadius: "28px",
-            maxWidth: "500px",
-            width: "90%"
-          }} onClick={(e) => e.stopPropagation()}>
-            <h3 style={{ marginTop: 0, marginBottom: "16px", color: "white" }}>
-              Remove Member?
-            </h3>
-            <p style={{ color: "#a5b7d0", marginBottom: "24px", lineHeight: "1.6" }}>
-              Are you sure you want to remove "{removeMemberDialog.username}" from the family? They will lose access to family features.
-            </p>
-            
-            <div style={{ display: "flex", gap: "12px" }}>
-              <button
-                onClick={() => setRemoveMemberDialog({ open: false, familyId: 0, userId: 0, username: "" })}
-                className="btn btn-outline"
-                style={{ flex: 1 }}
-              >
-                Cancel
-              </button>
-              <button 
-                onClick={handleRemoveMember} 
-                disabled={removeMemberLoading}
-                className="btn btn-primary" 
-                style={{ 
-                  flex: 1,
-                  background: "linear-gradient(135deg, #ff6b6b 0%, #ff5252 100%)",
-                  boxShadow: "0 12px 40px rgba(255, 107, 107, 0.35)"
-                }}
-              >
-                {removeMemberLoading ? (
-                  <>
-                    <i className="fa-solid fa-spinner fa-spin"></i>
-                    Removing...
-                  </>
-                ) : (
-                  <>
-                    <i className="fa-solid fa-user-minus"></i>
-                    Remove
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Remove Member Dialog */}
+      <AlertDialog open={removeMemberDialog.open} onOpenChange={(open) => setRemoveMemberDialog({ ...removeMemberDialog, open })}>
+        <AlertDialogContent className="bg-slate-800 border-slate-700">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-white">Remove Member?</AlertDialogTitle>
+            <AlertDialogDescription className="text-slate-400">
+              Remove "{removeMemberDialog.username}" from this family? They can rejoin with an invite code.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+            <button
+              onClick={() => setRemoveMemberDialog({ open: false, familyId: 0, userId: 0, username: "" })}
+              className="w-full py-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-semibold transition-all"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleRemoveMember}
+              className="w-full py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold transition-all"
+            >
+              Remove Member
+            </button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
