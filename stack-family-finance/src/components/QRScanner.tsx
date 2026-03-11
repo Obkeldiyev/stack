@@ -29,11 +29,29 @@ export function QRScanner({ onScan, onClose }: QRScannerProps) {
 
   const startCamera = async () => {
     try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error("Camera API is not available on this device");
+      }
+
+      const permissionStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: "environment" } },
+      });
+      permissionStream.getTracks().forEach((track) => track.stop());
+
+      const cameras = await Html5Qrcode.getCameras();
+      if (!cameras.length) {
+        throw new Error("No camera device detected");
+      }
+
       const scanner = new Html5Qrcode(scannerDivId);
       scannerRef.current = scanner;
+      const preferredCamera = cameras.find((camera) =>
+        camera.label.toLowerCase().includes("back") ||
+        camera.label.toLowerCase().includes("rear")
+      )?.id ?? cameras[0].id;
 
       await scanner.start(
-        { facingMode: "environment" },
+        preferredCamera,
         {
           fps: 10,
           qrbox: { width: 250, height: 250 },
@@ -54,7 +72,7 @@ export function QRScanner({ onScan, onClose }: QRScannerProps) {
       console.error("Camera access error:", error);
       toast({
         title: "Camera Error",
-        description: "Could not access camera. Please enter code manually.",
+        description: error?.message || "Could not access camera. Please enter code manually.",
         variant: "destructive",
       });
       setManualMode(true);

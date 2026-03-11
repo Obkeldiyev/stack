@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.kidsbank.api.admin.AdminDtos.*;
+
 @Service
 public class AdminService {
 
@@ -39,8 +41,10 @@ public class AdminService {
   }
 
   // User Management
-  public List<User> getAllUsers() {
-    return userRepo.findAll();
+  public List<AdminUserDto> getAllUsers() {
+    return userRepo.findAll().stream()
+        .map(AdminUserDto::from)
+        .toList();
   }
 
   @Transactional
@@ -74,8 +78,10 @@ public class AdminService {
   }
 
   // Game Management
-  public List<Game> getAllGames() {
-    return gameRepo.findAll();
+  public List<AdminGameDto> getAllGames() {
+    return gameRepo.findAll().stream()
+        .map(AdminGameDto::from)
+        .toList();
   }
 
   @Transactional
@@ -119,26 +125,43 @@ public class AdminService {
   }
 
   // Transaction Management
-  public List<Transaction> getAllTransactions() {
-    return transactionRepo.findAll();
+  public List<AdminTransactionDto> getAllTransactions() {
+    return transactionRepo.findAll().stream()
+        .map(AdminTransactionDto::from)
+        .toList();
   }
 
   // Family Management
-  public List<Family> getAllFamilies() {
-    return familyRepo.findAll();
+  public List<AdminFamilyDto> getAllFamilies() {
+    return familyRepo.findAll().stream()
+        .map(family -> AdminFamilyDto.from(family, familyMemberRepo.findAllByFamily_Id(family.getId())))
+        .toList();
   }
 
   // Statistics
-  public Map<String, Object> getSystemStats() {
-    Map<String, Object> stats = new HashMap<>();
-    
-    stats.put("totalUsers", userRepo.count());
-    stats.put("totalParents", userRepo.countByRole(Role.PARENT));
-    stats.put("totalChildren", userRepo.countByRole(Role.CHILD));
-    stats.put("totalFamilies", familyRepo.count());
-    stats.put("totalGames", gameRepo.count());
-    stats.put("totalTransactions", transactionRepo.count());
-    
-    return stats;
+  public AdminStatsDto getSystemStats() {
+    long totalUsers = userRepo.count();
+    long totalParents = userRepo.countByRole(Role.PARENT);
+    long totalChildren = userRepo.countByRole(Role.CHILD);
+    long totalAdmins = userRepo.countByRole(Role.ADMIN);
+    long totalFamilies = familyRepo.count();
+    long totalGames = gameRepo.count();
+    long totalTransactions = transactionRepo.count();
+
+    Map<String, Long> usersByRole = new HashMap<>();
+    usersByRole.put(Role.PARENT.name(), totalParents);
+    usersByRole.put(Role.CHILD.name(), totalChildren);
+    usersByRole.put(Role.ADMIN.name(), totalAdmins);
+
+    return new AdminStatsDto(
+        totalUsers,
+        totalParents,
+        totalChildren,
+        totalAdmins,
+        totalFamilies,
+        totalGames,
+        totalTransactions,
+        usersByRole
+    );
   }
 }

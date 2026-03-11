@@ -13,7 +13,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
+
+import static com.kidsbank.api.admin.AdminDtos.*;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -28,7 +29,7 @@ public class AdminController {
 
   // User Management
   @GetMapping("/users")
-  public ApiResponse<List<User>> getAllUsers() {
+  public ApiResponse<List<AdminUserDto>> getAllUsers() {
     return ApiResponse.ok("Users retrieved", adminService.getAllUsers());
   }
 
@@ -60,7 +61,7 @@ public class AdminController {
 
   // Game Management
   @GetMapping("/games")
-  public ApiResponse<List<Game>> getAllGames() {
+  public ApiResponse<List<AdminGameDto>> getAllGames() {
     return ApiResponse.ok("Games retrieved", adminService.getAllGames());
   }
 
@@ -86,19 +87,19 @@ public class AdminController {
 
   // Transaction Management
   @GetMapping("/transactions")
-  public ApiResponse<List<Transaction>> getAllTransactions() {
+  public ApiResponse<List<AdminTransactionDto>> getAllTransactions() {
     return ApiResponse.ok("Transactions retrieved", adminService.getAllTransactions());
   }
 
   // Family Management
   @GetMapping("/families")
-  public ApiResponse<List<Family>> getAllFamilies() {
+  public ApiResponse<List<AdminFamilyDto>> getAllFamilies() {
     return ApiResponse.ok("Families retrieved", adminService.getAllFamilies());
   }
 
   // Statistics
   @GetMapping("/stats")
-  public ApiResponse<Map<String, Object>> getStats() {
+  public ApiResponse<AdminStatsDto> getStats() {
     return ApiResponse.ok("Statistics retrieved", adminService.getSystemStats());
   }
 

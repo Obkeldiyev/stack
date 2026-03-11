@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { authApi } from "@/lib/api";
-import { setAuth } from "@/lib/auth";
+import { authApiExtended } from "@/lib/api";
+import { clearAuth, setAuth } from "@/lib/auth";
 import { toast } from "sonner";
 import "../Landing.css";
 
@@ -16,16 +16,18 @@ export default function AdminLogin() {
     setLoading(true);
 
     try {
-      const response: any = await authApi.login({ username, password });
+      const response: any = await authApiExtended.login({ username, password });
+      const accessToken = response.accessToken ?? response.token;
       
-      if (response.token && response.user) {
-        setAuth(response.token, response.user);
+      if (accessToken && response.user) {
+        setAuth(accessToken, response.user, response.refreshToken);
         
         // Check if user is admin
         if (response.user.role === "ADMIN") {
           toast.success("Welcome back, Admin!");
           navigate("/admin/dashboard");
         } else {
+          clearAuth();
           toast.error("Access denied. Admin credentials required.");
           setLoading(false);
         }

@@ -40,6 +40,10 @@ export function clearAuth() {
   localStorage.removeItem(USER_KEY);
 }
 
+export function updateStoredUser(user: User) {
+  localStorage.setItem(USER_KEY, JSON.stringify(user));
+}
+
 export function isAuthenticated(): boolean {
   return !!getToken();
 }

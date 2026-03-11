@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, Notification } from 'electron'
+import { app, BrowserWindow, ipcMain, Notification, session } from 'electron'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
@@ -38,6 +38,14 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+  session.defaultSession.setPermissionCheckHandler((_webContents, permission) => {
+    return permission === 'media' || permission === 'camera' || permission === 'microphone'
+  })
+
+  session.defaultSession.setPermissionRequestHandler((_webContents, permission, callback) => {
+    callback(permission === 'media' || permission === 'camera' || permission === 'microphone')
+  })
+
   createWindow()
 
   app.on('activate', () => {

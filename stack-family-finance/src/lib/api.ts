@@ -1,4 +1,4 @@
-import { getToken, clearAuth } from "./auth";
+import { getRefreshToken, getToken, clearAuth, setToken } from "./auth";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://stack.polito.uz";
 
@@ -12,7 +12,8 @@ export class ApiError extends Error {
 
 export async function apiFetch<T>(
   path: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
+  allowRetry = true
 ): Promise<T> {
   const token = getToken();
   const headers: Record<string, string> = {
@@ -33,10 +34,35 @@ export async function apiFetch<T>(
     headers,
   });
 
-  if (res.status === 401) {
+  if ((res.status === 401 || res.status === 403) && allowRetry) {
+    const refreshToken = getRefreshToken();
+    if (refreshToken) {
+      try {
+        const refreshRes = await fetch(`${BASE_URL}/api/auth/refresh`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ refreshToken }),
+        });
+
+        if (refreshRes.ok) {
+          const refreshText = await refreshRes.text();
+          const refreshJson = refreshText ? JSON.parse(refreshText) : {};
+          const refreshedToken = refreshJson?.data?.accessToken ?? refreshJson?.accessToken;
+          if (refreshedToken) {
+            setToken(refreshedToken);
+            return apiFetch<T>(path, options, false);
+          }
+        }
+      } catch {
+        // Fall through to clear auth below.
+      }
+    }
+  }
+
+  if (res.status === 401 || res.status === 403) {
     clearAuth();
     window.location.hash = "#/login";
-    throw new ApiError("Unauthorized", 401);
+    throw new ApiError("Unauthorized", res.status);
   }
 
   if (!res.ok) {
