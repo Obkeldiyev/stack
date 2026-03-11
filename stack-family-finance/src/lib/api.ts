@@ -131,7 +131,7 @@ export const goalsApi = {
   getMyGoals: () =>
     apiFetch<any[]>("/api/goals/me"),
   create: (title: string, targetAmount: number) =>
-    apiFetch("/api/goals/me", {
+    apiFetch("/api/goals", {
       method: "POST",
       body: JSON.stringify({ title, targetAmount }),
     }),

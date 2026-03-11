@@ -38,9 +38,8 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
         
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         
-        // TEMPORARY FIX: When security is disabled, return default user (ID=1)
         if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
-            return userRepository.findById(1L).orElse(null);
+            return null;
         }
 
         // Get username from authentication principal (JWT filter stores username)

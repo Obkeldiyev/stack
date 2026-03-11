@@ -30,6 +30,7 @@ import About from "@/pages/About";
 import Features from "@/pages/Features";
 import Developers from "@/pages/Developers";
 import Privacy from "@/pages/Privacy";
+import "@/styles/dashboard.css";
 
 const queryClient = new QueryClient();
 

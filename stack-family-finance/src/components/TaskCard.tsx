@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { tasksApi } from "@/lib/api";
 import { toast } from "sonner";
+import { formatCurrency } from "@/lib/view-models";
 
 interface TaskCardProps {
   task: any;
@@ -8,38 +9,49 @@ interface TaskCardProps {
   onTaskUpdate: () => void;
 }
 
+function getStatusCopy(status: string) {
+  switch (status) {
+    case "PENDING":
+      return "Ready to start";
+    case "COMPLETED":
+      return "Awaiting approval";
+    case "APPROVED":
+      return "Approved and paid";
+    case "REJECTED":
+      return "Needs another try";
+    default:
+      return status;
+  }
+}
+
+function getStatusTone(status: string) {
+  switch (status) {
+    case "PENDING":
+      return { background: "rgba(255,193,7,0.12)", color: "#facc15" };
+    case "COMPLETED":
+      return { background: "rgba(25,199,216,0.12)", color: "#86f0ff" };
+    case "APPROVED":
+      return { background: "rgba(112,207,66,0.14)", color: "#70cf42" };
+    case "REJECTED":
+      return { background: "rgba(255,100,100,0.12)", color: "#ff7d7d" };
+    default:
+      return { background: "rgba(255,255,255,0.08)", color: "#dce8ff" };
+  }
+}
+
 export default function TaskCard({ task, userRole, onTaskUpdate }: TaskCardProps) {
   const [loading, setLoading] = useState(false);
-  const [showApprovalModal, setShowApprovalModal] = useState(false);
+  const [approveOpen, setApproveOpen] = useState(false);
+  const [rejectOpen, setRejectOpen] = useState(false);
   const [approvalNotes, setApprovalNotes] = useState("");
   const [rejectionNotes, setRejectionNotes] = useState("");
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "PENDING": return "rgba(255,193,7,0.2)";
-      case "COMPLETED": return "rgba(25,199,216,0.2)";
-      case "APPROVED": return "rgba(112,207,66,0.2)";
-      case "REJECTED": return "rgba(255,100,100,0.2)";
-      default: return "rgba(255,255,255,0.1)";
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case "PENDING": return "Waiting to Start";
-      case "COMPLETED": return "Awaiting Approval";
-      case "APPROVED": return "Completed & Paid";
-      case "REJECTED": return "Needs Revision";
-      default: return status;
-    }
-  };
 
   const handleApprove = async () => {
     setLoading(true);
     try {
       await tasksApi.approveTask(task.id, approvalNotes);
-      toast.success("Task approved and payment sent!");
-      setShowApprovalModal(false);
+      toast.success("Task approved and payment sent.");
+      setApproveOpen(false);
       setApprovalNotes("");
       onTaskUpdate();
     } catch (error: any) {
@@ -51,14 +63,15 @@ export default function TaskCard({ task, userRole, onTaskUpdate }: TaskCardProps
 
   const handleReject = async () => {
     if (!rejectionNotes.trim()) {
-      toast.error("Please provide feedback for rejection");
+      toast.error("Add feedback before rejecting the task.");
       return;
     }
-    
+
     setLoading(true);
     try {
       await tasksApi.rejectTask(task.id, rejectionNotes);
-      toast.success("Task rejected with feedback");
+      toast.success("Task rejected with feedback.");
+      setRejectOpen(false);
       setRejectionNotes("");
       onTaskUpdate();
     } catch (error: any) {
@@ -68,279 +81,151 @@ export default function TaskCard({ task, userRole, onTaskUpdate }: TaskCardProps
     }
   };
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return null;
     return new Date(dateString).toLocaleDateString();
   };
 
-  const formatAmount = (amount: number) => {
-    return `$${amount.toFixed(2)}`;
-  };
+  const statusTone = getStatusTone(task.status);
 
   return (
     <>
-      <div className="glass" style={{ 
-        padding: "24px", 
-        borderRadius: "24px", 
-        marginBottom: "16px",
-        transition: "transform 0.25s ease, border-color 0.25s ease"
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = "translateY(-4px)";
-        e.currentTarget.style.borderColor = "rgba(134, 240, 255, 0.3)";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = "translateY(0)";
-        e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)";
-      }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "16px" }}>
+      <div className="panel-card">
+        <div className="dashboard-grid two-up" style={{ alignItems: "start", gap: "20px" }}>
           <div>
-            <h3 style={{ margin: "0 0 8px 0", color: "white", fontSize: "1.25rem", letterSpacing: "-0.03em" }}>
-              {task.title}
-            </h3>
-            <p style={{ margin: "0 0 12px 0", color: "#a5b7d0", lineHeight: "1.6" }}>
-              {task.description}
-            </p>
-          </div>
-          <div style={{ textAlign: "right" }}>
-            <div style={{ 
-              fontSize: "1.5rem", 
-              fontWeight: "700", 
-              color: "#70cf42", 
-              marginBottom: "4px",
-              letterSpacing: "-0.04em"
-            }}>
-              {formatAmount(task.amount)}
-            </div>
-            <span style={{
-              padding: "4px 12px",
-              borderRadius: "999px",
-              fontSize: "0.8rem",
-              fontWeight: "600",
-              background: getStatusColor(task.status),
-              border: "1px solid rgba(255,255,255,0.1)",
-              color: "white"
-            }}>
-              {getStatusText(task.status)}
-            </span>
-          </div>
-        </div>
-
-        {task.photoUrl && (
-          <div style={{ marginBottom: "16px" }}>
-            <img 
-              src={task.photoUrl} 
-              alt="Task completion proof"
-              style={{ 
-                width: "100%", 
-                maxHeight: "200px", 
-                objectFit: "cover", 
-                borderRadius: "12px",
-                border: "1px solid rgba(255,255,255,0.1)"
-              }}
-            />
-          </div>
-        )}
-
-        {task.childNotes && (
-          <div style={{ 
-            marginBottom: "16px", 
-            padding: "12px", 
-            borderRadius: "12px", 
-            background: "rgba(255,255,255,0.05)",
-            border: "1px solid rgba(255,255,255,0.08)"
-          }}>
-            <div style={{ fontSize: "0.9rem", color: "#86f0ff", marginBottom: "4px", fontWeight: "600" }}>
-              Child Notes:
-            </div>
-            <div style={{ color: "#dce8ff", fontSize: "0.95rem" }}>
-              {task.childNotes}
-            </div>
-          </div>
-        )}
-
-        {task.parentNotes && (
-          <div style={{ 
-            marginBottom: "16px", 
-            padding: "12px", 
-            borderRadius: "12px", 
-            background: "rgba(255,255,255,0.05)",
-            border: "1px solid rgba(255,255,255,0.08)"
-          }}>
-            <div style={{ fontSize: "0.9rem", color: "#86f0ff", marginBottom: "4px", fontWeight: "600" }}>
-              Parent Feedback:
-            </div>
-            <div style={{ color: "#dce8ff", fontSize: "0.95rem" }}>
-              {task.parentNotes}
-            </div>
-          </div>
-        )}
-
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "16px" }}>
-          <div style={{ fontSize: "0.9rem", color: "#a5b7d0" }}>
-            Created: {formatDate(task.createdAt)}
-            {task.completedAt && (
-              <span> • Completed: {formatDate(task.completedAt)}</span>
-            )}
-          </div>
-
-          {userRole === "PARENT" && task.status === "COMPLETED" && (
-            <div style={{ display: "flex", gap: "8px" }}>
-              <button
-                onClick={() => setShowApprovalModal(true)}
-                disabled={loading}
+            <div className="button-row" style={{ justifyContent: "space-between", alignItems: "start", gap: "14px" }}>
+              <div>
+                <h3 className="section-heading" style={{ fontSize: "1.2rem" }}>{task.title}</h3>
+                <p className="section-subtitle">
+                  {task.description || "No extra details were added for this task."}
+                </p>
+              </div>
+              <span
+                className="pill"
                 style={{
-                  padding: "8px 16px",
-                  borderRadius: "12px",
-                  border: "1px solid rgba(112,207,66,0.3)",
-                  background: "rgba(112,207,66,0.1)",
-                  color: "#70cf42",
-                  fontSize: "0.9rem",
-                  fontWeight: "600",
-                  cursor: "pointer",
-                  transition: "all 0.25s ease"
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "rgba(112,207,66,0.2)";
-                  e.currentTarget.style.transform = "translateY(-2px)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "rgba(112,207,66,0.1)";
-                  e.currentTarget.style.transform = "translateY(0)";
+                  background: statusTone.background,
+                  color: statusTone.color,
+                  border: "1px solid rgba(255,255,255,0.06)",
                 }}
               >
-                <i className="fa-solid fa-check" style={{ marginRight: "6px" }}></i>
-                Approve
-              </button>
-              <button
-                onClick={() => handleReject()}
-                disabled={loading}
-                style={{
-                  padding: "8px 16px",
-                  borderRadius: "12px",
-                  border: "1px solid rgba(255,100,100,0.3)",
-                  background: "rgba(255,100,100,0.1)",
-                  color: "#ff6b6b",
-                  fontSize: "0.9rem",
-                  fontWeight: "600",
-                  cursor: "pointer",
-                  transition: "all 0.25s ease"
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "rgba(255,100,100,0.2)";
-                  e.currentTarget.style.transform = "translateY(-2px)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "rgba(255,100,100,0.1)";
-                  e.currentTarget.style.transform = "translateY(0)";
-                }}
-              >
-                <i className="fa-solid fa-times" style={{ marginRight: "6px" }}></i>
-                Reject
-              </button>
+                {getStatusCopy(task.status)}
+              </span>
             </div>
-          )}
-        </div>
-      </div>
 
-      {/* Approval Modal */}
-      {showApprovalModal && (
-        <div style={{
-          position: "fixed",
-          inset: 0,
-          background: "rgba(0,0,0,0.7)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 1000,
-          backdropFilter: "blur(8px)"
-        }} onClick={() => setShowApprovalModal(false)}>
-          <div className="glass" style={{
-            padding: "32px",
-            borderRadius: "24px",
-            maxWidth: "500px",
-            width: "90%"
-          }} onClick={(e) => e.stopPropagation()}>
-            <h3 style={{ marginTop: 0, marginBottom: "20px", color: "white" }}>
-              Approve Task & Send Payment
-            </h3>
-            <p style={{ color: "#a5b7d0", marginBottom: "20px" }}>
-              This will send <strong style={{ color: "#70cf42" }}>{formatAmount(task.amount)}</strong> to the child's account.
-            </p>
-            <div style={{ marginBottom: "20px" }}>
-              <label style={{ display: "block", marginBottom: "8px", color: "#dce8ff" }}>
-                Optional feedback (optional):
-              </label>
-              <textarea
-                value={approvalNotes}
-                onChange={(e) => setApprovalNotes(e.target.value)}
-                placeholder="Great job! Keep up the good work..."
-                rows={3}
+            <div className="button-row" style={{ marginTop: "16px" }}>
+              <span className="pill">
+                <i className="fa-solid fa-coins"></i>
+                {formatCurrency(task.amount)}
+              </span>
+              {formatDate(task.createdAt) && (
+                <span className="pill">
+                  <i className="fa-regular fa-calendar"></i>
+                  Created {formatDate(task.createdAt)}
+                </span>
+              )}
+              {formatDate(task.completedAt) && (
+                <span className="pill">
+                  <i className="fa-solid fa-camera"></i>
+                  Completed {formatDate(task.completedAt)}
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className="dashboard-grid" style={{ gap: "12px" }}>
+            {task.photoUrl && (
+              <img
+                src={task.photoUrl}
+                alt="Task proof"
                 style={{
                   width: "100%",
-                  padding: "12px",
-                  borderRadius: "12px",
-                  border: "1px solid rgba(255,255,255,0.12)",
-                  background: "rgba(255,255,255,0.05)",
-                  color: "white",
-                  fontSize: "1rem",
-                  resize: "vertical"
+                  minHeight: "180px",
+                  objectFit: "cover",
+                  borderRadius: "18px",
+                  border: "1px solid rgba(255,255,255,0.08)",
                 }}
               />
-            </div>
-            <div style={{ display: "flex", gap: "12px" }}>
-              <button
-                onClick={handleApprove}
-                disabled={loading}
-                style={{
-                  flex: 1,
-                  padding: "12px",
-                  borderRadius: "12px",
-                  border: "none",
-                  background: "linear-gradient(135deg, #1d64d6 0%, #19c7d8 60%, #70cf42 100%)",
-                  color: "white",
-                  fontSize: "1rem",
-                  fontWeight: "600",
-                  cursor: "pointer",
-                  transition: "transform 0.25s ease"
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.transform = "translateY(-2px)"}
-                onMouseLeave={(e) => e.currentTarget.style.transform = "translateY(0)"}
-              >
-                {loading ? (
-                  <>
-                    <i className="fa-solid fa-spinner fa-spin" style={{ marginRight: "8px" }}></i>
-                    Processing...
-                  </>
-                ) : (
-                  <>
-                    <i className="fa-solid fa-check" style={{ marginRight: "8px" }}></i>
-                    Approve & Pay
-                  </>
-                )}
+            )}
+
+            {task.childNotes && (
+              <div className="info-row">
+                <div>
+                  <div className="muted-heading" style={{ marginBottom: "6px" }}>Child notes</div>
+                  <span>{task.childNotes}</span>
+                </div>
+              </div>
+            )}
+
+            {task.parentNotes && (
+              <div className="info-row">
+                <div>
+                  <div className="muted-heading" style={{ marginBottom: "6px" }}>Parent feedback</div>
+                  <span>{task.parentNotes}</span>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {userRole === "PARENT" && task.status === "COMPLETED" && (
+          <div className="button-row" style={{ marginTop: "18px" }}>
+            <button className="btn btn-primary" disabled={loading} onClick={() => setApproveOpen(true)}>
+              <i className="fa-solid fa-check"></i>
+              Approve and pay
+            </button>
+            <button className="btn btn-outline" disabled={loading} onClick={() => setRejectOpen(true)}>
+              <i className="fa-solid fa-xmark"></i>
+              Reject with feedback
+            </button>
+          </div>
+        )}
+      </div>
+
+      {approveOpen && (
+        <div className="modal-overlay" onClick={() => setApproveOpen(false)}>
+          <div className="panel-card modal-card" onClick={(event) => event.stopPropagation()}>
+            <h3 className="section-heading">Approve task</h3>
+            <p className="section-subtitle">
+              This sends {formatCurrency(task.amount)} to the child account after approval.
+            </p>
+            <textarea
+              className="dashboard-textarea"
+              style={{ marginTop: "18px" }}
+              value={approvalNotes}
+              onChange={(event) => setApprovalNotes(event.target.value)}
+              placeholder="Optional praise or feedback"
+            />
+            <div className="button-row" style={{ marginTop: "18px" }}>
+              <button className="btn btn-primary" disabled={loading} onClick={handleApprove}>
+                {loading ? "Processing..." : "Approve task"}
               </button>
-              <button
-                onClick={() => setShowApprovalModal(false)}
-                style={{
-                  flex: 1,
-                  padding: "12px",
-                  borderRadius: "12px",
-                  border: "1px solid rgba(255,255,255,0.12)",
-                  background: "rgba(255,255,255,0.05)",
-                  color: "white",
-                  fontSize: "1rem",
-                  fontWeight: "600",
-                  cursor: "pointer",
-                  transition: "all 0.25s ease"
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "rgba(255,255,255,0.1)";
-                  e.currentTarget.style.transform = "translateY(-2px)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "rgba(255,255,255,0.05)";
-                  e.currentTarget.style.transform = "translateY(0)";
-                }}
-              >
+              <button className="btn btn-outline" disabled={loading} onClick={() => setApproveOpen(false)}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {rejectOpen && (
+        <div className="modal-overlay" onClick={() => setRejectOpen(false)}>
+          <div className="panel-card modal-card" onClick={(event) => event.stopPropagation()}>
+            <h3 className="section-heading">Reject task</h3>
+            <p className="section-subtitle">
+              Add a clear reason so the child knows what to fix before resubmitting.
+            </p>
+            <textarea
+              className="dashboard-textarea"
+              style={{ marginTop: "18px" }}
+              value={rejectionNotes}
+              onChange={(event) => setRejectionNotes(event.target.value)}
+              placeholder="Explain what still needs to be done"
+            />
+            <div className="button-row" style={{ marginTop: "18px" }}>
+              <button className="btn btn-primary" disabled={loading} onClick={handleReject}>
+                {loading ? "Processing..." : "Reject task"}
+              </button>
+              <button className="btn btn-outline" disabled={loading} onClick={() => setRejectOpen(false)}>
                 Cancel
               </button>
             </div>

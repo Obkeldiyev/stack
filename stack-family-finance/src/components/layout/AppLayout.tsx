@@ -19,7 +19,7 @@ export function AppLayout({ requiredRole }: AppLayoutProps) {
   }
 
   return (
-    <div className="landing-page">
+    <div className="landing-page app-shell">
       <div className="cursor-glow"></div>
       <div className="bg-noise"></div>
       
@@ -29,7 +29,7 @@ export function AppLayout({ requiredRole }: AppLayoutProps) {
             <AppSidebar />
           </div>
           <div className="flex-1 flex flex-col min-w-0">
-            <main className="flex-1 overflow-auto">
+            <main className="flex-1 overflow-auto smooth-scroll">
               <Outlet />
             </main>
           </div>

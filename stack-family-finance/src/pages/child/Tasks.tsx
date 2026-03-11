@@ -3,7 +3,7 @@ import { tasksApi } from "@/lib/api";
 import { toast } from "sonner";
 import TaskCard from "@/components/TaskCard";
 import PhotoUpload from "@/components/PhotoUpload";
-import "../Landing.css";
+import { formatCurrency } from "@/lib/view-models";
 
 export default function ChildTasks() {
   const [tasks, setTasks] = useState<any[]>([]);
@@ -13,15 +13,16 @@ export default function ChildTasks() {
   const [photoUrl, setPhotoUrl] = useState("");
 
   useEffect(() => {
-    loadTasks();
+    void loadTasks();
   }, []);
 
   const loadTasks = async () => {
+    setLoading(true);
     try {
       const data = await tasksApi.getChildTasks();
-      setTasks(data);
+      setTasks(Array.isArray(data) ? data : []);
     } catch (error: any) {
-      toast.error("Failed to load tasks");
+      toast.error(error.message || "Failed to load tasks");
     } finally {
       setLoading(false);
     }
@@ -29,228 +30,136 @@ export default function ChildTasks() {
 
   const handleCompleteTask = async () => {
     if (!completingTask || !photoUrl) {
-      toast.error("Please upload a photo to complete the task");
+      toast.error("Upload a photo before submitting the task.");
       return;
     }
 
     try {
       await tasksApi.completeTask(completingTask.id, photoUrl, completionNotes);
-      toast.success("Task completed! Waiting for parent approval.");
+      toast.success("Task submitted for approval.");
       setCompletingTask(null);
       setCompletionNotes("");
       setPhotoUrl("");
-      loadTasks();
+      await loadTasks();
     } catch (error: any) {
       toast.error(error.message || "Failed to complete task");
     }
   };
 
-  const getTaskStats = () => {
-    const pending = tasks.filter(t => t.status === "PENDING").length;
-    const completed = tasks.filter(t => t.status === "COMPLETED").length;
-    const approved = tasks.filter(t => t.status === "APPROVED").length;
-    const rejected = tasks.filter(t => t.status === "REJECTED").length;
-    
-    return { pending, completed, approved, rejected };
-  };
-
-  const stats = getTaskStats();
-
-  if (loading) {
-    return (
-      <div className="landing-page">
-        <div className="bg-noise"></div>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh" }}>
-          <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: "2rem", color: "#86f0ff" }}></i>
-        </div>
-      </div>
-    );
-  }
+  const pending = tasks.filter((task) => task.status === "PENDING").length;
+  const review = tasks.filter((task) => task.status === "COMPLETED").length;
+  const approved = tasks.filter((task) => task.status === "APPROVED").length;
 
   return (
-    <div className="landing-page">
-      <div className="cursor-glow"></div>
-      <div className="bg-noise"></div>
+    <div className="dashboard-page">
+      <div className="dashboard-container dashboard-stack">
+        <section className="dashboard-hero">
+          <div className="dashboard-eyebrow">
+            <i className="fa-solid fa-camera-retro"></i>
+            Task rewards
+          </div>
+          <h1 className="dashboard-title">Finish tasks, upload proof, earn money.</h1>
+          <p className="dashboard-copy">
+            Every approved task moves money into your account, so submit clean photos and short notes when you finish.
+          </p>
+        </section>
 
-      <main>
-        <section style={{ padding: "16px 16px 80px 16px" }}>
-          <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
-            <div style={{ marginBottom: "24px" }}>
-              <div className="eyebrow" style={{ marginBottom: "12px" }}>
-                <i className="fa-solid fa-tasks"></i>
-                My Tasks
-              </div>
-              <h2 style={{ 
-                fontSize: "2.5rem", 
-                lineHeight: "1.1", 
-                letterSpacing: "-0.05em", 
-                margin: "0 0 12px 0",
-                color: "white"
-              }}>
-                Complete Tasks & Earn Rewards
-              </h2>
-              <p style={{ color: "#a5b7d0", margin: 0, fontSize: "1.05rem", lineHeight: "1.6" }}>
-                Complete tasks assigned by your parents and earn money for your goals. Don't forget to take photos as proof!
-              </p>
-            </div>
-
-            {/* Stats Cards */}
-            <div className="feature-grid" style={{ marginBottom: "32px" }}>
-              <div className="feature-card glass reveal left">
-                <div className="icon-box">
-                  <i className="fa-solid fa-clock"></i>
-                </div>
-                <h3>{stats.pending}</h3>
-                <p>Available Tasks</p>
-              </div>
-
-              <div className="feature-card glass reveal up stagger-1">
-                <div className="icon-box">
-                  <i className="fa-solid fa-hourglass-half"></i>
-                </div>
-                <h3>{stats.completed}</h3>
-                <p>Awaiting Approval</p>
-              </div>
-
-              <div className="feature-card glass reveal right">
-                <div className="icon-box">
-                  <i className="fa-solid fa-trophy"></i>
-                </div>
-                <h3>{stats.approved}</h3>
-                <p>Completed & Paid</p>
-              </div>
-            </div>
-
-            {/* Tasks List */}
-            <div>
-              {tasks.length === 0 ? (
-                <div className="glass" style={{ padding: "48px", borderRadius: "28px", textAlign: "center" }}>
-                  <i className="fa-solid fa-tasks" style={{ fontSize: "3rem", color: "#86f0ff", marginBottom: "16px", display: "block" }}></i>
-                  <h3 style={{ marginBottom: "12px", color: "white" }}>No Tasks Available</h3>
-                  <p style={{ color: "#a5b7d0", margin: 0 }}>
-                    Ask your parents to create some tasks for you to complete and earn rewards!
-                  </p>
-                </div>
-              ) : (
-                tasks.map((task) => (
-                  <div key={task.id} style={{ marginBottom: "16px" }}>
-                    <TaskCard
-                      task={task}
-                      userRole="CHILD"
-                      onTaskUpdate={loadTasks}
-                    />
-                    
-                    {/* Complete Task Button for Pending Tasks */}
-                    {task.status === "PENDING" && (
-                      <div style={{ marginTop: "12px", textAlign: "right" }}>
-                        <button
-                          onClick={() => setCompletingTask(task)}
-                          className="btn btn-primary"
-                          style={{ fontSize: "1rem" }}
-                        >
-                          <i className="fa-solid fa-camera"></i>
-                          Complete Task
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                ))
-              )}
-            </div>
+        <section className="dashboard-grid stats">
+          <div className="panel-card stat-card">
+            <div className="stat-icon"><i className="fa-regular fa-square-check"></i></div>
+            <div className="stat-value">{pending}</div>
+            <div className="stat-label">Tasks you can start right now.</div>
+          </div>
+          <div className="panel-card stat-card">
+            <div className="stat-icon"><i className="fa-solid fa-hourglass-half"></i></div>
+            <div className="stat-value">{review}</div>
+            <div className="stat-label">Tasks waiting for parent approval.</div>
+          </div>
+          <div className="panel-card stat-card">
+            <div className="stat-icon"><i className="fa-solid fa-medal"></i></div>
+            <div className="stat-value">{approved}</div>
+            <div className="stat-label">Tasks already paid into your balance.</div>
           </div>
         </section>
-      </main>
 
-      {/* Complete Task Modal */}
+        <section className="panel-card">
+          <div className="section-title">
+            <div>
+              <h2 className="section-heading">Your tasks</h2>
+              <p className="section-subtitle">Pending tasks can be submitted with a photo from this page.</p>
+            </div>
+          </div>
+
+          {loading ? (
+            <div className="empty-panel">
+              <i className="fa-solid fa-spinner fa-spin"></i>
+              <p className="section-subtitle">Loading tasks...</p>
+            </div>
+          ) : tasks.length === 0 ? (
+            <div className="empty-panel">
+              <i className="fa-solid fa-list-check"></i>
+              <h3 className="section-heading" style={{ fontSize: "1.2rem" }}>No tasks yet</h3>
+              <p className="section-subtitle">Ask your parent to assign one from their dashboard.</p>
+            </div>
+          ) : (
+            <div className="task-list">
+              {tasks.map((task) => (
+                <div key={task.id} className="dashboard-stack" style={{ gap: "10px" }}>
+                  <TaskCard task={task} userRole="CHILD" onTaskUpdate={loadTasks} />
+                  {task.status === "PENDING" && (
+                    <div className="button-row" style={{ justifyContent: "flex-end" }}>
+                      <button className="btn btn-primary" onClick={() => setCompletingTask(task)}>
+                        <i className="fa-solid fa-camera"></i>
+                        Submit proof
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      </div>
+
       {completingTask && (
-        <div style={{
-          position: "fixed",
-          inset: 0,
-          background: "rgba(0,0,0,0.7)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 1000,
-          backdropFilter: "blur(8px)"
-        }} onClick={() => setCompletingTask(null)}>
-          <div className="glass" style={{
-            padding: "36px",
-            borderRadius: "28px",
-            maxWidth: "700px",
-            width: "90%",
-            maxHeight: "90vh",
-            overflowY: "auto"
-          }} onClick={(e) => e.stopPropagation()}>
-            <h3 style={{ marginTop: 0, marginBottom: "24px", letterSpacing: "-0.03em", color: "white" }}>
-              Complete Task: {completingTask.title}
-            </h3>
-            
-            <div style={{ marginBottom: "24px", padding: "16px", borderRadius: "16px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>
-              <div style={{ fontSize: "0.9rem", color: "#86f0ff", marginBottom: "8px", fontWeight: "600" }}>
-                Task Description:
+        <div className="modal-overlay" onClick={() => setCompletingTask(null)}>
+          <div className="panel-card modal-card" onClick={(event) => event.stopPropagation()}>
+            <h3 className="section-heading">Submit task proof</h3>
+            <p className="section-subtitle">
+              {completingTask.title} for {formatCurrency(completingTask.amount)}
+            </p>
+
+            <div className="info-row" style={{ marginTop: "18px" }}>
+              <div>
+                <div className="muted-heading" style={{ marginBottom: "6px" }}>Task details</div>
+                <span>{completingTask.description || "No extra description was added."}</span>
               </div>
-              <div style={{ color: "#dce8ff", fontSize: "1rem", lineHeight: "1.6" }}>
-                {completingTask.description || "No description provided"}
-              </div>
-              <div style={{ marginTop: "12px", fontSize: "1.2rem", fontWeight: "700", color: "#70cf42" }}>
-                Reward: ${completingTask.amount.toFixed(2)}
-              </div>
-            </div>
-            
-            <div style={{ marginBottom: "24px" }}>
-              <label style={{ display: "block", marginBottom: "12px", color: "#dce8ff", fontSize: "1.1rem", fontWeight: "600" }}>
-                Upload Photo Proof *
-              </label>
-              <PhotoUpload
-                onPhotoUploaded={setPhotoUrl}
-                currentPhoto={photoUrl}
-              />
             </div>
 
-            <div style={{ marginBottom: "24px" }}>
-              <label style={{ display: "block", marginBottom: "8px", color: "#dce8ff" }}>
-                Notes (optional)
-              </label>
-              <textarea
-                value={completionNotes}
-                onChange={(e) => setCompletionNotes(e.target.value)}
-                placeholder="Tell your parents about how you completed the task..."
-                rows={3}
-                style={{
-                  width: "100%",
-                  padding: "12px 16px",
-                  borderRadius: "14px",
-                  border: "1px solid rgba(255,255,255,0.12)",
-                  background: "rgba(255,255,255,0.05)",
-                  color: "white",
-                  fontSize: "1rem",
-                  resize: "vertical"
-                }}
-              />
+            <div style={{ marginTop: "18px" }}>
+              <div className="muted-heading" style={{ marginBottom: "10px" }}>Photo proof</div>
+              <PhotoUpload onPhotoUploaded={setPhotoUrl} currentPhoto={photoUrl} />
             </div>
 
-            <div style={{ display: "flex", gap: "12px", marginTop: "24px" }}>
-              <button 
-                onClick={handleCompleteTask}
-                disabled={!photoUrl}
-                className="btn btn-primary" 
-                style={{ 
-                  flex: 1,
-                  opacity: !photoUrl ? 0.5 : 1,
-                  cursor: !photoUrl ? "not-allowed" : "pointer"
-                }}
-              >
-                <i className="fa-solid fa-check"></i>
-                Submit for Approval
+            <textarea
+              className="dashboard-textarea"
+              style={{ marginTop: "18px" }}
+              value={completionNotes}
+              onChange={(event) => setCompletionNotes(event.target.value)}
+              placeholder="Optional note about how you completed it"
+            />
+
+            <div className="button-row" style={{ marginTop: "18px" }}>
+              <button className="btn btn-primary" disabled={!photoUrl} onClick={handleCompleteTask}>
+                Send for approval
               </button>
               <button
+                className="btn btn-outline"
                 onClick={() => {
                   setCompletingTask(null);
                   setCompletionNotes("");
                   setPhotoUrl("");
                 }}
-                className="btn btn-outline"
-                style={{ flex: 1 }}
               >
                 Cancel
               </button>

@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { tasksApi, familyApi } from "@/lib/api";
+import { familyApi, tasksApi } from "@/lib/api";
 import { toast } from "sonner";
 import TaskCard from "@/components/TaskCard";
-import "../Landing.css";
+import { getFamilyId, getFamilyTitle, normalizeFamilyMember } from "@/lib/view-models";
 
 export default function ParentTasks() {
   const [tasks, setTasks] = useState<any[]>([]);
@@ -13,307 +13,219 @@ export default function ParentTasks() {
     childId: "",
     title: "",
     description: "",
-    amount: ""
+    amount: "",
   });
 
   useEffect(() => {
-    loadData();
+    void loadData();
   }, []);
 
   const loadData = async () => {
+    setLoading(true);
     try {
       const [tasksData, familiesData] = await Promise.all([
         tasksApi.getParentTasks(),
-        familyApi.getMyFamilies()
+        familyApi.getMyFamilies(),
       ]);
-      
-      setTasks(tasksData);
-      
-      // Get all family members who are children
-      const allMembers: any[] = [];
-      for (const family of familiesData) {
-        const members = await familyApi.getMembers(family.id);
-        const children = members.filter((member: any) => member.role === "CHILD");
-        allMembers.push(...children);
-      }
-      setFamilyMembers(allMembers);
+
+      setTasks(Array.isArray(tasksData) ? tasksData : []);
+
+      const membershipLists = await Promise.all(
+        (Array.isArray(familiesData) ? familiesData : []).map(async (familyRecord: any) => {
+          const familyId = getFamilyId(familyRecord);
+          const familyTitle = getFamilyTitle(familyRecord);
+          if (!familyId) return [];
+
+          try {
+            const members = await familyApi.getMembers(familyId);
+            return members
+              .map(normalizeFamilyMember)
+              .filter((member: any) => member.role === "CHILD")
+              .map((member: any) => ({
+                ...member,
+                familyId,
+                familyTitle,
+              }));
+          } catch {
+            return [];
+          }
+        })
+      );
+
+      const uniqueChildren = new Map<number, any>();
+      membershipLists.flat().forEach((member: any) => {
+        if (!member.userId) return;
+        uniqueChildren.set(member.userId, member);
+      });
+
+      setFamilyMembers(Array.from(uniqueChildren.values()));
     } catch (error: any) {
-      toast.error("Failed to load tasks");
+      toast.error(error.message || "Failed to load tasks");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleCreateTask = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!newTask.childId || !newTask.title || !newTask.amount) {
-      toast.error("Please fill in all required fields");
+  const handleCreateTask = async (event: React.FormEvent) => {
+    event.preventDefault();
+
+    if (!newTask.childId || !newTask.title.trim() || !newTask.amount) {
+      toast.error("Fill in the child, title, and reward amount.");
       return;
     }
 
     try {
       await tasksApi.createTask({
-        childId: parseInt(newTask.childId),
-        title: newTask.title,
-        description: newTask.description,
-        amount: parseFloat(newTask.amount)
+        childId: Number(newTask.childId),
+        title: newTask.title.trim(),
+        description: newTask.description.trim(),
+        amount: Number(newTask.amount),
       });
-      
-      toast.success("Task created successfully!");
+
+      toast.success("Task created.");
       setShowCreateModal(false);
       setNewTask({ childId: "", title: "", description: "", amount: "" });
-      loadData();
+      await loadData();
     } catch (error: any) {
       toast.error(error.message || "Failed to create task");
     }
   };
 
-  const getTaskStats = () => {
-    const pending = tasks.filter(t => t.status === "PENDING").length;
-    const completed = tasks.filter(t => t.status === "COMPLETED").length;
-    const approved = tasks.filter(t => t.status === "APPROVED").length;
-    
-    return { pending, completed, approved };
-  };
-
-  const stats = getTaskStats();
-
-  if (loading) {
-    return (
-      <div className="landing-page">
-        <div className="bg-noise"></div>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh" }}>
-          <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: "2rem", color: "#86f0ff" }}></i>
-        </div>
-      </div>
-    );
-  }
+  const pending = tasks.filter((task) => task.status === "PENDING").length;
+  const review = tasks.filter((task) => task.status === "COMPLETED").length;
+  const approved = tasks.filter((task) => task.status === "APPROVED").length;
 
   return (
-    <div className="landing-page">
-      <div className="cursor-glow"></div>
-      <div className="bg-noise"></div>
+    <div className="dashboard-page">
+      <div className="dashboard-container dashboard-stack">
+        <section className="dashboard-hero">
+          <div className="dashboard-eyebrow">
+            <i className="fa-solid fa-list-check"></i>
+            Parent task board
+          </div>
+          <h1 className="dashboard-title">Assign work, review proof, and pay fast.</h1>
+          <p className="dashboard-copy">
+            Create chores for each child, check completed work, and keep rewards connected to the rest of the family dashboard.
+          </p>
+        </section>
 
-      <main>
-        <section style={{ padding: "16px 16px 80px 16px" }}>
-          <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
-            <div style={{ marginBottom: "24px" }}>
-              <div className="eyebrow" style={{ marginBottom: "12px" }}>
-                <i className="fa-solid fa-tasks"></i>
-                Task Management
-              </div>
-              <h2 style={{ 
-                fontSize: "2.5rem", 
-                lineHeight: "1.1", 
-                letterSpacing: "-0.05em", 
-                margin: "0 0 12px 0",
-                color: "white"
-              }}>
-                Family Tasks
-              </h2>
-              <p style={{ color: "#a5b7d0", margin: 0, fontSize: "1.05rem", lineHeight: "1.6" }}>
-                Create tasks for your children and track their progress. Reward completion with automatic payments.
-              </p>
-            </div>
-
-            {/* Stats Cards */}
-            <div className="feature-grid" style={{ marginBottom: "32px" }}>
-              <div className="feature-card glass reveal left">
-                <div className="icon-box">
-                  <i className="fa-solid fa-clock"></i>
-                </div>
-                <h3>{stats.pending}</h3>
-                <p>Pending Tasks</p>
-              </div>
-
-              <div className="feature-card glass reveal up stagger-1">
-                <div className="icon-box">
-                  <i className="fa-solid fa-check-circle"></i>
-                </div>
-                <h3>{stats.completed}</h3>
-                <p>Awaiting Review</p>
-              </div>
-
-              <div className="feature-card glass reveal right">
-                <div className="icon-box">
-                  <i className="fa-solid fa-trophy"></i>
-                </div>
-                <h3>{stats.approved}</h3>
-                <p>Completed & Paid</p>
-              </div>
-            </div>
-
-            {/* Create Task Button */}
-            <div style={{ marginBottom: "32px" }}>
-              <button
-                onClick={() => setShowCreateModal(true)}
-                className="btn btn-primary"
-                style={{ fontSize: "1.1rem" }}
-              >
-                <i className="fa-solid fa-plus"></i>
-                Create New Task
-              </button>
-            </div>
-
-            {/* Tasks List */}
-            <div>
-              {tasks.length === 0 ? (
-                <div className="glass" style={{ padding: "48px", borderRadius: "28px", textAlign: "center" }}>
-                  <i className="fa-solid fa-tasks" style={{ fontSize: "3rem", color: "#86f0ff", marginBottom: "16px", display: "block" }}></i>
-                  <h3 style={{ marginBottom: "12px", color: "white" }}>No Tasks Yet</h3>
-                  <p style={{ color: "#a5b7d0", margin: 0 }}>
-                    Create your first task to start teaching responsibility and rewarding good behavior.
-                  </p>
-                </div>
-              ) : (
-                tasks.map((task) => (
-                  <TaskCard
-                    key={task.id}
-                    task={task}
-                    userRole="PARENT"
-                    onTaskUpdate={loadData}
-                  />
-                ))
-              )}
-            </div>
+        <section className="dashboard-grid stats">
+          <div className="panel-card stat-card">
+            <div className="stat-icon"><i className="fa-regular fa-clock"></i></div>
+            <div className="stat-value">{pending}</div>
+            <div className="stat-label">Tasks still waiting to be started.</div>
+          </div>
+          <div className="panel-card stat-card">
+            <div className="stat-icon"><i className="fa-solid fa-camera"></i></div>
+            <div className="stat-value">{review}</div>
+            <div className="stat-label">Submissions waiting for your review.</div>
+          </div>
+          <div className="panel-card stat-card">
+            <div className="stat-icon"><i className="fa-solid fa-trophy"></i></div>
+            <div className="stat-value">{approved}</div>
+            <div className="stat-label">Tasks approved and already rewarded.</div>
           </div>
         </section>
-      </main>
 
-      {/* Create Task Modal */}
+        <section className="panel-card">
+          <div className="section-title">
+            <div>
+              <h2 className="section-heading">New task</h2>
+              <p className="section-subtitle">Pick a child and set the reward amount in dollars.</p>
+            </div>
+            <button className="btn btn-primary" onClick={() => setShowCreateModal(true)}>
+              <i className="fa-solid fa-plus"></i>
+              Create task
+            </button>
+          </div>
+          <div className="button-row">
+            {familyMembers.length === 0 ? (
+              <span className="muted-copy">Add a child to a family first. The task form will use those members automatically.</span>
+            ) : (
+              familyMembers.map((member) => (
+                <span key={member.userId} className="pill">
+                  <i className="fa-solid fa-child-reaching"></i>
+                  {member.username} in {member.familyTitle}
+                </span>
+              ))
+            )}
+          </div>
+        </section>
+
+        <section className="panel-card">
+          <div className="section-title">
+            <div>
+              <h2 className="section-heading">Task queue</h2>
+              <p className="section-subtitle">Everything assigned to your children across all families.</p>
+            </div>
+          </div>
+
+          {loading ? (
+            <div className="empty-panel">
+              <i className="fa-solid fa-spinner fa-spin"></i>
+              <p className="section-subtitle">Loading tasks...</p>
+            </div>
+          ) : tasks.length === 0 ? (
+            <div className="empty-panel">
+              <i className="fa-solid fa-list-check"></i>
+              <h3 className="section-heading" style={{ fontSize: "1.2rem" }}>No tasks yet</h3>
+              <p className="section-subtitle">Start by creating a simple chore with a reward.</p>
+            </div>
+          ) : (
+            <div className="task-list">
+              {tasks.map((task) => (
+                <TaskCard key={task.id} task={task} userRole="PARENT" onTaskUpdate={loadData} />
+              ))}
+            </div>
+          )}
+        </section>
+      </div>
+
       {showCreateModal && (
-        <div style={{
-          position: "fixed",
-          inset: 0,
-          background: "rgba(0,0,0,0.7)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 1000,
-          backdropFilter: "blur(8px)"
-        }} onClick={() => setShowCreateModal(false)}>
-          <div className="glass" style={{
-            padding: "36px",
-            borderRadius: "28px",
-            maxWidth: "600px",
-            width: "90%"
-          }} onClick={(e) => e.stopPropagation()}>
-            <h3 style={{ marginTop: 0, marginBottom: "24px", letterSpacing: "-0.03em", color: "white" }}>
-              Create New Task
-            </h3>
-            
-            <form onSubmit={handleCreateTask} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-              <div>
-                <label style={{ display: "block", marginBottom: "8px", color: "#dce8ff" }}>
-                  Assign to Child *
-                </label>
-                <select
-                  value={newTask.childId}
-                  onChange={(e) => setNewTask({ ...newTask, childId: e.target.value })}
-                  required
-                  style={{
-                    width: "100%",
-                    padding: "12px 16px",
-                    borderRadius: "14px",
-                    border: "1px solid rgba(255,255,255,0.12)",
-                    background: "rgba(255,255,255,0.05)",
-                    color: "white",
-                    fontSize: "1rem"
-                  }}
-                >
-                  <option value="">Select a child...</option>
-                  {familyMembers.map((member) => (
-                    <option key={member.id} value={member.id} style={{ background: "#0a1730" }}>
-                      {member.username}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label style={{ display: "block", marginBottom: "8px", color: "#dce8ff" }}>
-                  Task Title *
-                </label>
-                <input
-                  type="text"
-                  value={newTask.title}
-                  onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
-                  required
-                  placeholder="e.g., Clean your room"
-                  style={{
-                    width: "100%",
-                    padding: "12px 16px",
-                    borderRadius: "14px",
-                    border: "1px solid rgba(255,255,255,0.12)",
-                    background: "rgba(255,255,255,0.05)",
-                    color: "white",
-                    fontSize: "1rem"
-                  }}
-                />
-              </div>
-
-              <div>
-                <label style={{ display: "block", marginBottom: "8px", color: "#dce8ff" }}>
-                  Description
-                </label>
-                <textarea
-                  value={newTask.description}
-                  onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
-                  placeholder="Provide details about what needs to be done..."
-                  rows={3}
-                  style={{
-                    width: "100%",
-                    padding: "12px 16px",
-                    borderRadius: "14px",
-                    border: "1px solid rgba(255,255,255,0.12)",
-                    background: "rgba(255,255,255,0.05)",
-                    color: "white",
-                    fontSize: "1rem",
-                    resize: "vertical"
-                  }}
-                />
-              </div>
-
-              <div>
-                <label style={{ display: "block", marginBottom: "8px", color: "#dce8ff" }}>
-                  Reward Amount *
-                </label>
-                <input
-                  type="number"
-                  value={newTask.amount}
-                  onChange={(e) => setNewTask({ ...newTask, amount: e.target.value })}
-                  required
-                  min="0.01"
-                  step="0.01"
-                  placeholder="0.00"
-                  style={{
-                    width: "100%",
-                    padding: "12px 16px",
-                    borderRadius: "14px",
-                    border: "1px solid rgba(255,255,255,0.12)",
-                    background: "rgba(255,255,255,0.05)",
-                    color: "white",
-                    fontSize: "1rem"
-                  }}
-                />
-              </div>
-
-              <div style={{ display: "flex", gap: "12px", marginTop: "12px" }}>
-                <button 
-                  type="submit" 
-                  className="btn btn-primary" 
-                  style={{ flex: 1 }}
-                >
-                  <i className="fa-solid fa-plus"></i>
-                  Create Task
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowCreateModal(false)}
-                  className="btn btn-outline"
-                  style={{ flex: 1 }}
-                >
+        <div className="modal-overlay" onClick={() => setShowCreateModal(false)}>
+          <div className="panel-card modal-card" onClick={(event) => event.stopPropagation()}>
+            <h3 className="section-heading">Create task</h3>
+            <p className="section-subtitle">Use dollars here. The backend stores the task reward correctly as a decimal amount.</p>
+            <form onSubmit={handleCreateTask} className="dashboard-stack" style={{ marginTop: "18px", gap: "14px" }}>
+              <select
+                className="dashboard-select"
+                value={newTask.childId}
+                onChange={(event) => setNewTask({ ...newTask, childId: event.target.value })}
+                required
+              >
+                <option value="">Choose a child</option>
+                {familyMembers.map((member) => (
+                  <option key={member.userId} value={member.userId}>
+                    {member.username} - {member.familyTitle}
+                  </option>
+                ))}
+              </select>
+              <input
+                className="dashboard-input"
+                value={newTask.title}
+                onChange={(event) => setNewTask({ ...newTask, title: event.target.value })}
+                placeholder="Task title"
+                required
+              />
+              <textarea
+                className="dashboard-textarea"
+                value={newTask.description}
+                onChange={(event) => setNewTask({ ...newTask, description: event.target.value })}
+                placeholder="Explain what needs to be done"
+              />
+              <input
+                className="dashboard-input"
+                type="number"
+                min="0.01"
+                step="0.01"
+                value={newTask.amount}
+                onChange={(event) => setNewTask({ ...newTask, amount: event.target.value })}
+                placeholder="Reward amount"
+                required
+              />
+              <div className="button-row">
+                <button className="btn btn-primary" type="submit">Save task</button>
+                <button className="btn btn-outline" type="button" onClick={() => setShowCreateModal(false)}>
                   Cancel
                 </button>
               </div>

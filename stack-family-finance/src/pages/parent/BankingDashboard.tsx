@@ -1,61 +1,51 @@
 import { useEffect, useState } from "react";
-import { dashboardApi, accountsApi, familyApi } from "@/lib/api";
-import { getUser } from "@/lib/auth";
+import { accountsApi, dashboardApi, familyApi } from "@/lib/api";
 import { toast } from "sonner";
-import "../Landing.css";
+import { formatCurrencyFromCents } from "@/lib/view-models";
 
 export default function ParentBankingDashboard() {
   const [dashboard, setDashboard] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [familyTitle, setFamilyTitle] = useState("");
+  const [creating, setCreating] = useState(false);
   const [transferOpen, setTransferOpen] = useState(false);
   const [selectedChild, setSelectedChild] = useState<any>(null);
   const [transferAmount, setTransferAmount] = useState("");
   const [transferNote, setTransferNote] = useState("");
   const [transferring, setTransferring] = useState(false);
-  
-  // Create family state
-  const [familyTitle, setFamilyTitle] = useState("");
-  const [creating, setCreating] = useState(false);
-  
-  // Invite code state
   const [inviteCode, setInviteCode] = useState<string | null>(null);
-  const [inviteOpen, setInviteOpen] = useState(false);
-  
-  // Edit family state
   const [editOpen, setEditOpen] = useState(false);
   const [editingFamily, setEditingFamily] = useState<any>(null);
   const [editTitle, setEditTitle] = useState("");
-  
-  // Delete family state
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deletingFamily, setDeletingFamily] = useState<any>(null);
-  
-  const user = getUser();
+
+  useEffect(() => {
+    void fetchDashboard();
+  }, []);
 
   const fetchDashboard = async () => {
+    setLoading(true);
     try {
       const data = await dashboardApi.getParentDashboard();
       setDashboard(data);
-    } catch (err: any) {
-      console.error('Error fetching dashboard:', err);
-      toast.error(err.message);
+    } catch (error: any) {
+      toast.error(error.message || "Failed to load dashboard");
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => { fetchDashboard(); }, []);
-
   const handleCreateFamily = async () => {
     if (!familyTitle.trim()) return;
     setCreating(true);
     try {
-      await familyApi.create(familyTitle);
-      toast.success("Family created!");
+      await familyApi.create(familyTitle.trim());
+      toast.success("Family created.");
       setFamilyTitle("");
-      fetchDashboard();
-    } catch (err: any) {
-      toast.error(err.message);
+      await fetchDashboard();
+    } catch (error: any) {
+      toast.error(error.message || "Failed to create family");
     } finally {
       setCreating(false);
     }
@@ -63,350 +53,233 @@ export default function ParentBankingDashboard() {
 
   const handleInvite = async (familyId: number) => {
     try {
-      const res = await familyApi.invite(familyId);
-      setInviteCode(res.code);
-      setInviteOpen(true);
-    } catch (err: any) {
-      toast.error(err.message);
+      const result = await familyApi.invite(familyId);
+      setInviteCode(result.code);
+    } catch (error: any) {
+      toast.error(error.message || "Failed to create invite");
     }
-  };
-
-  const openEdit = (family: any) => {
-    setEditingFamily(family);
-    setEditTitle(family.familyTitle || "");
-    setEditOpen(true);
   };
 
   const handleEdit = async () => {
-    if (!editTitle.trim() || !editingFamily) return;
+    if (!editingFamily || !editTitle.trim()) return;
     try {
-      await familyApi.update(editingFamily.familyId, editTitle);
-      toast.success("Family updated!");
+      await familyApi.update(editingFamily.familyId, editTitle.trim());
+      toast.success("Family updated.");
       setEditOpen(false);
-      fetchDashboard();
-    } catch (err: any) {
-      toast.error(err.message);
+      await fetchDashboard();
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update family");
     }
-  };
-
-  const openDelete = (family: any) => {
-    setDeletingFamily(family);
-    setDeleteOpen(true);
   };
 
   const handleDelete = async () => {
     if (!deletingFamily) return;
     try {
       await familyApi.delete(deletingFamily.familyId);
-      toast.success("Family deleted!");
+      toast.success("Family deleted.");
       setDeleteOpen(false);
-      fetchDashboard();
-    } catch (err: any) {
-      toast.error(err.message);
+      await fetchDashboard();
+    } catch (error: any) {
+      toast.error(error.message || "Failed to delete family");
     }
-  };
-
-  const copyCode = () => {
-    if (inviteCode) {
-      navigator.clipboard.writeText(inviteCode);
-      toast.success("Copied!");
-    }
-  };
-
-  const openTransfer = (child: any) => {
-    setSelectedChild(child);
-    setTransferAmount("");
-    setTransferNote("");
-    setTransferOpen(true);
   };
 
   const handleTransfer = async () => {
     if (!selectedChild || !transferAmount) return;
-    const amount = parseFloat(transferAmount);
-    if (amount <= 0 || isNaN(amount)) {
-      toast.error("Please enter a valid amount");
+    const amount = Number(transferAmount);
+    if (!amount || amount <= 0) {
+      toast.error("Enter a valid amount.");
       return;
     }
-    
-    const amountInCents = Math.round(amount * 100);
 
     setTransferring(true);
     try {
-      await accountsApi.transfer(selectedChild.childId, amountInCents, transferNote || undefined);
-      toast.success(`Sent $${amount.toFixed(2)} to ${selectedChild.childUsername}`);
+      await accountsApi.transfer(selectedChild.childId, Math.round(amount * 100), transferNote || undefined);
+      toast.success(`Sent ${amount.toFixed(2)} dollars to ${selectedChild.childUsername}.`);
       setTransferOpen(false);
       setTransferAmount("");
       setTransferNote("");
-      fetchDashboard();
-    } catch (err: any) {
-      toast.error(err.message || "Transfer failed");
+      await fetchDashboard();
+    } catch (error: any) {
+      toast.error(error.message || "Transfer failed");
     } finally {
       setTransferring(false);
     }
   };
 
-  const formatMoney = (cents: number) => {
-    return `$${(cents / 100).toFixed(2)}`;
-  };
-
-  if (loading) {
-    return (
-      <div className="landing-page">
-        <div className="bg-noise"></div>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh" }}>
-          <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: "2rem", color: "#86f0ff" }}></i>
-        </div>
-      </div>
-    );
-  }
-
-  if (!dashboard) {
-    return (
-      <div className="landing-page">
-        <div className="bg-noise"></div>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh" }}>
-          <p style={{ color: "#a5b7d0" }}>Unable to load dashboard</p>
-        </div>
-      </div>
-    );
-  }
-
-  const { families, totalStats } = dashboard;
+  const families = dashboard?.families ?? [];
+  const stats = dashboard?.totalStats ?? { totalBalance: 0, activeGoals: 0, completedGoals: 0 };
+  const childCount = families.reduce((total: number, family: any) => total + family.children.length, 0);
 
   return (
-    <div className="landing-page">
-      <div className="cursor-glow"></div>
-      <div className="bg-noise"></div>
+    <div className="dashboard-page">
+      <div className="dashboard-container dashboard-stack">
+        <section className="dashboard-hero">
+          <div className="dashboard-eyebrow">
+            <i className="fa-solid fa-wallet"></i>
+            Parent banking
+          </div>
+          <h1 className="dashboard-title">One place to run every family wallet.</h1>
+          <p className="dashboard-copy">
+            Create families, send allowance, watch progress, and keep the dashboard readable on phones instead of squeezing everything into one row.
+          </p>
+          <div className="hero-balance">
+            <div className="hero-balance-value">{formatCurrencyFromCents(stats.totalBalance)}</div>
+            <div className="hero-balance-meta">Total child balance across all connected families</div>
+          </div>
+        </section>
 
-      <main>
-        <section style={{ padding: "16px 16px 80px 16px" }}>
-          <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-            <div style={{ marginBottom: "24px" }}>
-              <div className="eyebrow" style={{ marginBottom: "12px" }}>
-                <i className="fa-solid fa-users"></i>
-                Family Banking
-              </div>
-              <h2 style={{ 
-                fontSize: "2.5rem", 
-                lineHeight: "1.1", 
-                letterSpacing: "-0.05em", 
-                margin: "0 0 12px 0",
-                color: "white"
-              }}>
-                Monitor & Manage Your Family's Finances
-              </h2>
-              <p style={{ color: "#a5b7d0", margin: 0, fontSize: "1.05rem", lineHeight: "1.6" }}>
-                Create families, invite children, send money, and track their financial progress all in one place.
-              </p>
+        <section className="dashboard-grid stats">
+          <div className="panel-card stat-card">
+            <div className="stat-icon"><i className="fa-solid fa-sack-dollar"></i></div>
+            <div className="stat-value">{formatCurrencyFromCents(stats.totalBalance)}</div>
+            <div className="stat-label">Combined family balance visible to you.</div>
+          </div>
+          <div className="panel-card stat-card">
+            <div className="stat-icon"><i className="fa-solid fa-bullseye"></i></div>
+            <div className="stat-value">{stats.activeGoals}</div>
+            <div className="stat-label">{stats.completedGoals} goals already completed.</div>
+          </div>
+          <div className="panel-card stat-card">
+            <div className="stat-icon"><i className="fa-solid fa-users"></i></div>
+            <div className="stat-value">{childCount}</div>
+            <div className="stat-label">{families.length} families and children you can fund from here.</div>
+          </div>
+        </section>
+
+        <section className="panel-card">
+          <div className="section-title">
+            <div>
+              <h2 className="section-heading">Create a family</h2>
+              <p className="section-subtitle">A short title is enough. Invite codes are created later only when needed.</p>
             </div>
+          </div>
+          <div className="dashboard-form-grid">
+            <input
+              className="dashboard-input"
+              value={familyTitle}
+              onChange={(event) => setFamilyTitle(event.target.value)}
+              onKeyDown={(event) => event.key === "Enter" && handleCreateFamily()}
+              placeholder="Family name"
+            />
+            <button className="btn btn-primary" disabled={creating || !familyTitle.trim()} onClick={handleCreateFamily}>
+              {creating ? "Creating..." : "Create family"}
+            </button>
+          </div>
+        </section>
 
-            {/* Create Family Section */}
-            <div className="glass" style={{ padding: "32px", borderRadius: "28px", marginBottom: "32px", border: "2px solid rgba(25,199,216,0.2)" }}>
-              <h3 style={{ marginTop: 0, marginBottom: "20px", color: "white", letterSpacing: "-0.03em", display: "flex", alignItems: "center", gap: "12px" }}>
-                <i className="fa-solid fa-plus" style={{ color: "#86f0ff" }}></i>
-                Create New Family
-              </h3>
-              <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-                <input
-                  placeholder="Enter family name"
-                  value={familyTitle}
-                  onChange={(e) => setFamilyTitle(e.target.value)}
-                  onKeyPress={(e) => e.key === "Enter" && handleCreateFamily()}
-                  style={{
-                    flex: 1,
-                    minWidth: "300px",
-                    padding: "14px 18px",
-                    borderRadius: "14px",
-                    border: "1px solid rgba(255,255,255,0.12)",
-                    background: "rgba(255,255,255,0.05)",
-                    color: "white",
-                    fontSize: "1rem"
-                  }}
-                />
-                <button
-                  onClick={handleCreateFamily}
-                  disabled={creating || !familyTitle.trim()}
-                  className="btn btn-primary"
-                  style={{ fontSize: "1rem", minWidth: "160px" }}
-                >
-                  {creating ? (
-                    <>
-                      <i className="fa-solid fa-spinner fa-spin"></i>
-                      Creating...
-                    </>
-                  ) : (
-                    <>
-                      <i className="fa-solid fa-plus"></i>
-                      Create Family
-                    </>
-                  )}
-                </button>
-              </div>
+        <section className="panel-card">
+          <div className="section-title">
+            <div>
+              <h2 className="section-heading">Family overview</h2>
+              <p className="section-subtitle">Each child card exposes balance, goals, tasks, and quick transfer actions.</p>
             </div>
+          </div>
 
-            {/* Total Overview */}
-            <div className="feature-grid" style={{ marginBottom: "32px" }}>
-              <div className="feature-card glass reveal left">
-                <div className="icon-box">
-                  <i className="fa-solid fa-wallet"></i>
-                </div>
-                <h3>{formatMoney(totalStats.totalBalance)}</h3>
-                <p>Total Family Balance</p>
-              </div>
-
-              <div className="feature-card glass reveal up stagger-1">
-                <div className="icon-box">
-                  <i className="fa-solid fa-bullseye"></i>
-                </div>
-                <h3>{totalStats.activeGoals}</h3>
-                <p>Active Goals ({totalStats.completedGoals} completed)</p>
-              </div>
-
-              <div className="feature-card glass reveal right">
-                <div className="icon-box">
-                  <i className="fa-solid fa-users"></i>
-                </div>
-                <h3>{families.length}</h3>
-                <p>Families Managed</p>
-              </div>
+          {loading ? (
+            <div className="empty-panel">
+              <i className="fa-solid fa-spinner fa-spin"></i>
+              <p className="section-subtitle">Loading dashboard...</p>
             </div>
-
-            {/* Families */}
-            {families.length === 0 ? (
-              <div className="glass" style={{ padding: "48px", borderRadius: "28px", textAlign: "center" }}>
-                <i className="fa-solid fa-users" style={{ fontSize: "3rem", color: "#86f0ff", marginBottom: "16px", display: "block" }}></i>
-                <h3 style={{ marginBottom: "12px", color: "white" }}>No Families Yet</h3>
-                <p style={{ color: "#a5b7d0", margin: 0 }}>
-                  Create your first family to start managing your children's finances.
-                </p>
-              </div>
-            ) : (
-              families.map((family: any) => (
-                <div key={family.familyId} className="glass" style={{ padding: "32px", borderRadius: "28px", marginBottom: "24px" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px", flexWrap: "wrap", gap: "16px" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                      <i className="fa-solid fa-users" style={{ color: "#86f0ff", fontSize: "1.5rem" }}></i>
-                      <h3 style={{ margin: 0, color: "white", letterSpacing: "-0.03em" }}>{family.familyTitle}</h3>
+          ) : families.length === 0 ? (
+            <div className="empty-panel">
+              <i className="fa-solid fa-users"></i>
+              <h3 className="section-heading" style={{ fontSize: "1.2rem" }}>No families yet</h3>
+              <p className="section-subtitle">Create your first family to start using the rest of the dashboard.</p>
+            </div>
+          ) : (
+            <div className="family-card">
+              {families.map((family: any) => (
+                <div key={family.familyId} className="panel-card" style={{ padding: "20px" }}>
+                  <div className="section-title">
+                    <div>
+                      <h3 className="section-heading">{family.familyTitle}</h3>
+                      <p className="section-subtitle">{family.children.length} connected children</p>
                     </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
-                      <div style={{ fontSize: "2rem", fontWeight: "700", color: "#70cf42" }}>
-                        {formatMoney(family.totalBalance)}
-                      </div>
-                      <div style={{ display: "flex", gap: "8px" }}>
-                        <button
-                          onClick={() => handleInvite(family.familyId)}
-                          className="btn btn-outline"
-                          style={{ fontSize: "0.9rem" }}
-                        >
-                          <i className="fa-solid fa-copy"></i>
-                          Invite Code
-                        </button>
-                        <button
-                          onClick={() => openEdit(family)}
-                          className="btn btn-outline"
-                          style={{ fontSize: "0.9rem", minWidth: "44px" }}
-                        >
-                          <i className="fa-solid fa-pencil"></i>
-                        </button>
-                        <button
-                          onClick={() => openDelete(family)}
-                          className="btn btn-outline"
-                          style={{ 
-                            fontSize: "0.9rem", 
-                            minWidth: "44px",
-                            borderColor: "rgba(255,100,100,0.3)",
-                            color: "#ff6b6b"
-                          }}
-                        >
-                          <i className="fa-solid fa-trash"></i>
-                        </button>
-                      </div>
+                    <div className="button-row" style={{ justifyContent: "flex-end" }}>
+                      <span className="pill">
+                        <i className="fa-solid fa-piggy-bank"></i>
+                        {formatCurrencyFromCents(family.totalBalance)}
+                      </span>
+                      <button className="btn btn-outline" onClick={() => handleInvite(family.familyId)}>
+                        <i className="fa-solid fa-qrcode"></i>
+                        Invite
+                      </button>
+                      <button
+                        className="btn btn-outline"
+                        onClick={() => {
+                          setEditingFamily(family);
+                          setEditTitle(family.familyTitle);
+                          setEditOpen(true);
+                        }}
+                      >
+                        <i className="fa-solid fa-pen"></i>
+                        Edit
+                      </button>
+                      <button
+                        className="btn btn-outline"
+                        onClick={() => {
+                          setDeletingFamily(family);
+                          setDeleteOpen(true);
+                        }}
+                      >
+                        <i className="fa-solid fa-trash"></i>
+                        Delete
+                      </button>
                     </div>
                   </div>
 
                   {family.children.length === 0 ? (
-                    <p style={{ color: "#a5b7d0", textAlign: "center", padding: "24px", margin: 0 }}>
-                      No children in this family yet. Share the invite code to add members.
-                    </p>
+                    <div className="info-row">
+                      <span>No children joined this family yet. Create an invite code to add one.</span>
+                    </div>
                   ) : (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+                    <div className="dashboard-grid auto">
                       {family.children.map((child: any) => (
-                        <div key={child.childId} style={{ 
-                          border: "1px solid rgba(255,255,255,0.08)", 
-                          borderRadius: "20px", 
-                          padding: "24px",
-                          background: "rgba(255,255,255,0.02)"
-                        }}>
-                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px", flexWrap: "wrap", gap: "16px" }}>
+                        <div key={child.childId} className="panel-card" style={{ padding: "18px" }}>
+                          <div className="section-title">
                             <div>
-                              <h4 style={{ margin: "0 0 8px 0", color: "white", fontSize: "1.2rem" }}>{child.childUsername}</h4>
-                              <p style={{ margin: 0, color: "#a5b7d0", fontSize: "0.9rem" }}>
-                                {child.accounts.length} account{child.accounts.length !== 1 ? "s" : ""}
-                              </p>
+                              <h4 className="section-heading" style={{ fontSize: "1.1rem" }}>{child.childUsername}</h4>
+                              <p className="section-subtitle">{child.accounts.length} accounts connected</p>
                             </div>
-                            <div style={{ textAlign: "right" }}>
-                              <div style={{ fontSize: "1.8rem", fontWeight: "700", color: "#70cf42", marginBottom: "8px" }}>
-                                {formatMoney(child.totalBalance)}
-                              </div>
-                              <button
-                                onClick={() => openTransfer(child)}
-                                className="btn btn-primary"
-                                style={{ fontSize: "0.9rem" }}
-                              >
-                                <i className="fa-solid fa-paper-plane"></i>
-                                Send Money
-                              </button>
+                            <span className="pill">
+                              <i className="fa-solid fa-coins"></i>
+                              {formatCurrencyFromCents(child.totalBalance)}
+                            </span>
+                          </div>
+
+                          <div className="goal-list">
+                            <div className="info-row">
+                              <span>Active goals</span>
+                              <strong>{child.activeGoals}</strong>
+                            </div>
+                            <div className="info-row">
+                              <span>Completed tasks</span>
+                              <strong>{child.completedTasks}</strong>
                             </div>
                           </div>
 
-                          {/* Child Stats */}
-                          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "16px", paddingTop: "16px", borderTop: "1px solid rgba(255,255,255,0.08)" }}>
-                            <div>
-                              <p style={{ margin: "0 0 4px 0", color: "#a5b7d0", fontSize: "0.8rem" }}>Active Goals</p>
-                              <p style={{ margin: 0, fontSize: "1.2rem", fontWeight: "600", color: "white", display: "flex", alignItems: "center", gap: "6px" }}>
-                                <i className="fa-solid fa-bullseye" style={{ color: "#86f0ff" }}></i>
-                                {child.activeGoals}
-                              </p>
-                            </div>
-                            <div>
-                              <p style={{ margin: "0 0 4px 0", color: "#a5b7d0", fontSize: "0.8rem" }}>Completed Tasks</p>
-                              <p style={{ margin: 0, fontSize: "1.2rem", fontWeight: "600", color: "white", display: "flex", alignItems: "center", gap: "6px" }}>
-                                <i className="fa-solid fa-chart-line" style={{ color: "#70cf42" }}></i>
-                                {child.completedTasks}
-                              </p>
-                            </div>
-                            <div>
-                              <p style={{ margin: "0 0 4px 0", color: "#a5b7d0", fontSize: "0.8rem" }}>Accounts</p>
-                              <p style={{ margin: 0, fontSize: "1.2rem", fontWeight: "600", color: "white", display: "flex", alignItems: "center", gap: "6px" }}>
-                                <i className="fa-solid fa-piggy-bank" style={{ color: "#19c7d8" }}></i>
-                                {child.accounts.length}
-                              </p>
-                            </div>
+                          <div className="button-row" style={{ marginTop: "14px" }}>
+                            <button
+                              className="btn btn-primary"
+                              onClick={() => {
+                                setSelectedChild(child);
+                                setTransferOpen(true);
+                              }}
+                            >
+                              <i className="fa-solid fa-paper-plane"></i>
+                              Send money
+                            </button>
                           </div>
 
-                          {/* Accounts List */}
                           {child.accounts.length > 0 && (
-                            <div style={{ paddingTop: "16px", borderTop: "1px solid rgba(255,255,255,0.08)", marginTop: "16px" }}>
-                              <p style={{ margin: "0 0 12px 0", color: "#dce8ff", fontSize: "0.9rem", fontWeight: "600" }}>Accounts:</p>
-                              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                                {child.accounts.map((account: any) => (
-                                  <div key={account.id} style={{ 
-                                    display: "flex", 
-                                    justifyContent: "space-between", 
-                                    alignItems: "center", 
-                                    padding: "12px", 
-                                    borderRadius: "12px", 
-                                    background: "rgba(255,255,255,0.05)",
-                                    border: "1px solid rgba(255,255,255,0.08)"
-                                  }}>
-                                    <span style={{ display: "flex", alignItems: "center", gap: "8px", color: "#dce8ff" }}>
-                                      <i className="fa-solid fa-coins" style={{ color: "#86f0ff" }}></i>
-                                      {account.type}
-                                    </span>
-                                    <span style={{ fontWeight: "600", color: "#70cf42" }}>{formatMoney(account.balance)}</span>
-                                  </div>
-                                ))}
-                              </div>
+                            <div className="goal-list" style={{ marginTop: "14px" }}>
+                              {child.accounts.map((account: any) => (
+                                <div key={account.id} className="info-row">
+                                  <span>{account.type}</span>
+                                  <strong>{formatCurrencyFromCents(account.balance)}</strong>
+                                </div>
+                              ))}
                             </div>
                           )}
                         </div>
@@ -414,293 +287,85 @@ export default function ParentBankingDashboard() {
                     </div>
                   )}
                 </div>
-              ))
-            )}
-          </div>
+              ))}
+            </div>
+          )}
         </section>
-      </main>
+      </div>
 
-      {/* Transfer Modal */}
       {transferOpen && (
-        <div style={{
-          position: "fixed",
-          inset: 0,
-          background: "rgba(0,0,0,0.7)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 1000,
-          backdropFilter: "blur(8px)"
-        }} onClick={() => setTransferOpen(false)}>
-          <div className="glass" style={{
-            padding: "36px",
-            borderRadius: "28px",
-            maxWidth: "500px",
-            width: "90%"
-          }} onClick={(e) => e.stopPropagation()}>
-            <h3 style={{ marginTop: 0, marginBottom: "24px", color: "white" }}>
-              Send Money to {selectedChild?.childUsername}
-            </h3>
-            
-            <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-              <div>
-                <label style={{ display: "block", marginBottom: "8px", color: "#dce8ff" }}>
-                  Amount ($) *
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={transferAmount}
-                  onChange={(e) => setTransferAmount(e.target.value)}
-                  placeholder="0.00"
-                  autoFocus
-                  style={{
-                    width: "100%",
-                    padding: "12px 16px",
-                    borderRadius: "14px",
-                    border: "1px solid rgba(255,255,255,0.12)",
-                    background: "rgba(255,255,255,0.05)",
-                    color: "white",
-                    fontSize: "1rem"
-                  }}
-                />
-              </div>
-              
-              <div>
-                <label style={{ display: "block", marginBottom: "8px", color: "#dce8ff" }}>
-                  Note (optional)
-                </label>
-                <input
-                  value={transferNote}
-                  onChange={(e) => setTransferNote(e.target.value)}
-                  placeholder="e.g., Weekly allowance"
-                  style={{
-                    width: "100%",
-                    padding: "12px 16px",
-                    borderRadius: "14px",
-                    border: "1px solid rgba(255,255,255,0.12)",
-                    background: "rgba(255,255,255,0.05)",
-                    color: "white",
-                    fontSize: "1rem"
-                  }}
-                />
-              </div>
-              
-              {transferAmount && parseFloat(transferAmount) > 0 && (
-                <div style={{ 
-                  padding: "16px", 
-                  borderRadius: "14px", 
-                  background: "rgba(112,207,66,0.1)",
-                  border: "1px solid rgba(112,207,66,0.2)"
-                }}>
-                  <p style={{ margin: "0 0 8px 0", color: "#a5b7d0", fontSize: "0.9rem" }}>Transfer Summary:</p>
-                  <p style={{ margin: 0, fontSize: "1.2rem", fontWeight: "700", color: "#70cf42" }}>
-                    ${parseFloat(transferAmount).toFixed(2)} → {selectedChild?.childUsername}
-                  </p>
-                </div>
-              )}
-            </div>
-            
-            <div style={{ display: "flex", gap: "12px", marginTop: "24px" }}>
-              <button 
-                onClick={handleTransfer} 
-                disabled={transferring || !transferAmount || parseFloat(transferAmount) <= 0}
-                className="btn btn-primary" 
-                style={{ flex: 1 }}
-              >
-                {transferring ? (
-                  <>
-                    <i className="fa-solid fa-spinner fa-spin"></i>
-                    Sending...
-                  </>
-                ) : (
-                  <>
-                    <i className="fa-solid fa-paper-plane"></i>
-                    Send Money
-                  </>
-                )}
-              </button>
-              <button
-                onClick={() => setTransferOpen(false)}
-                className="btn btn-outline"
-                style={{ flex: 1 }}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Invite Code Modal */}
-      {inviteOpen && (
-        <div style={{
-          position: "fixed",
-          inset: 0,
-          background: "rgba(0,0,0,0.7)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 1000,
-          backdropFilter: "blur(8px)"
-        }} onClick={() => setInviteOpen(false)}>
-          <div className="glass" style={{
-            padding: "36px",
-            borderRadius: "28px",
-            maxWidth: "400px",
-            width: "90%"
-          }} onClick={(e) => e.stopPropagation()}>
-            <h3 style={{ marginTop: 0, marginBottom: "20px", color: "white" }}>
-              Family Invite Code
-            </h3>
-            
-            <div style={{ display: "flex", gap: "8px", marginBottom: "16px" }}>
-              <input 
-                value={inviteCode ?? ""} 
-                readOnly 
-                style={{
-                  flex: 1,
-                  padding: "12px 16px",
-                  borderRadius: "14px",
-                  border: "1px solid rgba(255,255,255,0.12)",
-                  background: "rgba(255,255,255,0.05)",
-                  color: "white",
-                  fontSize: "1.2rem",
-                  fontFamily: "monospace",
-                  textAlign: "center",
-                  letterSpacing: "0.1em"
-                }}
-              />
-              <button 
-                onClick={copyCode}
-                className="btn btn-outline"
-                style={{ minWidth: "44px" }}
-              >
-                <i className="fa-solid fa-copy"></i>
-              </button>
-            </div>
-            
-            <p style={{ color: "#a5b7d0", fontSize: "0.9rem", marginBottom: "20px" }}>
-              Share this code with your child so they can join the family.
-            </p>
-            
-            <button 
-              onClick={() => setInviteOpen(false)} 
-              className="btn btn-primary" 
-              style={{ width: "100%" }}
-            >
-              Done
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Edit Family Modal */}
-      {editOpen && (
-        <div style={{
-          position: "fixed",
-          inset: 0,
-          background: "rgba(0,0,0,0.7)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 1000,
-          backdropFilter: "blur(8px)"
-        }} onClick={() => setEditOpen(false)}>
-          <div className="glass" style={{
-            padding: "36px",
-            borderRadius: "28px",
-            maxWidth: "400px",
-            width: "90%"
-          }} onClick={(e) => e.stopPropagation()}>
-            <h3 style={{ marginTop: 0, marginBottom: "20px", color: "white" }}>
-              Edit Family Name
-            </h3>
-            
-            <div style={{ marginBottom: "20px" }}>
-              <label style={{ display: "block", marginBottom: "8px", color: "#dce8ff" }}>
-                Family Name
-              </label>
+        <div className="modal-overlay" onClick={() => setTransferOpen(false)}>
+          <div className="panel-card modal-card" onClick={(event) => event.stopPropagation()}>
+            <h3 className="section-heading">Send money to {selectedChild?.childUsername}</h3>
+            <div className="dashboard-stack" style={{ marginTop: "18px", gap: "14px" }}>
               <input
-                value={editTitle}
-                onChange={(e) => setEditTitle(e.target.value)}
-                placeholder="Enter family name"
-                style={{
-                  width: "100%",
-                  padding: "12px 16px",
-                  borderRadius: "14px",
-                  border: "1px solid rgba(255,255,255,0.12)",
-                  background: "rgba(255,255,255,0.05)",
-                  color: "white",
-                  fontSize: "1rem"
-                }}
+                className="dashboard-input"
+                type="number"
+                min="0.01"
+                step="0.01"
+                value={transferAmount}
+                onChange={(event) => setTransferAmount(event.target.value)}
+                placeholder="Amount in dollars"
               />
+              <input
+                className="dashboard-input"
+                value={transferNote}
+                onChange={(event) => setTransferNote(event.target.value)}
+                placeholder="Optional note"
+              />
+              <div className="button-row">
+                <button className="btn btn-primary" disabled={transferring} onClick={handleTransfer}>
+                  {transferring ? "Sending..." : "Send money"}
+                </button>
+                <button className="btn btn-outline" onClick={() => setTransferOpen(false)}>
+                  Cancel
+                </button>
+              </div>
             </div>
-            
-            <div style={{ display: "flex", gap: "12px" }}>
-              <button 
-                onClick={handleEdit}
-                className="btn btn-primary" 
-                style={{ flex: 1 }}
-              >
-                Save Changes
-              </button>
-              <button
-                onClick={() => setEditOpen(false)}
-                className="btn btn-outline"
-                style={{ flex: 1 }}
-              >
-                Cancel
+          </div>
+        </div>
+      )}
+
+      {inviteCode && (
+        <div className="modal-overlay" onClick={() => setInviteCode(null)}>
+          <div className="panel-card modal-card" onClick={(event) => event.stopPropagation()}>
+            <h3 className="section-heading">Invite code</h3>
+            <div className="info-row" style={{ marginTop: "18px" }}>
+              <strong style={{ fontSize: "1.6rem", letterSpacing: "0.18em" }}>{inviteCode}</strong>
+              <button className="btn btn-primary" onClick={() => navigator.clipboard.writeText(inviteCode)}>
+                Copy
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Delete Family Modal */}
+      {editOpen && (
+        <div className="modal-overlay" onClick={() => setEditOpen(false)}>
+          <div className="panel-card modal-card" onClick={(event) => event.stopPropagation()}>
+            <h3 className="section-heading">Rename family</h3>
+            <input
+              className="dashboard-input"
+              style={{ marginTop: "18px" }}
+              value={editTitle}
+              onChange={(event) => setEditTitle(event.target.value)}
+            />
+            <div className="button-row" style={{ marginTop: "18px" }}>
+              <button className="btn btn-primary" onClick={handleEdit}>Save</button>
+              <button className="btn btn-outline" onClick={() => setEditOpen(false)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {deleteOpen && (
-        <div style={{
-          position: "fixed",
-          inset: 0,
-          background: "rgba(0,0,0,0.7)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 1000,
-          backdropFilter: "blur(8px)"
-        }} onClick={() => setDeleteOpen(false)}>
-          <div className="glass" style={{
-            padding: "36px",
-            borderRadius: "28px",
-            maxWidth: "500px",
-            width: "90%"
-          }} onClick={(e) => e.stopPropagation()}>
-            <h3 style={{ marginTop: 0, marginBottom: "16px", color: "white" }}>
-              Delete Family?
-            </h3>
-            <p style={{ color: "#a5b7d0", marginBottom: "24px", lineHeight: "1.6" }}>
-              This will permanently delete "{deletingFamily?.familyTitle}" and remove all members. This action cannot be undone.
-            </p>
-            
-            <div style={{ display: "flex", gap: "12px" }}>
-              <button
-                onClick={() => setDeleteOpen(false)}
-                className="btn btn-outline"
-                style={{ flex: 1 }}
-              >
-                Cancel
-              </button>
-              <button 
-                onClick={handleDelete}
-                className="btn btn-primary" 
-                style={{ 
-                  flex: 1,
-                  background: "linear-gradient(135deg, #ff6b6b 0%, #ff5252 100%)",
-                  boxShadow: "0 12px 40px rgba(255, 107, 107, 0.35)"
-                }}
-              >
-                Delete Family
-              </button>
+        <div className="modal-overlay" onClick={() => setDeleteOpen(false)}>
+          <div className="panel-card modal-card" onClick={(event) => event.stopPropagation()}>
+            <h3 className="section-heading">Delete family</h3>
+            <p className="section-subtitle">This removes {deletingFamily?.familyTitle} and all memberships.</p>
+            <div className="button-row" style={{ marginTop: "18px" }}>
+              <button className="btn btn-primary" onClick={handleDelete}>Delete</button>
+              <button className="btn btn-outline" onClick={() => setDeleteOpen(false)}>Cancel</button>
             </div>
           </div>
         </div>

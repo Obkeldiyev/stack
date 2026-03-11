@@ -50,8 +50,7 @@ public class DashboardController {
   @GetMapping("/child")
   // @PreAuthorize("hasRole('CHILD')") // TEMPORARILY DISABLED
   public ApiResponse<ChildDashboard> childDashboard(org.springframework.security.core.Authentication auth) {
-    // TEMPORARY FIX: Use hardcoded user ID
-    Long childId = 1L; // authUserId(auth);
+    Long childId = authUserId(auth);
 
     // Get accounts
     List<Account> accounts = accountRepo.findAllByOwner_Id(childId);
@@ -114,7 +113,7 @@ public class DashboardController {
   @GetMapping("/parent")
   // @PreAuthorize("hasRole('PARENT')") // TEMPORARILY DISABLED
   public ApiResponse<ParentDashboard> parentDashboard(org.springframework.security.core.Authentication auth) {
-    Long parentId = 1L; // TEMPORARY FIX: authUserId(auth);
+    Long parentId = authUserId(auth);
 
     // Get all families where user is parent
     List<FamilyMember> parentMemberships = familyMemberRepo.findAllByUser_Id(parentId);

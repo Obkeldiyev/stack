@@ -32,13 +32,13 @@ public class FamilyController {
   // @PreAuthorize("hasRole('PARENT')") // TEMPORARILY DISABLED
   public ApiResponse<Family> create(@RequestBody CreateFamilyRequest req,
                                     org.springframework.security.core.Authentication auth) {
-    Long parentId = 1L; // TEMPORARY FIX: authUserId(auth);
+    Long parentId = authUserId(auth);
     return ApiResponse.ok("Family created", service.createFamily(parentId, req.title()));
   }
 
   @GetMapping("/me")
   public ApiResponse<List<FamilyMember>> myMemberships(org.springframework.security.core.Authentication auth) {
-    Long userId = 1L; // TEMPORARY FIX: authUserId(auth);
+    Long userId = authUserId(auth);
     return ApiResponse.ok("My memberships", service.myMemberships(userId));
   }
 
@@ -46,7 +46,7 @@ public class FamilyController {
   // @PreAuthorize("hasRole('PARENT')") // TEMPORARILY DISABLED
   public ApiResponse<InviteResponse> invite(@PathVariable Long familyId,
                                             org.springframework.security.core.Authentication auth) {
-    Long parentId = 1L; // TEMPORARY FIX: authUserId(auth);
+    Long parentId = authUserId(auth);
     FamilyInvite inv = service.createInvite(parentId, familyId);
     return ApiResponse.ok("Invite created", new InviteResponse(inv.getCode()));
   }
@@ -55,7 +55,7 @@ public class FamilyController {
   // @PreAuthorize("hasRole('CHILD')") // TEMPORARILY DISABLED
   public ApiResponse<FamilyMember> join(@RequestBody JoinRequest req,
                                         org.springframework.security.core.Authentication auth) {
-    Long childId = 1L; // TEMPORARY FIX: authUserId(auth);
+    Long childId = authUserId(auth);
     return ApiResponse.ok("Joined family", service.joinByInvite(childId, req.code()));
   }
 
@@ -63,7 +63,7 @@ public class FamilyController {
   // @PreAuthorize("hasRole('PARENT')") // TEMPORARILY DISABLED
   public ApiResponse<List<FamilyMember>> members(@PathVariable Long familyId,
                                                  org.springframework.security.core.Authentication auth) {
-    Long parentId = 1L; // TEMPORARY FIX: authUserId(auth);
+    Long parentId = authUserId(auth);
     return ApiResponse.ok("Members", service.listFamilyMembers(parentId, familyId));
   }
 
@@ -72,7 +72,7 @@ public class FamilyController {
   public ApiResponse<Family> update(@PathVariable Long familyId,
                                     @RequestBody UpdateFamilyRequest req,
                                     org.springframework.security.core.Authentication auth) {
-    Long parentId = 1L; // TEMPORARY FIX: authUserId(auth);
+    Long parentId = authUserId(auth);
     return ApiResponse.ok("Family updated", service.updateFamily(parentId, familyId, req.title()));
   }
 
@@ -80,7 +80,7 @@ public class FamilyController {
   // @PreAuthorize("hasRole('PARENT')") // TEMPORARILY DISABLED
   public ApiResponse<Void> delete(@PathVariable Long familyId,
                                   org.springframework.security.core.Authentication auth) {
-    Long parentId = 1L; // TEMPORARY FIX: authUserId(auth);
+    Long parentId = authUserId(auth);
     service.deleteFamily(parentId, familyId);
     return ApiResponse.ok("Family deleted", null);
   }
@@ -90,7 +90,7 @@ public class FamilyController {
   public ApiResponse<Void> removeMember(@PathVariable Long familyId,
                                         @PathVariable Long userId,
                                         org.springframework.security.core.Authentication auth) {
-    Long parentId = 1L; // TEMPORARY FIX: authUserId(auth);
+    Long parentId = authUserId(auth);
     service.removeMember(parentId, familyId, userId);
     return ApiResponse.ok("Member removed", null);
   }
