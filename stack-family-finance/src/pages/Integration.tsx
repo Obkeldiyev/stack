@@ -67,10 +67,29 @@ const dashboard = await fetch("https://stack.polito.uz/api/dashboard/parent", {
             </div>
           </div>
         </section>
+
+        <section className="section">
+          <div className="container feature-grid">
+            <article className="feature-card glass">
+              <div className="icon-box"><i className="fa-solid fa-school"></i></div>
+              <h3>School integrations</h3>
+              <p>Map attendance, homework, and classroom achievements to parent-approved rewards and savings goals.</p>
+            </article>
+            <article className="feature-card glass">
+              <div className="icon-box"><i className="fa-solid fa-mobile-screen-button"></i></div>
+              <h3>Parenting apps</h3>
+              <p>Use Stack for the finance layer while another app owns schedules, communication, or routines.</p>
+            </article>
+            <article className="feature-card glass">
+              <div className="icon-box"><i className="fa-solid fa-user-check"></i></div>
+              <h3>Developer approval</h3>
+              <p>Integration approval is controlled by the project developer, with reviews focused on security, data handling, and intended use.</p>
+            </article>
+          </div>
+        </section>
       </main>
 
       <MarketingFooter />
     </div>
   );
 }
-

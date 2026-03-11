@@ -1,6 +1,7 @@
 package com.kidsbank.api.bank;
 
 import com.kidsbank.api.common.ApiResponse;
+import com.kidsbank.api.common.UnauthorizedException;
 import com.kidsbank.api.family.FamilyMember;
 import com.kidsbank.api.family.FamilyMemberRepository;
 import com.kidsbank.api.task.TaskRepository;
@@ -41,10 +42,13 @@ public class DashboardController {
   }
 
   private Long authUserId(org.springframework.security.core.Authentication auth) {
+    if (auth == null || auth.getName() == null) {
+      throw new UnauthorizedException("User not authenticated");
+    }
     String username = auth.getName();
     return userRepository.findByUsername(username)
         .map(user -> user.getId())
-        .orElseThrow(() -> new RuntimeException("User not found: " + username));
+        .orElseThrow(() -> new UnauthorizedException("User not found: " + username));
   }
 
   @GetMapping("/child")

@@ -1,6 +1,7 @@
 package com.kidsbank.api.family;
 
 import com.kidsbank.api.common.ApiResponse;
+import com.kidsbank.api.common.UnauthorizedException;
 import com.kidsbank.api.user.UserRepository;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -22,10 +23,13 @@ public class FamilyController {
   }
 
   private Long authUserId(org.springframework.security.core.Authentication auth) { 
+    if (auth == null || auth.getName() == null) {
+      throw new UnauthorizedException("User not authenticated");
+    }
     String username = auth.getName();
     return userRepository.findByUsername(username)
         .map(user -> user.getId())
-        .orElseThrow(() -> new RuntimeException("User not found: " + username));
+        .orElseThrow(() -> new UnauthorizedException("User not found: " + username));
   }
 
   @PostMapping("/create")

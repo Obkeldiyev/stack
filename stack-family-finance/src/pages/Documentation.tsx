@@ -86,6 +86,26 @@ export default function Documentation() {
         </section>
 
         <section className="section">
+          <div className="container journey-grid">
+            <div className="journey-card glass">
+              <span>01</span>
+              <h3>Login contract</h3>
+              <p>The correct login response includes `accessToken`, optional `refreshToken`, and `user`. Frontend auth must persist the access token from that exact field.</p>
+            </div>
+            <div className="journey-card glass">
+              <span>02</span>
+              <h3>Protected dashboards</h3>
+              <p>Parent dashboard, family, tasks, and profile depend on a valid JWT reaching the backend filter. If auth is missing, controllers now return auth failure instead of a route-level 403 wall.</p>
+            </div>
+            <div className="journey-card glass">
+              <span>03</span>
+              <h3>Admin surfaces</h3>
+              <p>Admin APIs now return dedicated DTOs for users, games, transactions, families, and system stats so the frontend is not guessing backend field names.</p>
+            </div>
+          </div>
+        </section>
+
+        <section className="section">
           <div className="container">
             <div className="glass" style={{ padding: "32px", borderRadius: "28px" }}>
               <h2 style={{ marginTop: 0 }}>Current response shape</h2>
@@ -104,10 +124,24 @@ export default function Documentation() {
             </div>
           </div>
         </section>
+
+        <section className="section section-dark">
+          <div className="container">
+            <div className="cta-box glass reveal up">
+              <div className="cta-copy">
+                <div className="eyebrow">Project docs</div>
+                <h2>Documentation now matches the actual project structure.</h2>
+                <p>
+                  The repo also includes `docs/PROJECT_SYSTEM_GUIDE.md` and `docs/INTEGRATION_POSSIBILITIES.md`
+                  for a higher-level explanation of the backend, frontend, admin tools, and partner integration direction.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
 
       <MarketingFooter />
     </div>
   );
 }
-

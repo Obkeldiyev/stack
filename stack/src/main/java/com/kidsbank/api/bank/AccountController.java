@@ -1,6 +1,7 @@
 package com.kidsbank.api.bank;
 
 import com.kidsbank.api.common.ApiResponse;
+import com.kidsbank.api.common.UnauthorizedException;
 import com.kidsbank.api.user.UserRepository;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -22,10 +23,13 @@ public class AccountController {
   }
 
   private Long authUserId(org.springframework.security.core.Authentication auth) {
+    if (auth == null || auth.getName() == null) {
+      throw new UnauthorizedException("User not authenticated");
+    }
     String username = auth.getName();
     return userRepository.findByUsername(username)
         .map(user -> user.getId())
-        .orElseThrow(() -> new RuntimeException("User not found: " + username));
+        .orElseThrow(() -> new UnauthorizedException("User not found: " + username));
   }
 
   public record CreateAccountRequest(@NotNull AccountType type) {}

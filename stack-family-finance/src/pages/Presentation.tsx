@@ -82,6 +82,26 @@ export default function Presentation() {
             </article>
           </div>
         </section>
+
+        <section className="section section-dark">
+          <div className="container journey-grid">
+            <div className="journey-card glass">
+              <span>01</span>
+              <h3>Family money workflow</h3>
+              <p>Parents create families, fund children, review task submissions, and manage long-term habits from a single system.</p>
+            </div>
+            <div className="journey-card glass">
+              <span>02</span>
+              <h3>Education workflow</h3>
+              <p>Children play games, complete tasks, and build savings goals, turning rewards into visible progress instead of abstract numbers.</p>
+            </div>
+            <div className="journey-card glass">
+              <span>03</span>
+              <h3>Admin workflow</h3>
+              <p>Admins supervise users, families, games, and transactions through a dedicated internal control area separate from public marketing pages.</p>
+            </div>
+          </div>
+        </section>
       </main>
 
       <MarketingFooter />
