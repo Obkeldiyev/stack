@@ -1237,6 +1237,181 @@
   border-radius: 34px;
 }
 
+.landing-page .showcase-split {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 30px;
+  align-items: center;
+}
+
+.landing-page .showcase-copy {
+  max-width: 520px;
+}
+
+.landing-page .showcase-copy h2 {
+  margin: 0 0 14px 0;
+  font-size: clamp(2.5rem, 5vw, 4.8rem);
+  line-height: 0.96;
+  letter-spacing: -0.07em;
+}
+
+.landing-page .showcase-copy p {
+  margin: 0;
+  color: #a5b7d0;
+  line-height: 1.85;
+  font-size: 1.04rem;
+}
+
+.landing-page .showcase-action-stack {
+  display: grid;
+  gap: 12px;
+  margin-top: 22px;
+  max-width: 420px;
+}
+
+.landing-page .showcase-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 22px;
+}
+
+.landing-page .showcase-mini-card {
+  padding: 22px;
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at top right, rgba(112,207,66,0.08), transparent 28%),
+    linear-gradient(180deg, rgba(34, 49, 66, 0.88), rgba(19, 30, 42, 0.92));
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.landing-page .showcase-mini-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.landing-page .showcase-mini-head strong {
+  font-size: 1.15rem;
+}
+
+.landing-page .showcase-mini-card pre {
+  margin: 0;
+  white-space: pre-wrap;
+  color: #e7f2ff;
+  font-family: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+  line-height: 1.85;
+  font-size: 0.98rem;
+}
+
+.landing-page .showcase-console {
+  position: relative;
+  border-radius: 26px;
+  overflow: hidden;
+  border: 1px solid rgba(132, 158, 186, 0.22);
+  background:
+    linear-gradient(180deg, rgba(5, 11, 20, 0.98), rgba(7, 16, 28, 0.98)),
+    radial-gradient(circle at top right, rgba(78, 198, 121, 0.08), transparent 25%);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+}
+
+.landing-page .showcase-console::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 24px 24px;
+  opacity: 0.12;
+  pointer-events: none;
+}
+
+.landing-page .showcase-console-header,
+.landing-page .showcase-console-tabs,
+.landing-page .showcase-console-footer,
+.landing-page .showcase-console-note {
+  position: relative;
+  z-index: 1;
+}
+
+.landing-page .showcase-console-header {
+  padding: 14px 18px;
+  color: #9db2c8;
+  font-size: 0.92rem;
+  border-bottom: 1px solid rgba(132, 158, 186, 0.14);
+}
+
+.landing-page .showcase-console-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 14px 18px 10px;
+  border-bottom: 1px solid rgba(132, 158, 186, 0.14);
+}
+
+.landing-page .showcase-console-tab {
+  padding: 0 0 10px;
+  color: #d6e1ec;
+  font-weight: 600;
+  border-bottom: 2px solid transparent;
+}
+
+.landing-page .showcase-console-tab.active.green {
+  color: #7ee06f;
+  border-bottom-color: #7ee06f;
+}
+
+.landing-page .showcase-console-tab.active.cyan {
+  color: #6fe0df;
+  border-bottom-color: #6fe0df;
+}
+
+.landing-page .showcase-console-tab.active.blue {
+  color: #7fb8ff;
+  border-bottom-color: #7fb8ff;
+}
+
+.landing-page .showcase-console-code {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  padding: 22px 22px 26px;
+  white-space: pre-wrap;
+  color: #dce8ff;
+  font-family: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+  font-size: 0.98rem;
+  line-height: 1.85;
+}
+
+.landing-page .showcase-console-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 18px;
+  border-top: 1px solid rgba(132, 158, 186, 0.14);
+  color: #cfe0f1;
+}
+
+.landing-page .showcase-console-copy {
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.08);
+  color: #eff8ff;
+}
+
+.landing-page .showcase-console-note {
+  margin: 0;
+  padding: 16px 18px 18px;
+  color: #7ee06f;
+  line-height: 1.7;
+}
+
 .landing-page .route-board-head h2 {
   margin: 6px 0 0 0;
   font-size: clamp(2rem, 4vw, 3.3rem);
@@ -1744,6 +1919,8 @@
   .landing-page .detail-grid,
   .landing-page .timeline-grid,
   .landing-page .metrics-row,
+  .landing-page .showcase-split,
+  .landing-page .showcase-card-grid,
   .landing-page .showcase-grid,
   .landing-page .blueprint-grid,
   .landing-page .deep-grid,

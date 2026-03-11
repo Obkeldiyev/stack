@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { MarketingFooter } from "@/components/marketing/MarketingFooter";
 import { MarketingHeader } from "@/components/marketing/MarketingHeader";
+import { ShowcaseConsole } from "@/components/marketing/ShowcaseConsole";
 import { useMarketingMotion } from "@/hooks/useMarketingMotion";
 import "./Landing.css";
 
@@ -142,6 +143,41 @@ export default function Integration() {
                   ))}
                 </div>
               </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="section">
+          <div className="container showcase-split">
+            <div className="showcase-copy reveal left">
+              <div className="eyebrow">Package systems</div>
+              <h2>Integration should read like platform engineering.</h2>
+              <p>
+                This is where Stack should feel closer to Node, platform, and runtime pages than to a normal marketing site.
+                The integration layer needs package thinking, source-of-truth thinking, and deployment thinking.
+              </p>
+            </div>
+            <div className="reveal right">
+              <ShowcaseConsole
+                title="Integration workflow"
+                language="Platform packages"
+                tabs={[
+                  { label: "Auth package", accent: "green" },
+                  { label: "Family package" },
+                  { label: "Reward package" },
+                  { label: "Delivery package" },
+                ]}
+                code={`partner login
+-> accessToken
+-> family lookup
+-> role dashboard
+-> reward / goal mapping
+-> admin audit visibility
+
+packages:
+identity -> family -> rewards -> delivery`}
+                footer="A partner should understand which platform package they need before they touch the API."
+              />
             </div>
           </div>
         </section>

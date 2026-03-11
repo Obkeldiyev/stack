@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { MarketingFooter } from "@/components/marketing/MarketingFooter";
 import { MarketingHeader } from "@/components/marketing/MarketingHeader";
+import { ShowcaseConsole } from "@/components/marketing/ShowcaseConsole";
 import { useMarketingMotion } from "@/hooks/useMarketingMotion";
 import "./Landing.css";
 
@@ -184,8 +185,8 @@ if (requestFailsWith401) {
         </section>
 
         <section className="section">
-          <div className="container editorial-grid">
-            <div className="editorial-copy reveal left">
+          <div className="container showcase-split">
+            <div className="showcase-copy reveal left">
               <div className="eyebrow">System map</div>
               <h2>Document by behavior, ownership, and deployment.</h2>
               <p>
@@ -193,17 +194,39 @@ if (requestFailsWith401) {
                 settings persistence, admin supervision, Windows packaging, Android packaging, and a public microsite.
               </p>
             </div>
-            <div className="code-grid">
-              {endpointSets.map((set, index) => (
-                <div key={set.name} className={`code-panel glass reveal ${index % 2 === 0 ? "right" : "left"}`}>
-                  <div className="code-panel-head">
-                    <strong>{set.name}</strong>
-                    <button className="pill">copy-ready</button>
-                  </div>
-                  <pre>{set.code}</pre>
-                </div>
-              ))}
+            <div className="reveal right">
+              <ShowcaseConsole
+                title="Core route examples"
+                language="Stack routes"
+                tabs={[
+                  { label: "Auth", accent: "green" },
+                  { label: "Family" },
+                  { label: "Dashboard" },
+                  { label: "Goals" },
+                ]}
+                code={`POST /api/auth/login
+GET  /api/family/me
+GET  /api/dashboard/parent
+GET  /api/tasks/parent
+GET  /api/accounts/me
+POST /api/goals`}
+                footer="Use these as the first verification points after backend deploy and fresh login."
+              />
             </div>
+          </div>
+        </section>
+
+        <section className="section">
+          <div className="container showcase-card-grid">
+            {endpointSets.map((set, index) => (
+              <div key={set.name} className={`showcase-mini-card reveal ${index % 2 === 0 ? "right" : "left"}`}>
+                <div className="showcase-mini-head">
+                  <strong>{set.name}</strong>
+                  <button className="pill">copy-ready</button>
+                </div>
+                <pre>{set.code}</pre>
+              </div>
+            ))}
           </div>
         </section>
 
@@ -216,7 +239,7 @@ if (requestFailsWith401) {
             <div className="route-grid">
               <div className="route-item"><span>POST</span><code>/api/auth/login</code><p>Returns `accessToken`, optional `refreshToken`, and `user`.</p></div>
               <div className="route-item"><span>POST</span><code>/api/auth/refresh</code><p>Used by the frontend retry flow when auth expires.</p></div>
-              <div className="route-item"><span>GET</span><code>/api/family/me</code><p>Loads the authenticated user’s family membership and role context.</p></div>
+              <div className="route-item"><span>GET</span><code>/api/family/me</code><p>Loads the authenticated user's family membership and role context.</p></div>
               <div className="route-item"><span>GET</span><code>/api/dashboard/parent</code><p>Parent dashboard data surface for accounts, goals, and recent activity.</p></div>
               <div className="route-item"><span>GET</span><code>/api/tasks/parent</code><p>Parent task management and approval queue.</p></div>
               <div className="route-item"><span>GET</span><code>/api/users/profile</code><p>Current user profile data for settings and session persistence.</p></div>

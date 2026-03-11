@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { MarketingFooter } from "@/components/marketing/MarketingFooter";
 import { MarketingHeader } from "@/components/marketing/MarketingHeader";
+import { ShowcaseConsole } from "@/components/marketing/ShowcaseConsole";
 import { useMarketingMotion } from "@/hooks/useMarketingMotion";
 import "./Landing.css";
 
@@ -181,6 +182,45 @@ export default function Presentation() {
                   </article>
                 ))}
               </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="section">
+          <div className="container showcase-split">
+            <div className="showcase-copy reveal left">
+              <div className="eyebrow">Run Stack everywhere</div>
+              <h2>One product logic, many delivery surfaces.</h2>
+              <p>
+                Presentation should feel like a launch page for a serious platform. The same product logic stretches across web,
+                Electron, Android, parent, child, admin, and partner-facing surfaces without becoming fragmented.
+              </p>
+              <div className="showcase-action-stack">
+                <button className="btn btn-primary" onClick={() => navigate("/login")}>Get Stack</button>
+                <button className="btn btn-secondary" onClick={() => navigate("/integration")}>View integrations</button>
+              </div>
+            </div>
+            <div className="reveal right">
+              <ShowcaseConsole
+                title="Launch sequence"
+                language="Stack system"
+                tabs={[
+                  { label: "Parent dashboard", accent: "green" },
+                  { label: "Child experience" },
+                  { label: "Admin control" },
+                  { label: "Device rollout" },
+                ]}
+                code={`1  create family
+2  assign paid task
+3  child uploads proof
+4  parent approves reward
+5  goal progress updates
+6  admin still supervises system state
+
+// deploy to:
+web -> electron -> android`}
+                footer="The pitch should show a coherent system, not separate disconnected screens."
+              />
             </div>
           </div>
         </section>
