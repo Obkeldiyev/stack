@@ -29,7 +29,7 @@ export function AppLayout({ requiredRole }: AppLayoutProps) {
             <AppSidebar />
           </div>
           <div className="flex-1 flex flex-col min-w-0">
-            <main className="flex-1 overflow-auto" style={{ padding: "0px" }}>
+            <main className="flex-1 overflow-auto pb-20 md:pb-0" style={{ padding: "1rem 1rem 5rem 1rem" }}>
               <Outlet />
             </main>
           </div>

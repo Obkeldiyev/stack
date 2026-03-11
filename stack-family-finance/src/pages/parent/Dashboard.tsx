@@ -113,28 +113,28 @@ export default function ParentDashboard() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
-      <div>
-        <h1 className="text-2xl font-bold">Welcome, {user?.username}!</h1>
-        <p className="text-muted-foreground">Manage your family and track your kids' progress.</p>
+    <div className="max-w-2xl mx-auto space-y-4 animate-fade-in px-2 md:px-0">
+      <div className="mb-4">
+        <h1 className="text-xl md:text-2xl font-bold">Monitor & Manage Your Family's Finances</h1>
+        <p className="text-sm text-muted-foreground">Create families, invite children, send money, and track their financial progress all in one place.</p>
       </div>
 
       {/* Create family */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2"><Plus className="h-4 w-4" /> Create Family</CardTitle>
+      <Card className="shadow-sm">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm md:text-base flex items-center gap-2"><Plus className="h-4 w-4" /> Create New Family</CardTitle>
         </CardHeader>
         <CardContent className="flex gap-2">
-          <Input placeholder="Family name" value={familyTitle} onChange={(e) => setFamilyTitle(e.target.value)} className="min-h-[44px]" />
+          <Input placeholder="Enter family name" value={familyTitle} onChange={(e) => setFamilyTitle(e.target.value)} className="min-h-[44px]" />
           <Button onClick={handleCreate} disabled={creating} className="min-h-[44px] shrink-0">
-            {creating ? "..." : "Create"}
+            {creating ? "..." : <><Plus className="h-4 w-4 md:hidden" /><span className="hidden md:inline">Create Family</span></>}
           </Button>
         </CardContent>
       </Card>
 
       {/* Families list */}
       {loading ? (
-        <div className="space-y-4"><SkeletonCard /><SkeletonCard /></div>
+        <div className="space-y-3"><SkeletonCard /><SkeletonCard /></div>
       ) : families.length === 0 ? (
         <EmptyState icon={Users} title="No family yet" description="Create a family above and invite your kids!" />
       ) : (
@@ -142,24 +142,24 @@ export default function ParentDashboard() {
           const fam = fm.family ?? fm;
           const familyId = fam.id ?? fm.familyId;
           return (
-            <Card key={familyId}>
-              <CardHeader>
-                <CardTitle className="text-base flex items-center gap-2 justify-between">
+            <Card key={familyId} className="shadow-sm">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm md:text-base flex items-center gap-2 justify-between">
                   <div className="flex items-center gap-2">
                     <Users className="h-4 w-4 text-primary" /> {fam.title ?? "Family"}
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-1">
                     <Button variant="ghost" size="icon" onClick={() => openEdit(fm)} className="h-8 w-8">
-                      <Pencil className="h-4 w-4" />
+                      <Pencil className="h-3.5 w-3.5" />
                     </Button>
                     <Button variant="ghost" size="icon" onClick={() => openDelete(fm)} className="h-8 w-8 text-destructive">
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="h-3.5 w-3.5" />
                     </Button>
                   </div>
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                <Button variant="outline" size="sm" onClick={() => handleInvite(familyId)} className="min-h-[44px]">
+              <CardContent className="space-y-2">
+                <Button variant="outline" size="sm" onClick={() => handleInvite(familyId)} className="min-h-[44px] w-full">
                   Generate Invite Code
                 </Button>
               </CardContent>
@@ -169,11 +169,11 @@ export default function ParentDashboard() {
       )}
 
       {/* Coming soon */}
-      <Card className="border-dashed">
-        <CardContent className="py-8 flex flex-col items-center gap-2 text-center">
-          <Clock className="h-8 w-8 text-muted-foreground" />
-          <p className="font-medium">Kids Progress</p>
-          <p className="text-sm text-muted-foreground">Tasks, goals, and transaction summaries coming soon.</p>
+      <Card className="border-dashed shadow-sm">
+        <CardContent className="py-6 flex flex-col items-center gap-2 text-center">
+          <Clock className="h-6 w-6 text-muted-foreground" />
+          <p className="text-sm font-medium">Kids Progress</p>
+          <p className="text-xs text-muted-foreground">Tasks, goals, and transaction summaries coming soon.</p>
         </CardContent>
       </Card>
 
