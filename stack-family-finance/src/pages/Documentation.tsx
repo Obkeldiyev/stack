@@ -7,10 +7,9 @@ import "./Landing.css";
 const endpointSets = [
   {
     name: "Auth",
-    code: `POST /api/auth/login
-POST /api/auth/register
-POST /api/auth/refresh
-POST /api/auth/logout`,
+    code: `curl -X POST https://stack.polito.uz/api/auth/login \\
+  -H "Content-Type: application/json" \\
+  -d '{"username":"parent","password":"***"}'`,
   },
   {
     name: "Family",
@@ -60,7 +59,7 @@ export default function Documentation() {
                 <span>like a real platform</span>
               </h1>
               <p className="hero-text">
-                These docs are structured by system behavior, route ownership, and product surfaces. The goal is not to dump endpoints.
+                These docs are structured by system behavior, route ownership, package flow, and product surfaces. The goal is not to dump endpoints.
                 The goal is to make the backend and frontend behave predictably together.
               </p>
               <div className="hero-actions">
@@ -76,12 +75,19 @@ export default function Documentation() {
             </div>
 
             <div className="hero-visual reveal right">
-              <div className="code-surface glass">
-                <div className="code-topbar">
-                  <span></span><span></span><span></span>
-                  <p>stack-api.contracts.ts</p>
+              <div className="workspace-shell glass">
+                <div className="workspace-sidebar">
+                  <div className="workspace-item active">auth.http</div>
+                  <div className="workspace-item">family.routes.ts</div>
+                  <div className="workspace-item">dashboard.contracts.json</div>
+                  <div className="workspace-item">admin-dtos.java</div>
                 </div>
-                <pre>{`const login = await api.post("/api/auth/login", credentials);
+                <div className="workspace-main">
+                  <div className="code-topbar">
+                    <span></span><span></span><span></span>
+                    <p>stack-api.contracts.ts</p>
+                  </div>
+                  <pre>{`const login = await api.post("/api/auth/login", credentials);
 const token = login.data.accessToken;
 
 const parentDashboard = await api.get("/api/dashboard/parent", {
@@ -91,6 +97,7 @@ const parentDashboard = await api.get("/api/dashboard/parent", {
 if (requestFailsWith401) {
   await api.post("/api/auth/refresh");
 }`}</pre>
+                </div>
               </div>
             </div>
           </div>
@@ -116,6 +123,23 @@ if (requestFailsWith401) {
                   <pre>{set.code}</pre>
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="section">
+          <div className="container route-board glass reveal zoom">
+            <div className="route-board-head">
+              <div className="eyebrow">Route board</div>
+              <h2>Core requests in one technical surface.</h2>
+            </div>
+            <div className="route-grid">
+              <div className="route-item"><span>POST</span><code>/api/auth/login</code><p>Returns `accessToken`, optional `refreshToken`, and `user`.</p></div>
+              <div className="route-item"><span>GET</span><code>/api/family/me</code><p>Loads family membership for the authenticated user.</p></div>
+              <div className="route-item"><span>GET</span><code>/api/dashboard/parent</code><p>Parent finance dashboard, balances, goals, and activity summary.</p></div>
+              <div className="route-item"><span>GET</span><code>/api/tasks/parent</code><p>Task management and approval list for the parent role.</p></div>
+              <div className="route-item"><span>GET</span><code>/api/users/profile</code><p>Current profile data for the logged-in user.</p></div>
+              <div className="route-item"><span>POST</span><code>/api/auth/refresh</code><p>Refresh path used by the frontend retry flow.</p></div>
             </div>
           </div>
         </section>
@@ -174,27 +198,6 @@ if (requestFailsWith401) {
                 <strong>Capacitor Android</strong>
                 <p>Android delivery syncs the built web app into the native shell and exposes camera-based features.</p>
               </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="section section-dark">
-          <div className="container media-band">
-            <div className="media-card glass reveal left">
-              <div className="eyebrow">Admin contract</div>
-              <h3>Admin APIs now deserve first-class docs.</h3>
-              <p>
-                Users, games, families, and transactions are operational data. The admin frontend should consume dedicated DTOs,
-                not infer random fields from raw persistence models.
-              </p>
-            </div>
-            <div className="media-card glass reveal right">
-              <div className="eyebrow">Deployment sequence</div>
-              <h3>Backend first, frontend second.</h3>
-              <p>
-                When you fix auth or route logic, deploy the backend first. Then deploy the frontend and clear stale storage.
-                That sequence matters more than cosmetic frontend changes.
-              </p>
             </div>
           </div>
         </section>

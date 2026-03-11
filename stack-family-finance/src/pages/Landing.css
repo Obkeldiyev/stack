@@ -983,6 +983,185 @@
   line-height: 1.55;
 }
 
+.landing-page .horizontal-stage {
+  overflow: hidden;
+  padding: 8px 0 18px;
+}
+
+.landing-page .horizontal-track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(320px, 34vw);
+  gap: 18px;
+  padding: 0 max(20px, calc((100vw - 1180px) / 2));
+  transform: translateX(calc(var(--scroll-progress) * -32vw));
+  will-change: transform;
+}
+
+.landing-page .horizontal-card {
+  min-height: 320px;
+  padding: 30px;
+  border-radius: 34px;
+}
+
+.landing-page .horizontal-card span {
+  display: inline-flex;
+  width: 58px;
+  height: 58px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 18px;
+  margin-bottom: 18px;
+  background: linear-gradient(135deg, rgba(29,100,214,0.22), rgba(25,199,216,0.22));
+  color: #dff9ff;
+  font-weight: 800;
+}
+
+.landing-page .horizontal-card h3 {
+  margin: 0 0 14px 0;
+  font-size: 2rem;
+  letter-spacing: -0.05em;
+}
+
+.landing-page .horizontal-card p {
+  margin: 0;
+  color: #a5b7d0;
+  line-height: 1.85;
+}
+
+.landing-page .workspace-shell {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  min-height: 420px;
+  border-radius: 32px;
+  overflow: hidden;
+}
+
+.landing-page .workspace-sidebar {
+  padding: 18px;
+  border-right: 1px solid rgba(255,255,255,0.08);
+  background: rgba(4, 12, 24, 0.42);
+}
+
+.landing-page .workspace-item {
+  padding: 12px 14px;
+  border-radius: 16px;
+  color: #a5b7d0;
+  margin-bottom: 10px;
+  background: rgba(255,255,255,0.03);
+}
+
+.landing-page .workspace-item.active {
+  background: rgba(25,199,216,0.12);
+  color: #eff8ff;
+}
+
+.landing-page .workspace-main {
+  padding: 22px;
+}
+
+.landing-page .route-board {
+  padding: 30px;
+  border-radius: 34px;
+}
+
+.landing-page .route-board-head h2 {
+  margin: 6px 0 0 0;
+  font-size: clamp(2rem, 4vw, 3.3rem);
+  letter-spacing: -0.05em;
+}
+
+.landing-page .route-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 22px;
+}
+
+.landing-page .route-item {
+  padding: 20px;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.landing-page .route-item span {
+  display: inline-flex;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(25,199,216,0.16);
+  color: #dff8ff;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+}
+
+.landing-page .route-item code {
+  display: block;
+  color: #ffffff;
+  font-family: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+  font-size: 0.96rem;
+  margin-bottom: 10px;
+}
+
+.landing-page .route-item p {
+  margin: 0;
+  color: #a5b7d0;
+  line-height: 1.7;
+}
+
+.landing-page .source-map {
+  display: grid;
+  grid-template-columns: 1fr 120px 1fr;
+  gap: 18px;
+  align-items: center;
+  padding: 28px;
+  border-radius: 34px;
+}
+
+.landing-page .source-column small {
+  display: block;
+  color: #8fdfff;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 14px;
+}
+
+.landing-page .source-node {
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  margin-bottom: 12px;
+  color: #e6f3ff;
+}
+
+.landing-page .source-connector {
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(25,199,216,0.18), rgba(112,207,66,0.55), rgba(29,100,214,0.18));
+}
+
+.landing-page .terminal-rack {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 22px;
+}
+
+.landing-page .terminal-panel {
+  padding: 22px;
+  border-radius: 30px;
+}
+
+.landing-page .terminal-panel pre {
+  margin: 0;
+  white-space: pre-wrap;
+  color: #dbebff;
+  font-family: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+  font-size: 0.94rem;
+  line-height: 1.8;
+}
+
 .landing-page .spec-card small {
   display: block;
   color: #8fdfff;
@@ -1397,6 +1576,8 @@
   .landing-page .code-grid,
   .landing-page .docs-spec-grid,
   .landing-page .media-band,
+  .landing-page .route-grid,
+  .landing-page .terminal-rack,
   .landing-page .download-grid,
   .landing-page .spec-table,
   .landing-page .cta-box {
@@ -1429,6 +1610,17 @@
 
   .landing-page .editorial-copy {
     position: static;
+  }
+
+  .landing-page .source-map,
+  .landing-page .workspace-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .landing-page .source-connector {
+    width: 4px;
+    height: 80px;
+    justify-self: center;
   }
 }
 
@@ -1504,12 +1696,20 @@
   }
 
   .landing-page .package-list,
-  .landing-page .stage-grid {
+  .landing-page .stage-grid,
+  .landing-page .horizontal-track {
     grid-template-columns: 1fr;
   }
 
   .landing-page .microsite-page .hero-visual {
     min-height: auto;
+  }
+
+  .landing-page .horizontal-track {
+    grid-auto-flow: row;
+    grid-auto-columns: unset;
+    transform: none;
+    padding: 0 20px;
   }
 }
 

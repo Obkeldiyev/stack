@@ -92,12 +92,32 @@ export default function Integration() {
         </section>
 
         <section className="section">
+          <div className="container source-map glass reveal zoom">
+            <div className="source-column">
+              <small>Sources</small>
+              <div className="source-node">Spring Boot API</div>
+              <div className="source-node">Admin services</div>
+              <div className="source-node">Game content</div>
+              <div className="source-node">Family finance logic</div>
+            </div>
+            <div className="source-connector"></div>
+            <div className="source-column">
+              <small>Surfaces</small>
+              <div className="source-node">React web app</div>
+              <div className="source-node">Electron desktop</div>
+              <div className="source-node">Capacitor Android</div>
+              <div className="source-node">Partner products</div>
+            </div>
+          </div>
+        </section>
+
+        <section className="section">
           <div className="container editorial-grid">
             <div className="editorial-copy reveal left">
               <div className="eyebrow">Partner fit</div>
               <h2>Integrate whole value loops, not isolated APIs.</h2>
               <p>
-                The strongest partner integrations are the ones that map real activity in another product back into Stack’s supervised finance loop:
+                The strongest partner integrations are the ones that map real activity in another product back into Stack's supervised finance loop:
                 act, validate, reward, save, and review.
               </p>
             </div>
@@ -176,21 +196,29 @@ export default function Integration() {
         </section>
 
         <section className="section section-dark">
-          <div className="container media-band">
-            <div className="media-card glass reveal left">
-              <div className="eyebrow">Approval</div>
-              <h3>Developer-controlled integration access.</h3>
-              <p>
-                External partners should still be approved manually. That lets you filter for security, traffic expectations,
-                child-safety concerns, and whether the partner product fits the parent-supervised model.
-              </p>
+          <div className="container terminal-rack">
+            <div className="terminal-panel glass reveal left">
+              <div className="code-topbar">
+                <span></span><span></span><span></span>
+                <p>package sources</p>
+              </div>
+              <pre>{`web        -> React + Vite
+desktop    -> Electron + electron-builder
+android    -> Capacitor + Gradle
+api        -> Spring Boot + JWT security
+admin      -> DTO-backed internal operations`}</pre>
             </div>
-            <div className="media-card glass reveal right">
-              <div className="eyebrow">Deployment</div>
-              <h3>Public pages separate from internal admin routes.</h3>
-              <p>
-                Partner-facing integration content should stay on public pages, while admin login and control routes remain unlinked from the microsite.
-              </p>
+            <div className="terminal-panel glass reveal right">
+              <div className="code-topbar">
+                <span></span><span></span><span></span>
+                <p>integration approval</p>
+              </div>
+              <pre>{`1. developer review
+2. contract check
+3. token / role validation
+4. partner scope limit
+5. staged deployment
+6. admin audit visibility`}</pre>
             </div>
           </div>
         </section>

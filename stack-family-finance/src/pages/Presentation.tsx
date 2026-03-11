@@ -28,6 +28,29 @@ const valueFrames = [
   "Electron and Android packaging from the same product codebase",
 ];
 
+const horizontalFrames = [
+  {
+    label: "01",
+    title: "Finance should move sideways through the story",
+    text: "This rail is meant to feel like a cinematic deck. As the user scrolls down, the product argument moves across the screen instead of only stacking lower on the page.",
+  },
+  {
+    label: "02",
+    title: "Parents need confidence, not noise",
+    text: "The visual system leans toward premium payment products: calm spacing, precise cards, controlled color, and fewer chaotic elements competing for attention.",
+  },
+  {
+    label: "03",
+    title: "Children need feedback loops",
+    text: "Tasks, proof, rewards, games, and goals create motion inside the product. The app should always show what happened and what comes next.",
+  },
+  {
+    label: "04",
+    title: "Operators need internal control",
+    text: "Admin tools, transaction visibility, and content controls make the product credible beyond the public marketing layer.",
+  },
+];
+
 export default function Presentation() {
   const navigate = useNavigate();
   useMarketingMotion();
@@ -51,7 +74,7 @@ export default function Presentation() {
                 <span>with real depth</span>
               </h1>
               <p className="hero-text">
-                Stack is not just a children’s wallet screen. It is a full parent-child operating model with role-based dashboards,
+                Stack is not just a children's wallet screen. It is a full parent-child operating model with role-based dashboards,
                 tasks, approvals, goals, gameplay, internal admin control, and deployment paths across web, Windows, and Android.
               </p>
               <div className="hero-actions">
@@ -99,6 +122,27 @@ export default function Presentation() {
                 <div className="stage-orbit stage-orbit-a"></div>
                 <div className="stage-orbit stage-orbit-b"></div>
               </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="section">
+          <div className="container">
+            <div className="section-head reveal up">
+              <div className="eyebrow">Scroll performance</div>
+              <h2>The presentation moves sideways while the page moves down.</h2>
+              <p>This section exists only to change the rhythm of the page and make the product story feel less ordinary.</p>
+            </div>
+          </div>
+          <div className="horizontal-stage reveal zoom">
+            <div className="horizontal-track">
+              {horizontalFrames.map((frame) => (
+                <article className="horizontal-card glass" key={frame.label}>
+                  <span>{frame.label}</span>
+                  <h3>{frame.title}</h3>
+                  <p>{frame.text}</p>
+                </article>
+              ))}
             </div>
           </div>
         </section>
