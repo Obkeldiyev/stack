@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { authApi } from "@/lib/api";
+import { authApiExtended } from "@/lib/api";
 import { setAuth } from "@/lib/auth";
 import { toast } from "sonner";
 import "./Landing.css";
@@ -23,9 +23,10 @@ export default function Register() {
     e.preventDefault();
     setLoading(true);
     try {
-      const res: any = await authApi.register({ username, password, role });
-      if (res.token) {
-        setAuth(res.token, res.user ?? { id: 0, username, role });
+      const res: any = await authApiExtended.register({ username, password, role });
+      const accessToken = res.accessToken ?? res.token;
+      if (accessToken) {
+        setAuth(accessToken, res.user ?? { id: 0, username, role }, res.refreshToken);
         toast.success("Welcome to STACK!");
         setTimeout(() => {
           navigate(role === "PARENT" ? "/parent/dashboard" : "/child/dashboard", { replace: true });

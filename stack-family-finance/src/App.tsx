@@ -30,6 +30,9 @@ import About from "@/pages/About";
 import Features from "@/pages/Features";
 import Developers from "@/pages/Developers";
 import Privacy from "@/pages/Privacy";
+import Documentation from "@/pages/Documentation";
+import Integration from "@/pages/Integration";
+import Presentation from "@/pages/Presentation";
 import "@/styles/dashboard.css";
 
 const queryClient = new QueryClient();
@@ -110,6 +113,9 @@ const App = () => {
             <Route path="/features" element={<Features />} />
             <Route path="/developers" element={<Developers />} />
             <Route path="/privacy" element={<Privacy />} />
+            <Route path="/documentation" element={<Documentation />} />
+            <Route path="/integration" element={<Integration />} />
+            <Route path="/presentation" element={<Presentation />} />
 
             <Route path="*" element={<NotFound />} />
           </Routes>

@@ -56,11 +56,11 @@ export default function Developers() {
               </p>
 
               <div className="hero-actions">
-                <button onClick={() => window.open('/docs/API_REFERENCE.md', '_blank')} className="btn btn-primary">
+                <button onClick={() => navigate("/documentation")} className="btn btn-primary">
                   <i className="fa-solid fa-book"></i>
                   API Documentation
                 </button>
-                <button onClick={() => window.open('/docs/INTEGRATION_GUIDE.md', '_blank')} className="btn btn-secondary">
+                <button onClick={() => navigate("/integration")} className="btn btn-secondary">
                   <i className="fa-solid fa-puzzle-piece"></i>
                   Integration Guide
                 </button>
@@ -203,8 +203,8 @@ export default function Developers() {
                   <span><i className="fa-solid fa-code"></i> REST API</span>
                   <span><i className="fa-solid fa-shield"></i> Secure</span>
                 </div>
-                <button onClick={() => window.open('/docs/API_REFERENCE.md', '_blank')} className="btn btn-primary download-btn">
-                  <i className="fa-solid fa-external-link-alt"></i>
+                <button onClick={() => navigate("/documentation")} className="btn btn-primary download-btn">
+                  <i className="fa-solid fa-arrow-right"></i>
                   View Documentation
                 </button>
               </div>
@@ -219,8 +219,8 @@ export default function Developers() {
                   <span><i className="fa-solid fa-lightbulb"></i> Examples</span>
                   <span><i className="fa-solid fa-rocket"></i> Quick Start</span>
                 </div>
-                <button onClick={() => window.open('/docs/INTEGRATION_GUIDE.md', '_blank')} className="btn btn-primary download-btn">
-                  <i className="fa-solid fa-external-link-alt"></i>
+                <button onClick={() => navigate("/integration")} className="btn btn-primary download-btn">
+                  <i className="fa-solid fa-arrow-right"></i>
                   Integration Guide
                 </button>
               </div>
@@ -235,8 +235,8 @@ export default function Developers() {
                   <span><i className="fa-solid fa-info-circle"></i> Architecture</span>
                   <span><i className="fa-solid fa-cogs"></i> Technical</span>
                 </div>
-                <button onClick={() => window.open('/docs/PROJECT_OVERVIEW.md', '_blank')} className="btn btn-primary download-btn">
-                  <i className="fa-solid fa-external-link-alt"></i>
+                <button onClick={() => navigate("/presentation")} className="btn btn-primary download-btn">
+                  <i className="fa-solid fa-arrow-right"></i>
                   View Overview
                 </button>
               </div>
@@ -270,7 +270,7 @@ export default function Developers() {
                   <i className="fa-solid fa-envelope"></i>
                   Request API Access
                 </button>
-                <button onClick={() => window.open('/docs/INTEGRATION_GUIDE.md', '_blank')} className="btn btn-secondary">
+                <button onClick={() => navigate("/documentation")} className="btn btn-secondary">
                   <i className="fa-solid fa-book"></i>
                   Read Documentation
                 </button>

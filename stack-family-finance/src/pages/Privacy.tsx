@@ -172,7 +172,7 @@ export default function Privacy() {
           <div className="footer-links">
             <a href="/" onClick={(e) => { e.preventDefault(); navigate("/"); }}>Home</a>
             <a href="#" onClick={(e) => { e.preventDefault(); navigate("/about"); }}>About</a>
-            <a href="#" onClick={(e) => { e.preventDefault(); navigate("/terms"); }}>Terms</a>
+            <a href="#" onClick={(e) => { e.preventDefault(); navigate("/documentation"); }}>Documentation</a>
             <a href="#" onClick={(e) => { e.preventDefault(); navigate("/privacy"); }}>Privacy</a>
           </div>
         </div>

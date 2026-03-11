@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { authApi } from "@/lib/api";
+import { authApiExtended } from "@/lib/api";
 import { setAuth } from "@/lib/auth";
 import { toast } from "sonner";
 import "./Landing.css";
@@ -22,8 +22,9 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
     try {
-      const res: any = await authApi.login({ username, password });
-      setAuth(res.token, res.user ?? { id: 0, username, role: res.role ?? "CHILD" });
+      const res: any = await authApiExtended.login({ username, password });
+      const accessToken = res.accessToken ?? res.token;
+      setAuth(accessToken, res.user ?? { id: 0, username, role: res.role ?? "CHILD" }, res.refreshToken);
       const role = res.user?.role ?? res.role;
       
       // Success animation before navigation

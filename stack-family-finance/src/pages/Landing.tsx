@@ -99,7 +99,7 @@ export default function Landing() {
           </nav>
 
           <div className="nav-actions">
-            <button onClick={() => navigate("/login")} className="btn btn-outline">Get Started</button>
+              <button onClick={() => navigate("/login")} className="btn btn-outline">Get Started</button>
             <button className="menu-btn" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} aria-label="Open menu">
               <span></span><span></span><span></span>
             </button>
@@ -113,6 +113,9 @@ export default function Landing() {
             <a href="#security" onClick={(e) => { e.preventDefault(); scrollToSection("security"); }}>Security</a>
             <a href="#journey" onClick={(e) => { e.preventDefault(); scrollToSection("journey"); }}>Journey</a>
             <a href="#download" onClick={(e) => { e.preventDefault(); scrollToSection("download"); }}>Download</a>
+            <button onClick={() => navigate("/presentation")}>Presentation</button>
+            <button onClick={() => navigate("/documentation")}>Documentation</button>
+            <button onClick={() => navigate("/integration")}>Integration</button>
           </div>
         )}
       </header>
@@ -151,6 +154,10 @@ export default function Landing() {
                 <button onClick={() => scrollToSection("features")} className="btn btn-secondary">
                   <i className="fa-regular fa-circle-play"></i>
                   Explore product
+                </button>
+                <button onClick={() => navigate("/presentation")} className="btn btn-outline">
+                  <i className="fa-solid fa-display"></i>
+                  Presentation
                 </button>
               </div>
 
@@ -425,6 +432,45 @@ export default function Landing() {
           </div>
         </section>
 
+        <section className="section section-dark" id="resources">
+          <div className="container">
+            <div className="section-head reveal up">
+              <div className="eyebrow">Resources</div>
+              <h2>Working pages for demos, documentation, and integrations.</h2>
+              <p>These links now open actual in-app pages instead of broken markdown file URLs.</p>
+            </div>
+
+            <div className="download-grid">
+              <div className="download-card glass reveal left">
+                <div className="download-icon"><i className="fa-solid fa-display"></i></div>
+                <h3>Presentation Page</h3>
+                <p>Use a clean product presentation page for demos, reviews, and stakeholder meetings.</p>
+                <button onClick={() => navigate("/presentation")} className="btn btn-primary download-btn">
+                  Open Presentation
+                </button>
+              </div>
+
+              <div className="download-card glass reveal up">
+                <div className="download-icon"><i className="fa-solid fa-book-open"></i></div>
+                <h3>Documentation</h3>
+                <p>Read the updated API documentation with the real auth response format and base URLs.</p>
+                <button onClick={() => navigate("/documentation")} className="btn btn-primary download-btn">
+                  View Docs
+                </button>
+              </div>
+
+              <div className="download-card glass reveal right">
+                <div className="download-icon"><i className="fa-solid fa-plug-circle-check"></i></div>
+                <h3>Integration Guide</h3>
+                <p>See role-based request flows and integration examples for the Stack backend.</p>
+                <button onClick={() => navigate("/integration")} className="btn btn-primary download-btn">
+                  Open Guide
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Download Section */}
         <section className="section download-section" id="download">
           <div className="container">
@@ -533,6 +579,9 @@ export default function Landing() {
             <a href="#experience" onClick={(e) => { e.preventDefault(); scrollToSection("experience"); }}>Experience</a>
             <a href="#security" onClick={(e) => { e.preventDefault(); scrollToSection("security"); }}>Security</a>
             <a href="#journey" onClick={(e) => { e.preventDefault(); scrollToSection("journey"); }}>Journey</a>
+            <button onClick={() => navigate("/presentation")}>Presentation</button>
+            <button onClick={() => navigate("/documentation")}>Documentation</button>
+            <button onClick={() => navigate("/integration")}>Integration</button>
           </div>
         </div>
       </footer>

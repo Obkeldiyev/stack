@@ -22,6 +22,7 @@ export default function Features() {
             <a href="#" onClick={(e) => { e.preventDefault(); navigate("/about"); }}>About</a>
             <a href="#" onClick={(e) => { e.preventDefault(); navigate("/features"); }} style={{ color: "white" }}>Features</a>
             <a href="#" onClick={(e) => { e.preventDefault(); navigate("/developers"); }}>Developers</a>
+            <a href="#" onClick={(e) => { e.preventDefault(); navigate("/documentation"); }}>Documentation</a>
           </nav>
 
           <div className="nav-actions">
