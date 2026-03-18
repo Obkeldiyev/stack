@@ -13,6 +13,7 @@ const defaultItems: NavItem[] = [
   { label: "Presentation", path: "/presentation" },
   { label: "Documentation", path: "/documentation" },
   { label: "Integration", path: "/integration" },
+  { label: "Developers", path: "/developers" },
 ];
 
 export function MarketingHeader({ activePath, items = defaultItems }: MarketingHeaderProps) {

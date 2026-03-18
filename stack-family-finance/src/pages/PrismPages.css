@@ -1,0 +1,785 @@
+.pr-page {
+  --pr-bg: #f6f4ef;
+  --pr-bg-2: #ece7dd;
+  --pr-panel: rgba(255, 255, 255, 0.82);
+  --pr-panel-strong: #0d1828;
+  --pr-line: rgba(15, 24, 38, 0.12);
+  --pr-text: #101a2a;
+  --pr-muted: #405068;
+  --pr-accent: #ff5a2f;
+  --pr-accent-2: #0ea5a4;
+  --pr-accent-3: #2962ff;
+  background:
+    radial-gradient(circle at 8% 10%, color-mix(in srgb, var(--pr-accent) 18%, transparent), transparent 20%),
+    radial-gradient(circle at 92% 4%, color-mix(in srgb, var(--pr-accent-2) 18%, transparent), transparent 22%),
+    linear-gradient(180deg, var(--pr-bg) 0%, var(--pr-bg-2) 48%, #f9f7f2 100%);
+  color: var(--pr-text);
+}
+
+.pr-page.theme-presentation {
+  --pr-bg: #fbe7d7;
+  --pr-bg-2: #f3f7ea;
+  --pr-accent: #ff5a2f;
+  --pr-accent-2: #0ea5a4;
+  --pr-accent-3: #204ecf;
+}
+
+.pr-page.theme-documentation {
+  --pr-bg: #edf1f7;
+  --pr-bg-2: #f8f8fc;
+  --pr-accent: #1156d9;
+  --pr-accent-2: #0284c7;
+  --pr-accent-3: #f97316;
+}
+
+.pr-page.theme-integration {
+  --pr-bg: #edf7ea;
+  --pr-bg-2: #f7f4e9;
+  --pr-accent: #1d7f5e;
+  --pr-accent-2: #65a30d;
+  --pr-accent-3: #ff7a18;
+}
+
+.pr-page.theme-developers {
+  --pr-bg: #e9f1f8;
+  --pr-bg-2: #f4f7fc;
+  --pr-accent: #2156e1;
+  --pr-accent-2: #0891b2;
+  --pr-accent-3: #f76707;
+}
+
+.pr-page .bg-noise {
+  opacity: 0.035;
+  mix-blend-mode: multiply;
+}
+
+.pr-page .cursor-glow {
+  width: 360px;
+  height: 360px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--pr-accent) 22%, transparent), transparent 70%);
+  opacity: 0.45;
+  filter: blur(20px);
+}
+
+.pr-page .header {
+  position: sticky;
+  top: 0;
+  z-index: 55;
+  backdrop-filter: blur(20px);
+  background: color-mix(in srgb, var(--pr-bg) 88%, rgba(255, 255, 255, 0.46));
+  border-bottom: 1px solid var(--pr-line);
+}
+
+.pr-page .nav {
+  min-height: 90px;
+}
+
+.pr-page .brand span {
+  font-family: "Space Grotesk", "Trebuchet MS", sans-serif;
+  letter-spacing: -0.05em;
+  color: var(--pr-text);
+}
+
+.pr-page .desktop-nav button,
+.pr-page .mobile-nav button {
+  color: color-mix(in srgb, var(--pr-text) 72%, transparent);
+  font-family: "Manrope", "Segoe UI", sans-serif;
+  font-weight: 700;
+}
+
+.pr-page .desktop-nav button:hover,
+.pr-page .mobile-nav button:hover {
+  color: var(--pr-text);
+}
+
+.pr-page .menu-btn span {
+  background: var(--pr-text);
+}
+
+.pr-page .btn.btn-outline {
+  border-color: color-mix(in srgb, var(--pr-text) 18%, transparent);
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--pr-text);
+}
+
+.pr-page .mobile-nav {
+  background: color-mix(in srgb, var(--pr-bg) 92%, white);
+  border-top: 1px solid var(--pr-line);
+}
+
+.pr-page .footer {
+  background: #0b1627;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.pr-page .footer-wrap,
+.pr-page .footer p,
+.pr-page .footer-links button,
+.pr-page .footer .brand span {
+  color: rgba(247, 252, 255, 0.86);
+}
+
+.pr-shell {
+  position: relative;
+  padding: 30px 0 120px;
+}
+
+.pr-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(18, 28, 45, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(18, 28, 45, 0.035) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask: linear-gradient(180deg, rgba(0, 0, 0, 0.34), transparent 88%);
+  pointer-events: none;
+}
+
+.pr-container {
+  position: relative;
+  z-index: 1;
+}
+
+.pr-reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.86s cubic-bezier(.2, .8, .2, 1), transform 0.92s cubic-bezier(.2, .8, .2, 1);
+}
+
+.pr-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.pr-card,
+.pr-panel,
+.pr-stage,
+.pr-band,
+.pr-list,
+.pr-route,
+.pr-metric,
+.pr-final,
+.pr-diagram,
+.pr-code-shell {
+  position: relative;
+  overflow: hidden;
+  border-radius: 30px;
+  border: 1px solid var(--pr-line);
+  background: var(--pr-panel);
+  box-shadow: 0 24px 56px rgba(15, 24, 38, 0.12);
+}
+
+.pr-card::before,
+.pr-panel::before,
+.pr-stage::before,
+.pr-band::before,
+.pr-list::before,
+.pr-route::before,
+.pr-metric::before,
+.pr-final::before,
+.pr-diagram::before,
+.pr-code-shell::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(90deg, var(--pr-accent), var(--pr-accent-2), var(--pr-accent-3));
+}
+
+.pr-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.04fr) minmax(340px, 0.96fr);
+  gap: 26px;
+  align-items: stretch;
+}
+
+.pr-hero-main {
+  padding: 38px;
+}
+
+.pr-hero-main::after {
+  content: "";
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  right: -120px;
+  top: -100px;
+  border-radius: 999px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--pr-accent) 16%, transparent), transparent 72%);
+}
+
+.pr-stage {
+  padding: 24px;
+  color: #eef6ff;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01)),
+    var(--pr-panel-strong);
+}
+
+.pr-stage .pr-kicker,
+.pr-dark .pr-kicker,
+.pr-final .pr-kicker,
+.pr-list.pr-dark .pr-kicker {
+  border-color: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.08);
+  color: #f6fbff;
+}
+
+.pr-stage-grid {
+  margin-top: 16px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.pr-stage-box,
+.pr-stage-wide {
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.pr-stage-wide {
+  grid-column: 1 / -1;
+}
+
+.pr-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 15px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--pr-text) 10%, transparent);
+  background: rgba(255, 255, 255, 0.68);
+  font-family: "Space Grotesk", "Trebuchet MS", sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--pr-text) 90%, transparent);
+}
+
+.pr-title {
+  margin: 22px 0 16px;
+  font-family: "Space Grotesk", "Trebuchet MS", sans-serif;
+  font-size: clamp(2.9rem, 6vw, 5.2rem);
+  line-height: 0.96;
+  letter-spacing: -0.07em;
+  max-width: 13ch;
+  color: var(--pr-text);
+  text-wrap: balance;
+}
+
+.pr-title span,
+.pr-section-title span {
+  color: var(--pr-accent);
+}
+
+.pr-lead {
+  margin: 0;
+  color: var(--pr-muted);
+  line-height: 1.85;
+  max-width: 62ch;
+}
+
+.pr-actions {
+  margin-top: 26px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.pr-btn {
+  min-height: 50px;
+  border-radius: 16px;
+  padding: 0 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid transparent;
+  font-family: "Manrope", "Segoe UI", sans-serif;
+  font-size: 0.96rem;
+  font-weight: 700;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pr-btn:hover {
+  transform: translateY(-2px);
+}
+
+.pr-btn.primary {
+  color: white;
+  background: linear-gradient(135deg, var(--pr-accent), color-mix(in srgb, var(--pr-accent-2) 64%, white));
+  box-shadow: 0 18px 34px color-mix(in srgb, var(--pr-accent) 22%, transparent);
+}
+
+.pr-btn.secondary {
+  color: var(--pr-text);
+  background: rgba(255, 255, 255, 0.82);
+  border-color: color-mix(in srgb, var(--pr-text) 12%, transparent);
+}
+
+.pr-stat-grid {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.pr-stat {
+  border-radius: 18px;
+  border: 1px solid color-mix(in srgb, var(--pr-text) 10%, transparent);
+  background: rgba(255, 255, 255, 0.66);
+  padding: 14px;
+}
+
+.pr-stat strong {
+  display: block;
+  font-family: "Space Grotesk", "Trebuchet MS", sans-serif;
+  font-size: 1.25rem;
+  letter-spacing: -0.04em;
+}
+
+.pr-stat span {
+  display: block;
+  margin-top: 3px;
+  color: var(--pr-muted);
+  font-size: 0.82rem;
+}
+
+.pr-section {
+  padding-top: 84px;
+  display: grid;
+  gap: 24px;
+}
+
+.pr-section-head {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 22px;
+  align-items: end;
+}
+
+.pr-section-title {
+  margin: 0;
+  font-family: "Space Grotesk", "Trebuchet MS", sans-serif;
+  font-size: clamp(2.1rem, 4vw, 4rem);
+  line-height: 0.98;
+  letter-spacing: -0.055em;
+  color: var(--pr-text);
+}
+
+.pr-section-copy {
+  margin: 0;
+  color: var(--pr-muted);
+  line-height: 1.86;
+}
+
+.pr-grid-2,
+.pr-grid-3,
+.pr-grid-4 {
+  display: grid;
+  gap: 16px;
+}
+
+.pr-grid-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.pr-grid-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.pr-grid-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.pr-card,
+.pr-panel,
+.pr-list,
+.pr-route,
+.pr-metric,
+.pr-band,
+.pr-final,
+.pr-code-shell,
+.pr-diagram {
+  padding: 22px;
+}
+
+.pr-card h3,
+.pr-panel h3,
+.pr-list h3,
+.pr-band h3,
+.pr-final h2,
+.pr-route h3,
+.pr-metric h3 {
+  margin: 0;
+  font-family: "Space Grotesk", "Trebuchet MS", sans-serif;
+  font-size: 1.24rem;
+  letter-spacing: -0.04em;
+  color: var(--pr-text);
+}
+
+.pr-card p,
+.pr-panel p,
+.pr-list p,
+.pr-band p,
+.pr-route p,
+.pr-metric p,
+.pr-final p {
+  margin: 10px 0 0;
+  color: var(--pr-muted);
+  line-height: 1.8;
+}
+
+.pr-card small,
+.pr-panel small,
+.pr-route small,
+.pr-stage-box small,
+.pr-stage-wide small {
+  display: block;
+  margin-bottom: 10px;
+  font-family: "Space Grotesk", "Trebuchet MS", sans-serif;
+  font-size: 0.74rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--pr-accent) 78%, #1c2d44);
+}
+
+.pr-stage-box small,
+.pr-stage-wide small,
+.pr-dark small,
+.pr-final small {
+  color: color-mix(in srgb, white 78%, var(--pr-accent));
+}
+
+.pr-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 14px;
+}
+
+.pr-chip {
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--pr-text) 12%, transparent);
+  background: rgba(255, 255, 255, 0.72);
+  padding: 7px 11px;
+  font-size: 0.8rem;
+  color: var(--pr-text);
+}
+
+.pr-dark,
+.pr-band.pr-dark,
+.pr-list.pr-dark,
+.pr-final,
+.pr-code-shell,
+.pr-route.pr-dark {
+  background: #0c1727;
+  color: #ecf4ff;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.pr-dark h3,
+.pr-band.pr-dark h3,
+.pr-list.pr-dark h3,
+.pr-final h2,
+.pr-route.pr-dark h3,
+.pr-code-shell h3 {
+  color: #f5fbff;
+}
+
+.pr-dark p,
+.pr-band.pr-dark p,
+.pr-list.pr-dark p,
+.pr-final p,
+.pr-route.pr-dark p,
+.pr-code-shell p,
+.pr-dark .pr-section-copy {
+  color: rgba(233, 243, 255, 0.78);
+}
+
+.pr-dark .pr-chip,
+.pr-band.pr-dark .pr-chip,
+.pr-list.pr-dark .pr-chip,
+.pr-final .pr-chip {
+  border-color: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.08);
+  color: #f4f8ff;
+}
+
+.pr-process {
+  display: grid;
+  gap: 12px;
+}
+
+.pr-step {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 14px;
+  align-items: start;
+  padding: 16px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid color-mix(in srgb, var(--pr-text) 12%, transparent);
+}
+
+.pr-dark .pr-step {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.11);
+}
+
+.pr-step-index {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  color: white;
+  font-family: "Space Grotesk", "Trebuchet MS", sans-serif;
+  font-size: 0.86rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--pr-accent), var(--pr-accent-2));
+}
+
+.pr-step strong {
+  display: block;
+  font-family: "Space Grotesk", "Trebuchet MS", sans-serif;
+  font-size: 1.06rem;
+  color: inherit;
+}
+
+.pr-step p {
+  margin: 6px 0 0;
+  color: inherit;
+  opacity: 0.84;
+}
+
+.pr-band-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+}
+
+.pr-bullet,
+.pr-ordered {
+  margin: 0;
+  padding-left: 20px;
+  line-height: 1.84;
+}
+
+.pr-bullet li,
+.pr-ordered li {
+  margin-bottom: 8px;
+}
+
+.pr-route {
+  display: grid;
+  gap: 10px;
+}
+
+.pr-route code {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 10px;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 0.84rem;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid color-mix(in srgb, var(--pr-text) 12%, transparent);
+  color: var(--pr-text);
+}
+
+.pr-route.pr-dark code {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.14);
+  color: #f4f8ff;
+}
+
+.pr-metric-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.pr-metric {
+  border-radius: 22px;
+}
+
+.pr-metric strong {
+  display: block;
+  font-family: "Space Grotesk", "Trebuchet MS", sans-serif;
+  font-size: 1.22rem;
+  letter-spacing: -0.04em;
+}
+
+.pr-metric span {
+  display: block;
+  margin-top: 4px;
+  color: var(--pr-muted);
+  font-size: 0.82rem;
+}
+
+.pr-code-shell {
+  padding: 0;
+  border-radius: 26px;
+}
+
+.pr-code-head {
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.pr-tab-list {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+}
+
+.pr-tab-btn,
+.pr-copy-btn {
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.09);
+  color: rgba(242, 248, 255, 0.86);
+  padding: 8px 12px;
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+.pr-tab-btn.active {
+  background: color-mix(in srgb, var(--pr-accent) 34%, rgba(255, 255, 255, 0.1));
+  color: white;
+}
+
+.pr-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pr-code-pre {
+  margin: 0;
+  padding: 20px;
+  max-height: 420px;
+  overflow: auto;
+  color: #e4efff;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 0.84rem;
+  line-height: 1.82;
+  white-space: pre-wrap;
+}
+
+.pr-code-note {
+  margin: 0;
+  padding: 0 20px 18px;
+  color: rgba(232, 243, 255, 0.75);
+  font-size: 0.9rem;
+}
+
+.pr-diagram {
+  padding: 22px;
+}
+
+.pr-diagram :where(.db-diagram-wrap, .uml-diagram-wrap) {
+  overflow-x: auto;
+}
+
+.pr-diagram :where(.db-diagram-wrap, .uml-diagram-wrap)::-webkit-scrollbar {
+  height: 9px;
+}
+
+.pr-diagram :where(.db-diagram-wrap, .uml-diagram-wrap)::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.pr-final {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.pr-final-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+@media (max-width: 1180px) {
+  .pr-hero,
+  .pr-section-head,
+  .pr-band-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pr-grid-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pr-grid-3,
+  .pr-grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .pr-metric-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pr-final {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 760px) {
+  .pr-shell {
+    padding-bottom: 86px;
+  }
+
+  .pr-hero-main,
+  .pr-stage,
+  .pr-card,
+  .pr-panel,
+  .pr-band,
+  .pr-list,
+  .pr-route,
+  .pr-metric,
+  .pr-final,
+  .pr-diagram {
+    padding: 18px;
+    border-radius: 22px;
+  }
+
+  .pr-title {
+    font-size: clamp(2.4rem, 14vw, 4.2rem);
+  }
+
+  .pr-stage-grid,
+  .pr-stat-grid,
+  .pr-metric-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pr-actions,
+  .pr-final-actions {
+    width: 100%;
+  }
+
+  .pr-btn {
+    width: 100%;
+  }
+
+  .pr-page .nav {
+    min-height: 76px;
+  }
+}

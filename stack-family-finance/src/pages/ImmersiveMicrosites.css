@@ -1,0 +1,845 @@
+.ix-page {
+  --ix-bg: #f4ede1;
+  --ix-bg-2: #efe1c9;
+  --ix-panel: rgba(255, 250, 242, 0.84);
+  --ix-panel-strong: rgba(16, 24, 37, 0.96);
+  --ix-surface: rgba(255, 255, 255, 0.72);
+  --ix-surface-strong: rgba(245, 237, 225, 0.96);
+  --ix-border: rgba(36, 43, 54, 0.12);
+  --ix-ink: #0c1725;
+  --ix-muted: #425368;
+  --ix-accent: #ff6b3d;
+  --ix-accent-2: #0ea5a4;
+  --ix-accent-3: #e0b04b;
+  background:
+    radial-gradient(circle at 10% 10%, color-mix(in srgb, var(--ix-accent) 24%, transparent), transparent 22%),
+    radial-gradient(circle at 88% 8%, color-mix(in srgb, var(--ix-accent-2) 26%, transparent), transparent 24%),
+    linear-gradient(180deg, var(--ix-bg) 0%, var(--ix-bg-2) 54%, #f8f4ed 100%);
+  color: var(--ix-ink);
+}
+
+.ix-page.ix-theme-presentation {
+  --ix-bg: #f6e7d2;
+  --ix-bg-2: #f6f0e6;
+  --ix-accent: #ff6b3d;
+  --ix-accent-2: #009c93;
+  --ix-accent-3: #f2b94b;
+}
+
+.ix-page.ix-theme-documentation {
+  --ix-bg: #f2efe9;
+  --ix-bg-2: #ffffff;
+  --ix-accent: #0f62fe;
+  --ix-accent-2: #f97316;
+  --ix-accent-3: #101827;
+}
+
+.ix-page.ix-theme-integration {
+  --ix-bg: #ecf4eb;
+  --ix-bg-2: #f5f8f3;
+  --ix-accent: #0f766e;
+  --ix-accent-2: #65a30d;
+  --ix-accent-3: #f97316;
+}
+
+.ix-page.ix-theme-developers {
+  --ix-bg: #e8f0f6;
+  --ix-bg-2: #f3f8fb;
+  --ix-accent: #2563eb;
+  --ix-accent-2: #0891b2;
+  --ix-accent-3: #ea580c;
+}
+
+.ix-page .bg-noise {
+  opacity: 0.045;
+  mix-blend-mode: multiply;
+}
+
+.ix-page .cursor-glow {
+  width: 360px;
+  height: 360px;
+  pointer-events: none;
+  opacity: 0.46;
+  background: radial-gradient(circle, color-mix(in srgb, var(--ix-accent) 24%, transparent), transparent 68%);
+  filter: blur(18px);
+}
+
+.ix-page .header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(22px);
+  background: color-mix(in srgb, var(--ix-bg) 84%, rgba(255, 255, 255, 0.42));
+  border-bottom: 1px solid var(--ix-border);
+}
+
+.ix-page .nav {
+  min-height: 90px;
+  gap: 20px;
+}
+
+.ix-page .brand {
+  gap: 14px;
+  color: var(--ix-ink);
+}
+
+.ix-page .brand img {
+  border-radius: 18px;
+  box-shadow: 0 12px 24px rgba(12, 23, 37, 0.12);
+}
+
+.ix-page .brand span {
+  font-family: "Space Grotesk", "Trebuchet MS", sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.06em;
+}
+
+.ix-page .desktop-nav button,
+.ix-page .mobile-nav button {
+  color: color-mix(in srgb, var(--ix-ink) 74%, transparent);
+  font-family: "Space Grotesk", "Trebuchet MS", sans-serif;
+  font-size: 1.04rem;
+  font-weight: 600;
+}
+
+.ix-page .desktop-nav button:hover,
+.ix-page .mobile-nav button:hover {
+  color: var(--ix-ink);
+}
+
+.ix-page .nav-actions .btn-outline {
+  border: 1px solid color-mix(in srgb, var(--ix-ink) 12%, transparent);
+  background: rgba(255, 255, 255, 0.56);
+  color: var(--ix-ink);
+  box-shadow: 0 14px 28px rgba(12, 23, 37, 0.08);
+}
+
+.ix-page .menu-btn span {
+  background: var(--ix-ink);
+}
+
+.ix-page .mobile-nav {
+  background: color-mix(in srgb, var(--ix-bg) 92%, white);
+  border-top: 1px solid var(--ix-border);
+}
+
+.ix-page .footer {
+  background: rgba(11, 18, 30, 0.96);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ix-page .footer-wrap {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.ix-page .footer .brand span,
+.ix-page .footer-links button {
+  color: #f7fafc;
+}
+
+.ix-page .footer p {
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.ix-shell {
+  position: relative;
+  padding: 30px 0 120px;
+}
+
+.ix-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(12, 23, 37, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(12, 23, 37, 0.05) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask: linear-gradient(180deg, rgba(0, 0, 0, 0.3), transparent 92%);
+  pointer-events: none;
+}
+
+.ix-container {
+  position: relative;
+  z-index: 1;
+}
+
+.ix-reveal {
+  opacity: 0;
+  transform: translateY(38px);
+  transition: opacity 0.85s cubic-bezier(.2, .8, .2, 1), transform 0.95s cubic-bezier(.2, .8, .2, 1);
+}
+
+.ix-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ix-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
+  gap: 30px;
+  align-items: stretch;
+  padding-top: 28px;
+}
+
+.ix-card,
+.ix-panel,
+.ix-stage,
+.ix-tabs,
+.ix-band,
+.ix-diagram-shell,
+.ix-footer-panel,
+.ix-list-shell {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--ix-border);
+  background: var(--ix-panel);
+  box-shadow: 0 28px 70px rgba(16, 24, 37, 0.12);
+}
+
+.ix-card::before,
+.ix-panel::before,
+.ix-stage::before,
+.ix-tabs::before,
+.ix-band::before,
+.ix-diagram-shell::before,
+.ix-footer-panel::before,
+.ix-list-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 8px;
+  background: linear-gradient(90deg, var(--ix-accent), var(--ix-accent-2), var(--ix-accent-3));
+}
+
+.ix-hero-copy {
+  padding: 42px;
+  border-radius: 40px;
+}
+
+.ix-hero-copy::after {
+  content: "";
+  position: absolute;
+  right: -80px;
+  top: -60px;
+  width: 260px;
+  height: 260px;
+  border-radius: 999px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--ix-accent) 18%, transparent), transparent 70%);
+  opacity: 0.8;
+}
+
+.ix-stage {
+  padding: 28px;
+  border-radius: 36px;
+  min-height: 100%;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02)),
+    var(--ix-panel-strong);
+  color: #eff5ff;
+}
+
+.ix-stage::after {
+  content: "";
+  position: absolute;
+  inset: 18px;
+  border: 1px dashed rgba(255, 255, 255, 0.08);
+  border-radius: 28px;
+  pointer-events: none;
+}
+
+.ix-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--ix-ink) 10%, transparent);
+  background: rgba(255, 255, 255, 0.62);
+  color: color-mix(in srgb, var(--ix-ink) 92%, transparent);
+  font-family: "Space Grotesk", "Trebuchet MS", sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.ix-stage .ix-kicker,
+.ix-band-dark .ix-kicker,
+.ix-footer-panel .ix-kicker,
+.ix-list-shell.ix-dark .ix-kicker {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
+  color: #f6fbff;
+}
+
+.ix-title {
+  margin: 24px 0 18px;
+  max-width: 11ch;
+  font-family: "Space Grotesk", "Trebuchet MS", sans-serif;
+  font-size: clamp(3.4rem, 7vw, 6.6rem);
+  line-height: 0.92;
+  letter-spacing: -0.085em;
+  color: var(--ix-ink);
+  text-wrap: balance;
+}
+
+.ix-title span,
+.ix-section-title span {
+  color: var(--ix-accent);
+}
+
+.ix-lead {
+  margin: 0;
+  max-width: 58ch;
+  color: var(--ix-muted);
+  font-size: 1.08rem;
+  line-height: 1.82;
+}
+
+.ix-actions {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 28px;
+}
+
+.ix-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 0 22px;
+  border-radius: 18px;
+  border: 1px solid transparent;
+  font-family: "Space Grotesk", "Trebuchet MS", sans-serif;
+  font-size: 0.98rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.ix-btn:hover {
+  transform: translateY(-2px);
+}
+
+.ix-btn-primary {
+  background: linear-gradient(135deg, var(--ix-accent), color-mix(in srgb, var(--ix-accent-2) 54%, white));
+  color: white;
+  box-shadow: 0 22px 36px color-mix(in srgb, var(--ix-accent) 24%, transparent);
+}
+
+.ix-btn-secondary {
+  background: rgba(255, 255, 255, 0.74);
+  border-color: color-mix(in srgb, var(--ix-ink) 12%, transparent);
+  color: var(--ix-ink);
+}
+
+.ix-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 30px;
+}
+
+.ix-stat-card {
+  padding: 18px 16px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.64);
+  border: 1px solid color-mix(in srgb, var(--ix-ink) 10%, transparent);
+}
+
+.ix-stat-card strong {
+  display: block;
+  font-family: "Space Grotesk", "Trebuchet MS", sans-serif;
+  font-size: 1.34rem;
+  letter-spacing: -0.05em;
+}
+
+.ix-stat-card span {
+  display: block;
+  margin-top: 4px;
+  color: var(--ix-muted);
+  font-size: 0.82rem;
+}
+
+.ix-stage-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.ix-stage-header strong {
+  display: block;
+  font-family: "Space Grotesk", "Trebuchet MS", sans-serif;
+  font-size: 1.4rem;
+  letter-spacing: -0.04em;
+}
+
+.ix-stage-header p,
+.ix-stage-module p,
+.ix-stage-wide p,
+.ix-section-copy,
+.ix-card p,
+.ix-panel p,
+.ix-list-shell p,
+.ix-footer-panel p,
+.ix-tab-note {
+  color: inherit;
+  opacity: 0.78;
+  line-height: 1.76;
+}
+
+.ix-stage-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.ix-stage-module,
+.ix-stage-wide {
+  position: relative;
+  padding: 18px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.ix-stage-wide {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 10px;
+}
+
+.ix-stage-module small,
+.ix-stage-wide small,
+.ix-label,
+.ix-card small,
+.ix-list-shell small {
+  display: inline-block;
+  margin-bottom: 10px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.ix-card small,
+.ix-list-shell small,
+.ix-label {
+  color: color-mix(in srgb, var(--ix-accent) 76%, #0c1725);
+}
+
+.ix-stage-module small,
+.ix-stage-wide small,
+.ix-card-dark small,
+.ix-band-dark small,
+.ix-list-shell.ix-dark small,
+.ix-footer-panel small {
+  color: color-mix(in srgb, white 76%, var(--ix-accent));
+}
+
+.ix-stage-module strong,
+.ix-stage-wide strong,
+.ix-card h3,
+.ix-panel h3,
+.ix-list-shell h3,
+.ix-footer-panel h2,
+.ix-section-title {
+  margin: 0;
+  font-family: "Space Grotesk", "Trebuchet MS", sans-serif;
+  letter-spacing: -0.05em;
+}
+
+.ix-section {
+  padding-top: 82px;
+  display: grid;
+  gap: 26px;
+}
+
+.ix-section-head {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 28px;
+  align-items: end;
+}
+
+.ix-section-title {
+  font-size: clamp(2.2rem, 4vw, 4.5rem);
+  line-height: 0.94;
+  color: var(--ix-ink);
+}
+
+.ix-grid-2,
+.ix-grid-3,
+.ix-grid-4 {
+  display: grid;
+  gap: 18px;
+}
+
+.ix-grid-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ix-grid-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.ix-grid-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.ix-card,
+.ix-panel,
+.ix-list-shell,
+.ix-footer-panel {
+  padding: 24px;
+  border-radius: 32px;
+}
+
+.ix-card h3,
+.ix-panel h3,
+.ix-list-shell h3 {
+  font-size: 1.28rem;
+  color: var(--ix-ink);
+}
+
+.ix-card p,
+.ix-panel p,
+.ix-list-shell p {
+  margin: 12px 0 0;
+  color: var(--ix-muted);
+}
+
+.ix-card-dark,
+.ix-band-dark,
+.ix-list-shell.ix-dark,
+.ix-footer-panel {
+  background: #09111c;
+  color: #eef5ff;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.ix-card-dark h3,
+.ix-band-dark h3,
+.ix-list-shell.ix-dark h3,
+.ix-footer-panel h2,
+.ix-band-dark .ix-section-title,
+.ix-footer-panel .ix-section-title {
+  color: #f5fbff;
+}
+
+.ix-card-dark p,
+.ix-band-dark p,
+.ix-list-shell.ix-dark p,
+.ix-footer-panel p,
+.ix-band-dark .ix-section-copy {
+  color: rgba(233, 241, 250, 0.78);
+}
+
+.ix-tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.ix-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--ix-ink) 10%, transparent);
+  background: rgba(255, 255, 255, 0.6);
+  color: var(--ix-ink);
+  font-size: 0.83rem;
+}
+
+.ix-card-dark .ix-tag,
+.ix-band-dark .ix-tag,
+.ix-list-shell.ix-dark .ix-tag,
+.ix-footer-panel .ix-tag {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.07);
+  color: #f2f7ff;
+}
+
+.ix-process {
+  display: grid;
+  gap: 14px;
+}
+
+.ix-process-item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 20px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid color-mix(in srgb, var(--ix-ink) 10%, transparent);
+}
+
+.ix-process-item.ix-dark {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.ix-process-item strong {
+  display: block;
+  font-family: "Space Grotesk", "Trebuchet MS", sans-serif;
+  font-size: 1.12rem;
+  letter-spacing: -0.04em;
+}
+
+.ix-process-index {
+  width: 46px;
+  height: 46px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--ix-accent), var(--ix-accent-2));
+  color: white;
+  font-family: "Space Grotesk", "Trebuchet MS", sans-serif;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.ix-band {
+  padding: 32px;
+  border-radius: 40px;
+}
+
+.ix-band-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
+  gap: 22px;
+}
+
+.ix-band-copy {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+}
+
+.ix-band-copy h3 {
+  font-family: "Space Grotesk", "Trebuchet MS", sans-serif;
+  font-size: clamp(1.8rem, 2.8vw, 3.2rem);
+  line-height: 0.98;
+  letter-spacing: -0.05em;
+}
+
+.ix-list {
+  margin: 0;
+  padding-left: 20px;
+  line-height: 1.86;
+}
+
+.ix-list li {
+  margin-bottom: 10px;
+}
+
+.ix-metric-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.ix-metric {
+  padding: 18px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.66);
+  border: 1px solid color-mix(in srgb, var(--ix-ink) 10%, transparent);
+}
+
+.ix-metric strong {
+  display: block;
+  font-family: "Space Grotesk", "Trebuchet MS", sans-serif;
+  font-size: 1.3rem;
+  letter-spacing: -0.05em;
+}
+
+.ix-metric span {
+  display: block;
+  margin-top: 6px;
+  color: var(--ix-muted);
+  font-size: 0.84rem;
+}
+
+.ix-tabs {
+  border-radius: 34px;
+  background: #08111b;
+  color: #eff5ff;
+}
+
+.ix-tabs-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ix-tab-list {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+}
+
+.ix-tab,
+.ix-copy {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(238, 245, 255, 0.82);
+  border-radius: 999px;
+  padding: 9px 14px;
+  white-space: nowrap;
+  font-size: 0.82rem;
+}
+
+.ix-tab.active {
+  background: color-mix(in srgb, var(--ix-accent) 28%, rgba(255, 255, 255, 0.08));
+  color: #f6fbff;
+}
+
+.ix-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ix-code {
+  margin: 0;
+  padding: 22px 24px;
+  max-height: 430px;
+  overflow: auto;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 0.85rem;
+  line-height: 1.82;
+  white-space: pre-wrap;
+}
+
+.ix-tab-note {
+  padding: 0 24px 22px;
+  font-size: 0.9rem;
+}
+
+.ix-tabs-head strong {
+  color: #f6fbff;
+  font-family: "Space Grotesk", "Trebuchet MS", sans-serif;
+  font-size: 1rem;
+  letter-spacing: -0.03em;
+}
+
+.ix-diagram-shell {
+  padding: 24px;
+  border-radius: 36px;
+  background: #08111c;
+}
+
+.ix-diagram-shell :where(.db-diagram-wrap, .uml-diagram-wrap) {
+  overflow-x: auto;
+}
+
+.ix-diagram-shell :where(.db-diagram-wrap, .uml-diagram-wrap)::-webkit-scrollbar {
+  height: 10px;
+}
+
+.ix-diagram-shell :where(.db-diagram-wrap, .uml-diagram-wrap)::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+}
+
+.ix-rail {
+  display: grid;
+  gap: 14px;
+}
+
+.ix-footer-panel {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: center;
+  padding: 34px;
+  border-radius: 38px;
+}
+
+.ix-footer-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 1180px) {
+  .ix-hero,
+  .ix-section-head,
+  .ix-band-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ix-grid-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ix-grid-3,
+  .ix-grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .ix-metric-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ix-footer-panel {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 760px) {
+  .ix-shell {
+    padding-bottom: 92px;
+  }
+
+  .ix-hero-copy,
+  .ix-stage,
+  .ix-card,
+  .ix-panel,
+  .ix-list-shell,
+  .ix-band,
+  .ix-diagram-shell,
+  .ix-footer-panel {
+    padding: 20px;
+    border-radius: 28px;
+  }
+
+  .ix-title {
+    font-size: clamp(2.8rem, 14vw, 4.7rem);
+  }
+
+  .ix-stat-grid,
+  .ix-stage-grid,
+  .ix-metric-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .ix-actions,
+  .ix-footer-actions {
+    width: 100%;
+  }
+
+  .ix-btn {
+    width: 100%;
+  }
+
+  .ix-page .nav {
+    min-height: 78px;
+  }
+}

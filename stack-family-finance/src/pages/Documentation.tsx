@@ -1,289 +1,111 @@
+﻿import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MarketingFooter } from "@/components/marketing/MarketingFooter";
 import { MarketingHeader } from "@/components/marketing/MarketingHeader";
-import { ShowcaseConsole } from "@/components/marketing/ShowcaseConsole";
+import { DbDiagram } from "@/components/diagrams/DbDiagram";
+import { UmlDiagram } from "@/components/diagrams/UmlDiagram";
 import { useMarketingMotion } from "@/hooks/useMarketingMotion";
 import "./Landing.css";
 
-const endpointSets = [
+const contractPrinciples = [
+  { icon: "fa-solid fa-envelope-open-text", title: "ApiResponse envelope", body: "Every backend response is wrapped. Frontend always reads payload from response.data — never from guessed top-level fields." },
+  { icon: "fa-solid fa-rotate", title: "Refresh-aware auth client", body: "A 401 or 403 triggers exactly one silent refresh attempt. On failure auth state is cleared and user is redirected to /login." },
+  { icon: "fa-solid fa-user-tag", title: "Role ownership", body: "Parent, child, and admin flows are route-isolated. They never collapse into one ambiguous dashboard contract." },
+  { icon: "fa-solid fa-coins", title: "Money discipline", body: "Amount semantics are deterministic across UI conversion, API payloads, service layer, and persistence." },
+  { icon: "fa-solid fa-camera", title: "Proof before payout", body: "The task lifecycle enforces completion evidence and parent approval before any value moves." },
+  { icon: "fa-solid fa-layer-group", title: "DTO-first operations", body: "Admin contract uses DTO surfaces to decouple internal JPA entities from external operational pages." },
+];
+
+const endpointGroups = [
   {
-    name: "Auth",
-    code: `curl -X POST https://stack.polito.uz/api/auth/login \\
-  -H "Content-Type: application/json" \\
-  -d '{"username":"parent","password":"***"}'`,
+    title: "Auth and Profile",
+    code: "POST /api/auth/register\nPOST /api/auth/login\nPOST /api/auth/refresh\nPOST /api/auth/logout\nGET  /api/users/profile\nPUT  /api/users/profile\nPUT  /api/users/profile/password\nPOST /api/users/profile/photo\nGET  /api/users/me",
   },
   {
-    name: "Family",
-    code: `GET /api/family/me
-POST /api/family/create
-POST /api/family/{id}/invite
-POST /api/family/join`,
+    title: "Family Graph",
+    code: "POST   /api/family/create\nGET    /api/family/me\nPOST   /api/family/{familyId}/invite\nPOST   /api/family/join\nGET    /api/family/{familyId}/members\nPUT    /api/family/{familyId}\nDELETE /api/family/{familyId}\nDELETE /api/family/{familyId}/members/{userId}",
   },
   {
-    name: "Dashboard and tasks",
-    code: `GET /api/dashboard/parent
-GET /api/dashboard/child
-GET /api/tasks/parent
-GET /api/tasks/child
-POST /api/tasks`,
+    title: "Wallet and Dashboard",
+    code: "GET  /api/dashboard/child\nGET  /api/dashboard/parent\nGET  /api/accounts/me\nPOST /api/accounts/me\nGET  /api/accounts/family/{familyId}\nPOST /api/accounts/transfer\nGET  /api/transactions/accounts/{accountId}\nPOST /api/transactions/accounts/{accountId}/deposit\nPOST /api/transactions/accounts/{accountId}/withdraw",
   },
   {
-    name: "Banking and goals",
-    code: `GET /api/accounts/me
-GET /api/transactions/me
-GET /api/goals/me
-POST /api/goals`,
+    title: "Tasks Goals Games",
+    code: "POST /api/tasks\nGET  /api/tasks/parent\nGET  /api/tasks/child\nPUT  /api/tasks/{id}/complete\nPUT  /api/tasks/{id}/approve\nPUT  /api/tasks/{id}/reject\nDELETE /api/tasks/{id}\nGET  /api/goals/me\nPOST /api/goals\nPOST /api/goals/{goalId}/save\nGET  /api/games/public/list\nPOST /api/games/start/{gameId}\nPOST /api/games/finish/{sessionId}\nGET  /api/admin/users\nGET  /api/admin/stats",
   },
 ];
 
-const rules = [
-  "Send Authorization: Bearer <accessToken> for protected routes.",
-  "Persist accessToken from login, not a guessed token property.",
-  "Retry once through refresh for expired sessions, then log out cleanly.",
-  "Resolve current user from authenticated identity, never from hardcoded IDs.",
-  "Treat parent, child, and admin as separate route surfaces and data contracts.",
-  "Deploy backend auth or DTO changes before shipping the frontend that depends on them.",
-];
-
-const codeExamples = [
+const responseSamples = [
   {
     title: "Login response",
-    code: `{
-  "message": "Login successful",
-  "data": {
-    "accessToken": "jwt",
-    "refreshToken": "optional",
-    "user": {
-      "id": 1,
-      "username": "parent1",
-      "role": "PARENT"
-    }
-  }
-}`,
+    code: '{\n  "message": "Login successful",\n  "data": {\n    "token": "jwt_token_here",\n    "user": {\n      "id": 1,\n      "username": "john_doe",\n      "role": "PARENT",\n      "enabled": true\n    }\n  }\n}',
   },
   {
-    title: "Refresh retry logic",
-    code: `try {
-  return await apiFetch(endpoint, options);
-} catch (error) {
-  if (isAuthError(error)) {
-    await refreshSession();
-    return await apiFetch(endpoint, retryOptions);
-  }
-  throw error;
-}`,
+    title: "Create family",
+    code: '{\n  "message": "Family created",\n  "data": {\n    "id": 1,\n    "title": "Smith Family",\n    "createdBy": 1,\n    "createdAt": "2026-03-10T10:00:00Z"\n  }\n}',
   },
   {
-    title: "Parent dashboard call",
-    code: `GET /api/dashboard/parent
-Authorization: Bearer <accessToken>
-
-200 OK
-{
-  "message": "Success",
-  "data": {
-    "accounts": [],
-    "goals": [],
-    "recentTransactions": []
-  }
-}`,
-  },
-  {
-    title: "Profile update behavior",
-    code: `PATCH /api/users/profile
-Authorization: Bearer <accessToken>
-
--> backend updates current user
--> frontend updates stored user snapshot
--> session persists without forced relogin`,
+    title: "Auth header usage",
+    code: "// All protected requests\nAuthorization: Bearer <accessToken>\n\n// Refresh when 401\nPOST /api/auth/refresh\n{ \"refreshToken\": \"<token>\" }",
   },
 ];
 
-const architectureRows = [
-  ["Spring Boot backend", "Owns auth, roles, families, tasks, transactions, goals, games, and admin services."],
-  ["JWT filter and method security", "Protects the backend while keeping role logic explicit at controller and service level."],
-  ["React web product", "Renders landing pages, parent and child dashboards, settings, admin surfaces, and auth flow."],
-  ["Electron desktop package", "Delivers the same frontend inside a Windows desktop shell with media permission handling."],
-  ["Capacitor Android package", "Builds the mobile experience from the shared frontend and syncs it into native Android."],
-  ["Admin DTO layer", "Stabilizes admin responses so the frontend is not guessing at backend entity shape."],
+const commandDeck = [
+  { title: "Web runtime", code: "npm run dev\nnpm run build\nnpm run preview\nnpm run test\nnpm run lint" },
+  { title: "Desktop runtime", code: "npm run electron:dev\nnpm run electron:build\nnpm run electron:pack\nnpm run electron:dist:win" },
+  { title: "Android runtime", code: "npm run mobile:init\nnpm run mobile:add:android\nnpm run mobile:sync\nnpm run mobile:build" },
 ];
 
-const deploymentNotes = [
-  "Update backend auth or DTO contracts first.",
-  "Deploy Spring Boot to the server before frontend release.",
-  "Deploy frontend build after backend is live.",
-  "Clear stale browser or app auth data and log in again.",
-  "Verify dashboard, family, tasks, and profile endpoints with a fresh session.",
-  "Only then rebuild or redistribute Electron and Android artifacts if needed.",
+const troubleshooting = [
+  "401 after login — wrong token field persisted (must use response.data.accessToken).",
+  "403 on protected route — role mismatch, not only authentication failure.",
+  "Task payout bug — skipping complete to approve/reject lifecycle.",
+  "Ledger mismatch — non-deterministic amount conversion before API call.",
+  "Desktop/mobile drift — new web build not synced before packaging.",
+  "Admin view gaps — DTO shape drift between backend and frontend.",
+];
+
+const releaseChecklist = [
+  "Deploy backend contract changes before frontend code depending on new fields.",
+  "Re-test both parent and child dashboards after auth or family route updates.",
+  "Verify upload flow for task proof and profile photo on web and mobile targets.",
+  "Check admin stats and transaction list on release candidate environment.",
+  "Run smoke paths: login, invite/join, transfer, task approval, goal save, game session.",
 ];
 
 export default function Documentation() {
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState(0);
   useMarketingMotion();
 
   return (
-    <div className="landing-page microsite-page">
-      <div className="cursor-glow"></div>
-      <div className="bg-noise"></div>
+    <div className="landing-page">
+      <div className="cursor-glow" />
+      <div className="bg-noise" />
       <MarketingHeader activePath="/documentation" />
-
       <main>
-        <section className="hero hero-premium">
-          <div className="container hero-grid">
-            <div className="hero-copy reveal up">
+        <section className="hero" style={{ paddingTop: 80, paddingBottom: 60 }}>
+          <div className="container">
+            <div className="reveal up">
               <div className="eyebrow">
-                <i className="fa-solid fa-book-open"></i>
-                Platform Documentation
+                <i className="fa-solid fa-book-open" />
+                Technical Documentation
               </div>
               <h1 className="hero-title">
-                The full contract
-                <span>behind the product</span>
+                Contract clarity for the
+                <span>full family-finance stack.</span>
               </h1>
               <p className="hero-text">
-                This documentation explains the real system: backend identity handling, frontend session behavior, route ownership, admin DTOs,
-                Windows and Android delivery, deployment order, and the failure patterns that previously produced 403 and 500 errors.
+                Response rules, route ownership, module scripts, diagrams, failure patterns, and release discipline in one place.
               </p>
               <div className="hero-actions">
-                <button className="btn btn-primary" onClick={() => navigate("/integration")}>
-                  <i className="fa-solid fa-plug-circle-bolt"></i>
-                  Integration architecture
+                <button onClick={() => navigate("/developers")} className="btn btn-primary">
+                  <i className="fa-solid fa-terminal" /> Developer Portal
                 </button>
-                <button className="btn btn-secondary" onClick={() => navigate("/presentation")}>
-                  <i className="fa-solid fa-display"></i>
-                  Product presentation
+                <button onClick={() => navigate("/integration")} className="btn btn-secondary">
+                  <i className="fa-solid fa-link" /> Integration Guide
                 </button>
               </div>
-            </div>
-
-            <div className="hero-visual reveal right">
-              <div className="workspace-shell glass">
-                <div className="workspace-sidebar">
-                  <div className="workspace-item active">auth.http</div>
-                  <div className="workspace-item">dashboard.contracts.ts</div>
-                  <div className="workspace-item">admin-dtos.java</div>
-                  <div className="workspace-item">deployment-order.md</div>
-                </div>
-                <div className="workspace-main">
-                  <div className="code-topbar">
-                    <span></span><span></span><span></span>
-                    <p>live-auth-contract.ts</p>
-                  </div>
-                  <pre>{`const login = await api.post("/api/auth/login", credentials);
-const token = login.data.accessToken;
-
-const profile = await api.get("/api/users/profile", {
-  headers: { Authorization: \`Bearer \${token}\` }
-});
-
-if (requestFailsWith401) {
-  await api.post("/api/auth/refresh");
-}`}</pre>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="section">
-          <div className="container showcase-split">
-            <div className="showcase-copy reveal left">
-              <div className="eyebrow">System map</div>
-              <h2>Document by behavior, ownership, and deployment.</h2>
-              <p>
-                The project is bigger than a route list. It includes live auth, parent and child dashboards, tasks with proof uploads,
-                settings persistence, admin supervision, Windows packaging, Android packaging, and a public microsite.
-              </p>
-            </div>
-            <div className="reveal right">
-              <ShowcaseConsole
-                title="Core route examples"
-                language="Stack routes"
-                tabs={[
-                  { label: "Auth", accent: "green" },
-                  { label: "Family" },
-                  { label: "Dashboard" },
-                  { label: "Goals" },
-                ]}
-                code={`POST /api/auth/login
-GET  /api/family/me
-GET  /api/dashboard/parent
-GET  /api/tasks/parent
-GET  /api/accounts/me
-POST /api/goals`}
-                footer="Use these as the first verification points after backend deploy and fresh login."
-              />
-            </div>
-          </div>
-        </section>
-
-        <section className="section">
-          <div className="container showcase-card-grid">
-            {endpointSets.map((set, index) => (
-              <div key={set.name} className={`showcase-mini-card reveal ${index % 2 === 0 ? "right" : "left"}`}>
-                <div className="showcase-mini-head">
-                  <strong>{set.name}</strong>
-                  <button className="pill">copy-ready</button>
-                </div>
-                <pre>{set.code}</pre>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="section">
-          <div className="container route-board glass reveal zoom">
-            <div className="route-board-head">
-              <div className="eyebrow">Route board</div>
-              <h2>Primary API routes grouped by actual app usage.</h2>
-            </div>
-            <div className="route-grid">
-              <div className="route-item"><span>POST</span><code>/api/auth/login</code><p>Returns `accessToken`, optional `refreshToken`, and `user`.</p></div>
-              <div className="route-item"><span>POST</span><code>/api/auth/refresh</code><p>Used by the frontend retry flow when auth expires.</p></div>
-              <div className="route-item"><span>GET</span><code>/api/family/me</code><p>Loads the authenticated user's family membership and role context.</p></div>
-              <div className="route-item"><span>GET</span><code>/api/dashboard/parent</code><p>Parent dashboard data surface for accounts, goals, and recent activity.</p></div>
-              <div className="route-item"><span>GET</span><code>/api/tasks/parent</code><p>Parent task management and approval queue.</p></div>
-              <div className="route-item"><span>GET</span><code>/api/users/profile</code><p>Current user profile data for settings and session persistence.</p></div>
-            </div>
-          </div>
-        </section>
-
-        <section className="section section-dark">
-          <div className="container sticky-showcase">
-            <div className="sticky-copy reveal up">
-              <div className="pin-box">
-                <div className="eyebrow">Critical rules</div>
-                <h2>These are not suggestions. These are the system rules.</h2>
-                <p>
-                  Most production failures in this project came from contract mismatch, wrong identity handling, and deployment order mistakes.
-                  These rules exist to stop that from happening again.
-                </p>
-              </div>
-            </div>
-            <div className="sticky-cards">
-              {rules.map((item, index) => (
-                <div key={item} className={`story-panel glass ${index % 2 === 0 ? "reveal right" : "reveal left"} premium-panel`}>
-                  <span>{`Rule ${index + 1}`}</span>
-                  <h3>{item}</h3>
-                  <p>Apply it consistently across the backend, web app, Electron wrapper, Android wrapper, and any external integration.</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="section">
-          <div className="container matrix-board glass reveal zoom">
-            <div className="section-head" style={{ marginBottom: 24 }}>
-              <div className="eyebrow">Architecture matrix</div>
-              <h2>Major layers and what each layer owns.</h2>
-            </div>
-            <div className="matrix-grid">
-              {architectureRows.map(([title, text]) => (
-                <div key={title} className="matrix-cell">
-                  <strong>{title}</strong>
-                  <p>{text}</p>
-                </div>
-              ))}
             </div>
           </div>
         </section>
@@ -291,18 +113,72 @@ POST /api/goals`}
         <section className="section section-dark">
           <div className="container">
             <div className="section-head reveal up">
-              <div className="eyebrow">Executable examples</div>
-              <h2>Docs should feel runnable, not decorative.</h2>
-              <p>These blocks are written as reference surfaces a developer can actually follow during implementation.</p>
+              <div className="eyebrow">Contract principles</div>
+              <h2>Non-negotiable technical behaviors.</h2>
+              <p>These keep frontend and backend in sync across all environments.</p>
+            </div>
+            <div className="feature-grid">
+              {contractPrinciples.map((rule, i) => (
+                <article key={rule.title} className={`feature-card glass reveal ${["left","up","right","left","up","right"][i]}`}>
+                  <div className="icon-box"><i className={rule.icon} /></div>
+                  <h3>{rule.title}</h3>
+                  <p>{rule.body}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="section">
+          <div className="container">
+            <div className="section-head reveal up">
+              <div className="eyebrow">API endpoints</div>
+              <h2>Route groups by domain ownership.</h2>
+              <p>Base URL: https://stack.polito.uz/api</p>
+            </div>
+            <div className="showcase-console glass reveal up">
+              <div className="showcase-console-header">
+                <i className="fa-solid fa-server" style={{ marginRight: 8 }} />
+                Stack REST API
+              </div>
+              <div className="showcase-console-tabs">
+                {endpointGroups.map((g, i) => (
+                  <button
+                    key={g.title}
+                    className={`showcase-console-tab ${activeTab === i ? "active cyan" : ""}`}
+                    onClick={() => setActiveTab(i)}
+                  >
+                    {g.title}
+                  </button>
+                ))}
+              </div>
+              <pre className="showcase-console-code">{endpointGroups[activeTab].code}</pre>
+              <div className="showcase-console-footer">
+                <span>Protected endpoints require Authorization: Bearer token</span>
+                <button className="showcase-console-copy" onClick={() => navigator.clipboard.writeText(endpointGroups[activeTab].code)}>
+                  <i className="fa-regular fa-copy" /> Copy
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="section section-dark">
+          <div className="container">
+            <div className="section-head reveal up">
+              <div className="eyebrow">Response shapes</div>
+              <h2>Reference API response envelope.</h2>
             </div>
             <div className="code-grid">
-              {codeExamples.map((item, index) => (
-                <div key={item.title} className={`code-panel glass reveal ${index % 2 === 0 ? "left" : "right"}`}>
+              {responseSamples.map((sample, i) => (
+                <div key={sample.title} className={`code-panel glass reveal ${i % 2 === 0 ? "left" : "right"}`}>
                   <div className="code-panel-head">
-                    <strong>{item.title}</strong>
-                    <button className="pill">copy block</button>
+                    <strong>{sample.title}</strong>
+                    <button className="showcase-console-copy" onClick={() => navigator.clipboard.writeText(sample.code)}>
+                      <i className="fa-regular fa-copy" /> Copy
+                    </button>
                   </div>
-                  <pre>{item.code}</pre>
+                  <pre>{sample.code}</pre>
                 </div>
               ))}
             </div>
@@ -310,35 +186,95 @@ POST /api/goals`}
         </section>
 
         <section className="section">
-          <div className="container terminal-rack">
-            <div className="terminal-panel glass reveal left">
-              <div className="code-topbar">
-                <span></span><span></span><span></span>
-                <p>deployment-order</p>
-              </div>
-              <pre>{deploymentNotes.map((item, index) => `${index + 1}. ${item}`).join("\n")}</pre>
+          <div className="container">
+            <div className="section-head reveal up">
+              <div className="eyebrow">Runtime commands</div>
+              <h2>Script deck for all delivery channels.</h2>
             </div>
-            <div className="terminal-panel glass reveal right">
-              <div className="code-topbar">
-                <span></span><span></span><span></span>
-                <p>failure-patterns</p>
+            <div className="download-grid">
+              {commandDeck.map((deck, i) => (
+                <div key={deck.title} className={`terminal-panel glass reveal ${i === 0 ? "left" : i === 1 ? "up" : "right"}`}>
+                  <div className="code-topbar">
+                    <span /><span /><span />
+                    <p>{deck.title}</p>
+                    <button className="showcase-console-copy" style={{ marginLeft: "auto" }} onClick={() => navigator.clipboard.writeText(deck.code)}>
+                      <i className="fa-regular fa-copy" /> Copy
+                    </button>
+                  </div>
+                  <pre>{deck.code}</pre>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="section section-dark" id="doc-db">
+          <div className="container">
+            <div className="section-head reveal up">
+              <div className="eyebrow">Database diagram</div>
+              <h2>Visual entity-relationship map.</h2>
+              <p>Relational view with FK arrows — color-coded by domain.</p>
+            </div>
+            <div className="glass reveal up" style={{ padding: 24, borderRadius: 28, overflowX: "auto" }}>
+              <DbDiagram />
+            </div>
+          </div>
+        </section>
+
+        <section className="section" id="doc-uml">
+          <div className="container">
+            <div className="section-head reveal up">
+              <div className="eyebrow">Architecture diagram</div>
+              <h2>System topology — client to database.</h2>
+              <p>UML view for frontend, gateway calls, controller boundaries, and persistence flow.</p>
+            </div>
+            <div className="glass reveal up" style={{ padding: 24, borderRadius: 28, overflowX: "auto" }}>
+              <UmlDiagram />
+            </div>
+          </div>
+        </section>
+
+        <section className="section section-dark">
+          <div className="container">
+            <div className="detail-grid">
+              <div className="glass reveal left" style={{ padding: 32, borderRadius: 28 }}>
+                <div className="eyebrow" style={{ marginBottom: 16 }}>Failure playbook</div>
+                <h3 style={{ fontSize: "1.6rem", letterSpacing: "-0.04em", marginBottom: 16 }}>Common failure signatures</h3>
+                <ul className="micro-list">
+                  {troubleshooting.map((item) => <li key={item}>{item}</li>)}
+                </ul>
               </div>
-              <pre>{`403 before controller:
-  invalid or missing bearer token
+              <div className="glass reveal right" style={{ padding: 32, borderRadius: 28 }}>
+                <div className="eyebrow" style={{ marginBottom: 16 }}>Release checklist</div>
+                <h3 style={{ fontSize: "1.6rem", letterSpacing: "-0.04em", marginBottom: 16 }}>Before every deployment</h3>
+                <ul className="micro-list">
+                  {releaseChecklist.map((item) => <li key={item}>{item}</li>)}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
 
-500 before fixes:
-  controller parsed principal incorrectly
-
-stale auth UI:
-  frontend stored token instead of accessToken
-
-admin mismatch:
-  frontend assumed raw entity fields instead of DTO contract`}</pre>
+        <section className="section cta-section">
+          <div className="container">
+            <div className="cta-box glass reveal up">
+              <div className="cta-copy">
+                <div className="eyebrow">Next steps</div>
+                <h2>Ready to integrate or build on top of Stack?</h2>
+                <p>Explore the integration guide or open the developer portal for full implementation details.</p>
+              </div>
+              <div className="cta-actions">
+                <button onClick={() => navigate("/integration")} className="btn btn-primary">
+                  <i className="fa-solid fa-link" /> Integration
+                </button>
+                <button onClick={() => navigate("/presentation")} className="btn btn-secondary">
+                  <i className="fa-solid fa-display" /> Presentation
+                </button>
+              </div>
             </div>
           </div>
         </section>
       </main>
-
       <MarketingFooter />
     </div>
   );
